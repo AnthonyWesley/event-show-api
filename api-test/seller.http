@@ -1,0 +1,43 @@
+###
+GET http://localhost:8000/sellers
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlRSVzVDNFQ1NTBISzZFUzNIRFgxQVhTIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ3MDcwNTI0LCJleHAiOjE3NDc2NzUzMjR9.ojZjzVrwFWqVDnNvwCmR-HqKWlM4S0jcaJv-nZQmXv0
+
+###
+GET http://localhost:8000/sellers/01JSA5FX0RWEYWAD0M0VDQAXTH
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlRSVzVDNFQ1NTBISzZFUzNIRFgxQVhTIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ3MDcwNTI0LCJleHAiOjE3NDc2NzUzMjR9.ojZjzVrwFWqVDnNvwCmR-HqKWlM4S0jcaJv-nZQmXv0
+
+###
+GET http://localhost:8000/sellers/email/awl-7@live.com
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlRSVzVDNFQ1NTBISzZFUzNIRFgxQVhTIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ3MDcwNTI0LCJleHAiOjE3NDc2NzUzMjR9.ojZjzVrwFWqVDnNvwCmR-HqKWlM4S0jcaJv-nZQmXv0
+
+###
+POST http://localhost:8000/sellers
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlRSVzVDNFQ1NTBISzZFUzNIRFgxQVhTIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ3MDcwNTI0LCJleHAiOjE3NDc2NzUzMjR9.ojZjzVrwFWqVDnNvwCmR-HqKWlM4S0jcaJv-nZQmXv0
+# Authorization: Bearer <seu_token_jwt_aqui>
+Content-Type: application/json
+
+{
+  "name": "OTHER XxX.",
+  "email": "vendedor@04.com",
+  "phone": "55992101557"
+}
+
+###
+DELETE http://localhost:8000/sellers/01JSA5FX0RWEYWAD0M0VDQAXTH
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlRSVzVDNFQ1NTBISzZFUzNIRFgxQVhTIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ3MDcwNTI0LCJleHAiOjE3NDc2NzUzMjR9.ojZjzVrwFWqVDnNvwCmR-HqKWlM4S0jcaJv-nZQmXv0
+
+
+###
+PUT http://localhost:8000/sellers/01JSA5FX0RWEYWAD0M0VDQAXTH
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlRSVzVDNFQ1NTBISzZFUzNIRFgxQVhTIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ3MDcwNTI0LCJleHAiOjE3NDc2NzUzMjR9.ojZjzVrwFWqVDnNvwCmR-HqKWlM4S0jcaJv-nZQmXv0
+Content-Type: application/json
+
+{
+  "name": "Vendedor 50 - ATUALIZADO.",
+  "email": "vendedor@00.com",
+  "phone": "55992101557"
+}
+
+
+
+###

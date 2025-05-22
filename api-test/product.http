@@ -1,0 +1,36 @@
+###
+GET http://localhost:8000/products
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlRSVzVDNFQ1NTBISzZFUzNIRFgxQVhTIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ3MDcwNTI0LCJleHAiOjE3NDc2NzUzMjR9.ojZjzVrwFWqVDnNvwCmR-HqKWlM4S0jcaJv-nZQmXv0
+
+###
+GET http://localhost:8000/product/01JRJNPAFM575GJP095FCBHQHW
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlRSVzVDNFQ1NTBISzZFUzNIRFgxQVhTIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ3MDcwNTI0LCJleHAiOjE3NDc2NzUzMjR9.ojZjzVrwFWqVDnNvwCmR-HqKWlM4S0jcaJv-nZQmXv0
+
+###
+POST http://localhost:8000/products
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlRSVzVDNFQ1NTBISzZFUzNIRFgxQVhTIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ3MDcwNTI0LCJleHAiOjE3NDc2NzUzMjR9.ojZjzVrwFWqVDnNvwCmR-HqKWlM4S0jcaJv-nZQmXv0
+# Authorization: Bearer <seu_token_jwt_aqui>
+Content-Type: application/json
+
+{
+  "name": "bros",
+  "price": 8000.80
+}
+
+###
+DELETE http://localhost:8000/products/01JRJNPAFM575GJP095FCBHQHW
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlRSVzVDNFQ1NTBISzZFUzNIRFgxQVhTIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ3MDcwNTI0LCJleHAiOjE3NDc2NzUzMjR9.ojZjzVrwFWqVDnNvwCmR-HqKWlM4S0jcaJv-nZQmXv0
+
+
+###
+PUT http://localhost:8000/products/01JRJNPAFM575GJP095FCBHQHW
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlRSVzVDNFQ1NTBISzZFUzNIRFgxQVhTIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ3MDcwNTI0LCJleHAiOjE3NDc2NzUzMjR9.ojZjzVrwFWqVDnNvwCmR-HqKWlM4S0jcaJv-nZQmXv0
+Content-Type: application/json
+
+{
+  "name": "START - ATU2",
+  "price": 8000.80
+}
+
+
+###

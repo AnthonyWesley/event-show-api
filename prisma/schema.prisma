@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Partner {
+  id           String          @id @default(uuid())
+  name         String
+  email        String          @unique
+  password     String
+  phone        String?
+  plan         Plan            @default(FREE)
+  maxConcurrentEvents Int      @default(1) 
+  status       Status          @default(ACTIVE)
+  refreshToken String?
+  trialEndsAt  DateTime?
+  createdAt    DateTime        @default(now())
+  events       Event[]
+  products     Product[]
+  sellers      Seller[]
+  pendingAction PendingAction[]
+
+  @@index([plan])
+}
+
+model Product {
+  id         String   @id @default(uuid())
+  name       String
+  price      Float
+  partnerId  String
+  createdAt  DateTime @default(now())
+  partner    Partner  @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  sales      Sale[]
+
+  @@index([partnerId])
+}
+
+model Event {
+  id           String        @id @default(uuid())
+  name         String
+  startDate    DateTime
+  endDate      DateTime?
+  isActive     Boolean       @default(true) 
+  partnerId    String
+  goal         Float         @default(0.0)
+  goalType     GoalType      @default(QUANTITY)
+  createdAt    DateTime      @default(now())
+  partner      Partner       @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  sellerEvents SellerEvent[] 
+  sales        Sale[]
+
+  @@index([partnerId])
+  @@index([isActive])
+  @@index([partnerId, isActive])
+}
+
+model Seller {
+  id        String        @id @default(uuid())
+  name      String
+  email     String        
+  phone     String?
+  photo     String?
+  partnerId String
+  createdAt DateTime      @default(now())
+  partner   Partner       @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  sales     Sale[]
+  events    SellerEvent[] 
+  @@unique([partnerId, email]) 
+  @@index([partnerId])
+}
+
+model SellerEvent {
+  id        String   @id @default(uuid())
+  sellerId  String
+  eventId   String
+
+  seller    Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([sellerId, eventId], name: "sellerId_eventId")
+}
+
+model Sale {
+  id        String   @id @default(uuid())
+  sellerId  String
+  productId String
+  eventId   String
+  quantity  Int
+  createdAt DateTime @default(now())
+
+  seller    Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model PendingAction {
+  id         String        @id @default(uuid())
+  partnerId  String
+  eventId    String
+  actionType ActionType
+  targetId   String?
+  sellerId   String
+  payload    Json
+  status     ActionStatus  @default(PENDING)
+  createdAt  DateTime      @default(now())
+  partner    Partner       @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+}
+
+enum ActionType {
+  CREATE_SALE
+  UPDATE_SALE
+  DELETE_SALE
+  // CREATE_SELLER
+  // UPDATE_SELLER
+  // DELETE_SELLER
+  // OTHER
+}
+
+enum ActionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum Plan {
+  FREE
+  BASIC
+  PREMIUM
+}
+
+enum Status {
+  ACTIVE
+  SUSPENDED
+  TRIAL_EXPIRED
+}
+
+enum GoalType {
+  QUANTITY
+  VALUE
+}
