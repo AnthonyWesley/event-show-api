@@ -32,6 +32,7 @@ import { ListEventSellerRoute } from "./seller/ListEventSellerRoute";
 import { UpdateEventSellerRoute } from "./seller/UpdateEventSellerRoute";
 import { CreateSellerEventRoute } from "./sellerEvent/CreateSellerEventRoute";
 import { DeleteSellerEventRoute } from "./sellerEvent/DeleteSellerEventRoute";
+import { GuestAccessRoute } from "./sellerEvent/GuestAccessRoute";
 import { ListEventsBySellerRoute } from "./sellerEvent/ListEventsBySellerRoute";
 import { ListSellerByEventRoute } from "./sellerEvent/ListSellerByEventRoute";
 
@@ -82,6 +83,7 @@ export const routes = [
   //   useCases.sellerEvent.register,
   //   authorization
   // ),
+  GuestAccessRoute.create(authorization),
   ListEventsBySellerRoute.create(useCases.sellerEvent.listEvent, authorization),
   ListSellerByEventRoute.create(useCases.sellerEvent.listSeller, authorization),
   DeleteSellerEventRoute.create(useCases.sellerEvent.delete, authorization),
