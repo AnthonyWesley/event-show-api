@@ -5,7 +5,10 @@ import { IRoute } from "../../../presentation/routes/IRoute";
 import { ErrorHandler } from "../../http/middlewares/ErrorHandler";
 import { ValidationError } from "../../../shared/errors/ValidationError";
 import cookieParser from "cookie-parser";
-
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://event-flow-awl.netlify.app",
+];
 export class ApiExpress {
   private app: express.Application;
 
@@ -15,7 +18,13 @@ export class ApiExpress {
     this.app.use(cookieParser());
     this.app.use(
       cors({
-        origin: "http://localhost:5173",
+        origin: (origin, callback) => {
+          if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+          } else {
+            callback(new Error("Not allowed by CORS"));
+          }
+        },
         credentials: true,
       })
     );
