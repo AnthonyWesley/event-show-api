@@ -53,13 +53,13 @@ export class Authorization {
   ) => {
     try {
       const partnerToken = request.header("Partner-Authorization");
-      const guestToken = request.header("Guest-Authorization");
+      // const guestToken = request.header("Guest-Authorization");
 
-      if (!partnerToken && !guestToken) {
-        return response.status(401).json({
-          message: "Access denied. No token provided.",
-        });
-      }
+      // if (!partnerToken && !guestToken) {
+      //   return response.status(401).json({
+      //     message: "Access denied. No token provided.",
+      //   });
+      // }
 
       if (partnerToken) {
         const partnerDecoded = this.verifyToken(
@@ -68,12 +68,12 @@ export class Authorization {
         (request as any).partner = partnerDecoded;
       }
 
-      if (guestToken) {
-        const guestDecoded = this.verifyToken(
-          guestToken.replace("Bearer ", "")
-        );
-        (request as any).guest = guestDecoded;
-      }
+      // if (guestToken) {
+      //   const guestDecoded = this.verifyToken(
+      //     guestToken.replace("Bearer ", "")
+      //   );
+      //   (request as any).guest = guestDecoded;
+      // }
 
       next();
     } catch (error) {
