@@ -1,18 +1,24 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { GuestAccess } from "../../../usecase/sellerEvent/GuestAccess";
 
 export class GuestAccessRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
+    private readonly guestAccessService: GuestAccess,
     private readonly authorization: Authorization
   ) {}
 
-  public static create(authorization: Authorization) {
+  public static create(
+    guestAccessService: GuestAccess,
+    authorization: Authorization
+  ) {
     return new GuestAccessRoute(
-      "/guest/:sellerId",
+      "/events/:eventId/guest/:sellerId",
       HttpMethod.GET,
+      guestAccessService,
       authorization
     );
   }
@@ -20,12 +26,16 @@ export class GuestAccessRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response) => {
       const { partner } = request as any;
+      const { eventId, sellerId } = request.params;
 
-      if (!partner) {
-        response.status(401).json({ message: "Unauthorized access" });
-      }
+      const result = await this.guestAccessService.execute({
+        partnerId: partner.id,
+        email: partner.email,
+        eventId,
+        sellerId,
+      });
 
-      response.status(200).json({ message: "Access granted" });
+      response.status(200).json(result);
     };
   }
 

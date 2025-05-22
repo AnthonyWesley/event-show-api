@@ -121,6 +121,7 @@ export class SellerRepositoryPrisma implements ISellerGateway {
         email: sellers.email,
         phone: sellers.phone ?? "",
         photo: sellers.photo ?? "",
+        sales: sellers.sales,
         partnerId: sellers.partnerId,
         createdAt: sellers.createdAt,
       });

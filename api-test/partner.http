@@ -3,10 +3,10 @@ GET http://localhost:8000/partners
 
 ###
 GET http://localhost:8000/auth/me
-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlRSVzVDNFQ1NTBISzZFUzNIRFgxQVhTIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ3MDcwNTI0LCJleHAiOjE3NDc2NzUzMjR9.ojZjzVrwFWqVDnNvwCmR-HqKWlM4S0jcaJv-nZQmXv0
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlZUWkZRNFhLUkZTNzBCM1dLWkY5Rk5EIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ3OTUxODM4LCJleHAiOjE3NDc5NTU0Mzh9.zUltAi0lNJ_dmX8t7bJ_UIKksXmLtClxCG3e_dbxCSM
 
 ###
-POST https://event-flow-api.vercel.app/auth/register
+POST http://localhost:8000/auth/register
 Content-Type: application/json
 
 {
@@ -18,11 +18,11 @@ Content-Type: application/json
 }
 
 ###
-POST https://event-flow-api.vercel.app/auth/login
+POST http://localhost:8000/auth/login
 Content-Type: application/json
 
 {
-  "email": "parceiro9@email.com",
+  "email": "parceiro1@email.com",
   "password": "S&nh@1234"
 }
 ###

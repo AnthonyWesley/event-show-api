@@ -1,13 +1,14 @@
 import { generateId } from "../../../shared/utils/IdGenerator";
+import { SaleProps } from "../sale/Sale";
 
 export type SellerProps = {
   id: string;
   name: string;
   email: string;
   phone?: string;
-  // sales     Sale[]
   photo?: string;
   partnerId: string;
+  sales?: SaleProps[];
   createdAt: Date;
 };
 
@@ -42,6 +43,7 @@ export class Seller {
       partnerId,
       phone: normalizedPhone,
       photo,
+      sales: [],
       createdAt: new Date(),
     });
   }
@@ -87,6 +89,9 @@ export class Seller {
 
   public get partnerId() {
     return this.props.partnerId;
+  }
+  public get sales() {
+    return this.props.sales;
   }
 
   public get createdAt() {

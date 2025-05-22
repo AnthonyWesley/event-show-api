@@ -49,6 +49,7 @@ import { ApproveOrRejectPendingAction } from "../usecase/pendingAction/ApproveOr
 import { SendGuestAccessInvite } from "../usecase/sellerEvent/SendGuestAccessInvite";
 import { ResendAdapter } from "./mail/ResendAdapter";
 import { Resend } from "resend";
+import { GuestAccess } from "../usecase/sellerEvent/GuestAccess";
 
 const partnerRepository = PartnerRepositoryPrisma.create(prisma);
 const eventRepository = EventRepositoryPrisma.create(prisma);
@@ -109,6 +110,12 @@ export const useCases = {
     //   authorization,
     //   mailer
     // ),
+    guestAccess: GuestAccess.create(
+      partnerRepository,
+      eventRepository,
+      sellerRepository,
+      authorization
+    ),
     listSeller: ListSellerByEvent.create(
       sellerEventRepository,
       partnerRepository,

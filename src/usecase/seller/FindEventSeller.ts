@@ -1,5 +1,6 @@
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
+import { SaleProps } from "../../domain/entities/sale/Sale";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
@@ -16,7 +17,7 @@ export type FindEventSellerOutputDto = {
   phone?: string;
   photo?: string;
   partnerId: string;
-  // sales     Sale[]
+  sales: SaleProps[];
   createdAt: Date;
 };
 
@@ -53,6 +54,7 @@ export class FindEventSeller
       email: seller.email,
       phone: seller.phone,
       photo: seller.photo,
+      sales: seller.sales ?? [],
       partnerId: seller.partnerId,
       createdAt: seller.createdAt,
     };

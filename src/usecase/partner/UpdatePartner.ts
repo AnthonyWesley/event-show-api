@@ -30,7 +30,6 @@ export class UpdatePartner
     if (!existingPartner) {
       throw new NotFoundError("Partner");
     }
-    console.log(input.phone);
 
     const updatedPartner = Partner.with({
       id: existingPartner.id,

@@ -83,7 +83,7 @@ export const routes = [
   //   useCases.sellerEvent.register,
   //   authorization
   // ),
-  GuestAccessRoute.create(authorization),
+  GuestAccessRoute.create(useCases.sellerEvent.guestAccess, authorization),
   ListEventsBySellerRoute.create(useCases.sellerEvent.listEvent, authorization),
   ListSellerByEventRoute.create(useCases.sellerEvent.listSeller, authorization),
   DeleteSellerEventRoute.create(useCases.sellerEvent.delete, authorization),

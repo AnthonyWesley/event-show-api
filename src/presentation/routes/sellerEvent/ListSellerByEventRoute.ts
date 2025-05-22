@@ -35,7 +35,6 @@ export class ListSellerByEventRoute implements IRoute {
     return async (request: Request, response: Response): Promise<void> => {
       const { eventId } = request.params;
       const { partner } = request as any;
-      console.log(partner);
 
       const result = await this.listSellerByEventServer.execute({
         partnerId: partner.id,

@@ -6,6 +6,7 @@ import {
   FindEventSeller,
   FindEventSellerOutputDto,
 } from "../../../usecase/seller/FindEventSeller";
+import { SaleProps } from "../../../domain/entities/sale/Sale";
 
 export type FindEventSellerResponseDto = {
   id: string;
@@ -13,6 +14,7 @@ export type FindEventSellerResponseDto = {
   startDate: Date;
   endDate: Date;
   partnerId: string;
+  sales: SaleProps[];
   createdAt: Date;
 };
 
@@ -53,6 +55,7 @@ export class FindEventSellerRoute implements IRoute {
         phone: output.phone,
         photo: output.photo,
         partnerId: output.partnerId,
+        sales: output.sales,
         createdAt: output.createdAt,
       };
       response.status(200).json(result);
