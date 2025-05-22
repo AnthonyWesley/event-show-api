@@ -19,9 +19,9 @@ export class GuestAccessRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response) => {
-      const { partner, guest } = request as any;
+      const { partner } = request as any;
 
-      if (!partner || !guest) {
+      if (!partner) {
         response.status(401).json({ message: "Unauthorized access" });
       }
 
