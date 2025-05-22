@@ -59,8 +59,8 @@ const sellerEventRepository = SellerEventRepositoryPrisma.create(prisma);
 const pendingActionRepository = PendingActionRepositoryPrisma.create(prisma);
 
 const secretKey = process.env.SECRET_KEY as string;
-const newResend = new Resend(process.env.RESEND_API_KEY as string);
-const mailer = new ResendAdapter(newResend);
+// const newResend = new Resend(process.env.RESEND_API_KEY as string);
+// const mailer = new ResendAdapter(newResend);
 export const authorization = Authorization.create(secretKey);
 export const useCases = {
   partner: {
@@ -104,11 +104,11 @@ export const useCases = {
   },
   sellerEvent: {
     create: CreateSellerEvent.create(sellerEventRepository),
-    register: SendGuestAccessInvite.create(
-      sellerRepository,
-      authorization,
-      mailer
-    ),
+    // register: SendGuestAccessInvite.create(
+    //   sellerRepository,
+    //   authorization,
+    //   mailer
+    // ),
     listSeller: ListSellerByEvent.create(
       sellerEventRepository,
       partnerRepository,
