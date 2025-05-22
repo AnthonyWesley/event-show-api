@@ -11,7 +11,7 @@ export class GuestAccessRoute implements IRoute {
 
   public static create(authorization: Authorization) {
     return new GuestAccessRoute(
-      "/events/:eventId/guest/:sellerId",
+      "/guest/:sellerId",
       HttpMethod.GET,
       authorization
     );
