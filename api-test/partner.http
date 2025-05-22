@@ -6,7 +6,7 @@ GET http://localhost:8000/auth/me
 Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlRSVzVDNFQ1NTBISzZFUzNIRFgxQVhTIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ3MDcwNTI0LCJleHAiOjE3NDc2NzUzMjR9.ojZjzVrwFWqVDnNvwCmR-HqKWlM4S0jcaJv-nZQmXv0
 
 ###
-POST https://event-flow-2skerkudj-anthonys-projects-e32114db.vercel.app/auth/register
+POST https://event-flow-api.vercel.app/auth/register
 Content-Type: application/json
 
 {
@@ -18,7 +18,7 @@ Content-Type: application/json
 }
 
 ###
-POST https://event-flow-2skerkudj-anthonys-projects-e32114db.vercel.app/auth/login
+POST https://event-flow-api.vercel.app/auth/login
 Content-Type: application/json
 
 {
