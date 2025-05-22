@@ -50,15 +50,15 @@ export class ApiExpress {
     });
   }
 
+  public getApp(): express.Application {
+    return this.app;
+  }
+
   public start(port: number): void {
     this.app.listen(port, () => {
       console.log(`Server running on port ${port}`);
     });
     this.listIRoutes();
-  }
-
-  public getApp(): express.Application {
-    return this.app;
   }
 
   private listIRoutes() {
