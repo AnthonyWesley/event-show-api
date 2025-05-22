@@ -38,6 +38,6 @@ export class GuestAccessRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return this.authorization.partnerAndGuestAuthorizationRoute;
+    return this.authorization.authorizationRoute;
   }
 }
