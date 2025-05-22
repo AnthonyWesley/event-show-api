@@ -57,6 +57,10 @@ export class ApiExpress {
     this.listIRoutes();
   }
 
+  public getApp(): express.Application {
+    return this.app;
+  }
+
   private listIRoutes() {
     const routes = this.app._router.stack
       .filter((route: any) => route.route)
