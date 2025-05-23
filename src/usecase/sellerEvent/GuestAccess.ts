@@ -67,7 +67,7 @@ export class GuestAccess
   }
 
   async execute(input: GuestAccessInputDto): Promise<GuestAccessOutputDto> {
-    const partner = await this.partnerGateway.findByEmail(input.email);
+    const partner = await this.partnerGateway.findById(input.partnerId);
     if (!partner) {
       throw new UnauthorizedError("Invalid email.");
     }
@@ -88,12 +88,13 @@ export class GuestAccess
       throw new NotFoundError("Seller");
     }
 
-    const products = partner.products;
-
     const stats = SellerStatsHelper.computeStats(
       seller.sales ?? [],
-      products ?? []
+      partner.products ?? []
     );
+
+    console.log(partner);
+
     const { count: totalSalesCount, total: totalSalesValue } = stats[
       seller.id
     ] ?? { count: 0, total: 0 };
