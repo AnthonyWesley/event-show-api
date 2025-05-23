@@ -30,7 +30,11 @@ export class Authorization {
     next: NextFunction
   ) => {
     try {
-      const token = request.header("Authorization");
+      const headerToken = request
+        .header("Authorization")
+        ?.replace("Bearer ", "");
+      const queryToken = request.query.token as string;
+      const token = headerToken || queryToken;
 
       if (!token) {
         return response

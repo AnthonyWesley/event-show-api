@@ -93,8 +93,6 @@ export class GuestAccess
       partner.products ?? []
     );
 
-    console.log(partner);
-
     const { count: totalSalesCount, total: totalSalesValue } = stats[
       seller.id
     ] ?? { count: 0, total: 0 };
