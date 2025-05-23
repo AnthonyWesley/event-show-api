@@ -1,11 +1,6 @@
-import bcrypt from "bcryptjs";
 import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
 import { IUseCases } from "../IUseCases";
-import { EventProps, Goal } from "../../domain/entities/event/Event";
-import { StatusType } from "../../domain/entities/partner/Partner";
 import { Authorization } from "../../infra/http/middlewares/Authorization";
-import { ProductProps } from "../../domain/entities/product/Product";
-import { ValidationError } from "../../shared/errors/ValidationError";
 import { UnauthorizedError } from "../../shared/errors/UnauthorizedError";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
@@ -99,18 +94,8 @@ export class GuestAccess
 
     const accessToken = this.authorization.generateToken(
       { id: partner.id, email: partner.email },
-      "1h"
+      "1d"
     );
-
-    // const refreshToken = this.authorization.generateToken(
-    //   { id: partner.id },
-    //   "7d"
-    // );
-
-    // partner.setRefreshToken(refreshToken);
-    // this.partnerGateway.updateRefreshToken(partner.id, refreshToken);
-
-    // const token: TokenType = { accessToken, refreshToken };
 
     return {
       token: { accessToken },

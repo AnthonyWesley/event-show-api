@@ -20,7 +20,6 @@ export class RefreshPartner
     private readonly partnerGateway: IPartnerGateway,
     private readonly authorization: Authorization
   ) {}
-
   static create(partnerGateway: IPartnerGateway, authorization: Authorization) {
     return new RefreshPartner(partnerGateway, authorization);
   }
