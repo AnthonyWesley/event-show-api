@@ -50,6 +50,8 @@ import { SendGuestAccessInvite } from "../usecase/sellerEvent/SendGuestAccessInv
 import { ResendAdapter } from "./mail/ResendAdapter";
 import { Resend } from "resend";
 import { GuestAccess } from "../usecase/sellerEvent/GuestAccess";
+import { Client, LocalAuth } from "whatsapp-web.js";
+import { WhatsappWebAdapter } from "./mail/WhatsappWebAdapter";
 
 const partnerRepository = PartnerRepositoryPrisma.create(prisma);
 const eventRepository = EventRepositoryPrisma.create(prisma);
@@ -62,6 +64,18 @@ const pendingActionRepository = PendingActionRepositoryPrisma.create(prisma);
 const secretKey = process.env.SECRET_KEY as string;
 // const newResend = new Resend(process.env.RESEND_API_KEY as string);
 // const mailer = new ResendAdapter(newResend);
+
+// const whatsappClient = new Client({
+//   authStrategy: new LocalAuth(), // autenticação persistente
+//   puppeteer: {
+//     headless: false, // ou false se quiser ver o navegador
+//     args: ["--no-sandbox"],
+//   },
+// });
+
+// whatsappClient.initialize();
+
+// const whatsappService = WhatsappWebAdapter.create(whatsappClient);
 export const authorization = Authorization.create(secretKey);
 export const useCases = {
   partner: {
@@ -108,7 +122,8 @@ export const useCases = {
     // register: SendGuestAccessInvite.create(
     //   sellerRepository,
     //   authorization,
-    //   mailer
+    //   mailer,
+    //   whatsappService
     // ),
     guestAccess: GuestAccess.create(
       partnerRepository,

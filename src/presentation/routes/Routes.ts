@@ -35,6 +35,7 @@ import { DeleteSellerEventRoute } from "./sellerEvent/DeleteSellerEventRoute";
 import { GuestAccessRoute } from "./sellerEvent/GuestAccessRoute";
 import { ListEventsBySellerRoute } from "./sellerEvent/ListEventsBySellerRoute";
 import { ListSellerByEventRoute } from "./sellerEvent/ListSellerByEventRoute";
+import { SendGuestAccessInviteRoute } from "./sellerEvent/SendGuestAccessInviteRoute";
 
 export const routes = [
   LoginPartnerRoute.create(useCases.partner.login),

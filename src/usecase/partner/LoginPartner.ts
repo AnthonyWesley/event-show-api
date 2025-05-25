@@ -80,7 +80,7 @@ export class LoginPartner implements IUseCases<LoginInputDto, LoginOutputDto> {
 
     const accessToken = this.authorization.generateToken(
       { id: partner.id, email: partner.email },
-      "1h"
+      "1m"
     );
     const refreshToken = this.authorization.generateToken(
       { id: partner.id },
