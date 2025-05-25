@@ -32,9 +32,7 @@ export class RefreshPartnerRoute implements IRoute {
       const output: RefreshPartnerResponseDto =
         await this.refreshPartnerService.execute(input);
 
-      console.log("Refresh token from cookie:", refreshToken);
-
-      response.status(200).json(output);
+      response.status(200);
     };
   }
 
