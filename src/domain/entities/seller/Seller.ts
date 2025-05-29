@@ -47,9 +47,12 @@ export class Seller {
       createdAt: new Date(),
     });
   }
-
   public static with(props: SellerProps) {
-    return new Seller(props);
+    return new Seller({
+      ...props,
+      email: props.email.trim().toLowerCase(),
+      phone: Seller.normalizePhone(props.phone ?? ""),
+    });
   }
 
   private static isValidEmail(email: string): boolean {

@@ -94,7 +94,18 @@ export class Partner {
   }
 
   public static with(props: PartnerProps) {
-    return new Partner(props);
+    return new Partner({
+      ...props,
+      email: props.email.trim().toLowerCase(),
+      phone: Partner.normalizePhone(props.phone ?? ""),
+    });
+  }
+
+  public updateEmail(newEmail: string) {
+    if (!Partner.isValidEmail(newEmail)) {
+      throw new Error("Invalid email format.");
+    }
+    this.props.email = newEmail.trim().toLowerCase();
   }
 
   private static isValidEmail(email: string): boolean {
