@@ -39,7 +39,7 @@ export class Seller {
     return new Seller({
       id: generateId(),
       name,
-      email,
+      email: email.trim().toLowerCase(),
       partnerId,
       phone: normalizedPhone,
       photo,

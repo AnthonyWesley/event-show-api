@@ -78,7 +78,7 @@ export class Partner {
     return new Partner({
       id: generateId(),
       name,
-      email,
+      email: email.trim().toLowerCase(),
       password: hashedPassword,
       phone: normalizedPhone,
       plan: "FREE",
