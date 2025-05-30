@@ -6,7 +6,9 @@ import { ListPartnerEventRoute } from "./event/ListPartnerEventsRoute";
 import { SwitchPartnerEventStateRoute } from "./event/SwitchPartnerEventStateRoute";
 import { UpdatePartnerEventRoute } from "./event/UpdatePartnerEventRoute";
 import { CreatePartnerRoute } from "./partner/CreatePartnerRoute";
+import { DeletePartnerRoute } from "./partner/DeletePartnerRoute";
 import { FindPartnerRoute } from "./partner/FindPartnerRoute";
+import { ListPartnerRoute } from "./partner/ListPartnerRoute";
 import { LoginPartnerRoute } from "./partner/LoginPartnerRoute";
 import { LogoutPartnerRoute } from "./partner/LogoutPartnerRoute";
 import { RefreshPartnerRoute } from "./partner/RefreshPartnerRoute";
@@ -35,7 +37,6 @@ import { DeleteSellerEventRoute } from "./sellerEvent/DeleteSellerEventRoute";
 import { GuestAccessRoute } from "./sellerEvent/GuestAccessRoute";
 import { ListEventsBySellerRoute } from "./sellerEvent/ListEventsBySellerRoute";
 import { ListSellerByEventRoute } from "./sellerEvent/ListSellerByEventRoute";
-import { SendGuestAccessInviteRoute } from "./sellerEvent/SendGuestAccessInviteRoute";
 
 export const routes = [
   LoginPartnerRoute.create(useCases.partner.login),
@@ -43,8 +44,8 @@ export const routes = [
   LogoutPartnerRoute.create(useCases.partner.logout),
   FindPartnerRoute.create(useCases.partner.findOne, authorization),
   CreatePartnerRoute.create(useCases.partner.create),
-  // ListPartnerRoute.create(useCases.partner.list),
-  // DeletePartnerRoute.create(useCases.partner.delete),
+  ListPartnerRoute.create(useCases.partner.list),
+  DeletePartnerRoute.create(useCases.partner.delete),
   UpdatePartnerRoute.create(useCases.partner.update),
 
   CreatePartnerEventRoute.create(useCases.event.create, authorization),

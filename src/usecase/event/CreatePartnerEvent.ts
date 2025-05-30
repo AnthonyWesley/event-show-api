@@ -47,15 +47,15 @@ export class CreatePartnerEvent
       throw new NotFoundError("Partner");
     }
 
-    const lastEvent = await this.eventGateway.findLastEventByPartner(
-      input.partnerId
-    );
+    // const lastEvent = await this.eventGateway.findLastEventByPartner(
+    //   input.partnerId
+    // );
 
-    if (lastEvent && !lastEvent.endDate) {
-      throw new ConflictError(
-        "Only one event can be active at a time. Wait until the current event ends."
-      );
-    }
+    // if (lastEvent && !lastEvent.endDate) {
+    //   throw new ConflictError(
+    //     "Only one event can be active at a time. Wait until the current event ends."
+    //   );
+    // }
     const anEvent = Event.create(
       input.name,
       // input.startDate,

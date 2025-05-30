@@ -1,6 +1,5 @@
 import { generateId } from "../../../shared/utils/IdGenerator";
 import { SaleProps } from "../sale/Sale";
-import { SellerProps } from "../seller/Seller";
 
 export type Goal = "QUANTITY" | "VALUE";
 
@@ -56,7 +55,7 @@ export class Event {
       name,
       startDate: new Date(),
       // endDate,
-      isActive: true,
+      isActive: false,
       goal,
       goalType,
       partnerId,

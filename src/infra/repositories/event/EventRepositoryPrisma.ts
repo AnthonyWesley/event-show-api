@@ -146,6 +146,44 @@ export class EventRepositoryPrisma implements IEventGateway {
     }
   }
 
+  async findActiveByPartnerId(
+    input: FindPartnerEventInputDto
+  ): Promise<Event[]> {
+    try {
+      const events = await this.prismaClient.event.findMany({
+        where: {
+          // id: input.eventId,
+          partnerId: input.partnerId,
+          isActive: true,
+        },
+        include: {
+          sales: true,
+          sellerEvents: true,
+        },
+      });
+
+      // if (!events) return null;
+
+      return events.map((event) =>
+        Event.with({
+          id: event.id,
+          name: event.name,
+          startDate: event.startDate,
+          endDate: event.endDate ?? undefined,
+          partnerId: event.partnerId,
+          isActive: event.isActive,
+          goal: event.goal,
+          goalType: event.goalType,
+          createdAt: event.createdAt,
+          sales: event.sales,
+          sellerEvents: event.sellerEvents,
+        })
+      );
+    } catch (error: any) {
+      throw new Error(`Error finding event: ${error.message}`);
+    }
+  }
+
   async findLastEventByPartner(partnerId: string): Promise<Event | null> {
     try {
       const event = await this.prismaClient.event.findFirst({
