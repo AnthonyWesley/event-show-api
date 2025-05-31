@@ -83,8 +83,14 @@ export class GuestAccess
       throw new NotFoundError("Seller");
     }
 
+    const filteredSales = (seller.sales ?? []).filter(
+      (sale) => sale.eventId === input.eventId
+    );
+
+    console.log(filteredSales);
+
     const stats = SellerStatsHelper.computeStats(
-      seller.sales ?? [],
+      filteredSales,
       partner.products ?? []
     );
 
@@ -107,7 +113,7 @@ export class GuestAccess
         email: seller.email,
         phone: seller.phone ?? "",
         photo: seller.photo ?? "",
-        sales: seller.sales ?? [],
+        sales: filteredSales ?? [],
         totalSalesCount,
         totalSalesValue,
       },
