@@ -1,4 +1,7 @@
 import { useCases, authorization } from "../../infra/Container";
+import { CreateAdminRoute } from "./admin/CreateAdminRoute";
+import { ImpersonatePartnerRoute } from "./admin/ImpersonatePartnerRoute";
+import { LoginAdminRoute } from "./admin/LoginAdminRoute";
 import { CreatePartnerEventRoute } from "./event/CreatePartnerEventRoute";
 import { DeletePartnerEventRoute } from "./event/DeletePartnerEventRoute";
 import { FindPartnerEventRoute } from "./event/FindPartnerEventsRoute";
@@ -39,13 +42,17 @@ import { ListEventsBySellerRoute } from "./sellerEvent/ListEventsBySellerRoute";
 import { ListSellerByEventRoute } from "./sellerEvent/ListSellerByEventRoute";
 
 export const routes = [
+  LoginAdminRoute.create(useCases.admin.login),
+  CreateAdminRoute.create(useCases.admin.create),
+  ImpersonatePartnerRoute.create(useCases.admin.impersonate, authorization),
+
   LoginPartnerRoute.create(useCases.partner.login),
   RefreshPartnerRoute.create(useCases.partner.refresh),
   LogoutPartnerRoute.create(useCases.partner.logout),
   FindPartnerRoute.create(useCases.partner.findOne, authorization),
   CreatePartnerRoute.create(useCases.partner.create),
-  ListPartnerRoute.create(useCases.partner.list),
-  DeletePartnerRoute.create(useCases.partner.delete),
+  ListPartnerRoute.create(useCases.partner.list, authorization),
+  DeletePartnerRoute.create(useCases.partner.delete, authorization),
   UpdatePartnerRoute.create(useCases.partner.update),
 
   CreatePartnerEventRoute.create(useCases.event.create, authorization),

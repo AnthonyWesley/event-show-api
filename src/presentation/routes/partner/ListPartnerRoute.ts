@@ -6,6 +6,7 @@ import {
 import { HttpMethod, IRoute } from "../IRoute";
 import { PlanType, StatusType } from "../../../domain/entities/partner/Partner";
 import { EventProps } from "../../../domain/entities/event/Event";
+import { Authorization } from "../../../infra/http/middlewares/Authorization";
 
 export type ListPartnerResponseDto = {
   partners: {
@@ -26,11 +27,20 @@ export class ListPartnerRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
-    private readonly listPartnerServer: ListPartner
+    private readonly listPartnerServer: ListPartner,
+    private readonly authorization: Authorization
   ) {}
 
-  public static create(listPartnerServer: ListPartner) {
-    return new ListPartnerRoute("/partners", HttpMethod.GET, listPartnerServer);
+  public static create(
+    listPartnerServer: ListPartner,
+    authorization: Authorization
+  ) {
+    return new ListPartnerRoute(
+      "/partners",
+      HttpMethod.GET,
+      listPartnerServer,
+      authorization
+    );
   }
 
   public getHandler() {
@@ -63,5 +73,9 @@ export class ListPartnerRoute implements IRoute {
 
   public getMethod(): HttpMethod {
     return this.method;
+  }
+
+  public getMiddlewares() {
+    return this.authorization.adminAuthorizationRoute;
   }
 }

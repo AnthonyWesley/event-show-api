@@ -46,13 +46,13 @@ import { CreatePendingAction } from "../usecase/pendingAction/CreatePendingActio
 import { PendingActionRepositoryPrisma } from "./repositories/pendingAction/PendingActionRepositoryPrisma";
 import { ListPendingAction } from "../usecase/pendingAction/ListPendingAction";
 import { ApproveOrRejectPendingAction } from "../usecase/pendingAction/ApproveOrRejectPendingAction ";
-import { SendGuestAccessInvite } from "../usecase/sellerEvent/SendGuestAccessInvite";
-import { ResendAdapter } from "./mail/ResendAdapter";
-import { Resend } from "resend";
 import { GuestAccess } from "../usecase/sellerEvent/GuestAccess";
-import { Client, LocalAuth } from "whatsapp-web.js";
-import { WhatsappWebAdapter } from "./mail/WhatsappWebAdapter";
+import { LoginAdmin } from "../usecase/adm/LoginAdm";
+import { AdminRepositoryPrisma } from "./repositories/adm/AdminRepositoryPrisma";
+import { CreateAdmin } from "../usecase/adm/CreateAdmin";
+import { ImpersonatePartner } from "../usecase/adm/ImpersonatePartner";
 
+const adminRepository = AdminRepositoryPrisma.create(prisma);
 const partnerRepository = PartnerRepositoryPrisma.create(prisma);
 const eventRepository = EventRepositoryPrisma.create(prisma);
 const productRepository = ProductRepositoryPrisma.create(prisma);
@@ -78,6 +78,12 @@ const secretKey = process.env.SECRET_KEY as string;
 // const whatsappService = WhatsappWebAdapter.create(whatsappClient);
 export const authorization = Authorization.create(secretKey);
 export const useCases = {
+  admin: {
+    login: LoginAdmin.create(adminRepository, authorization),
+    create: CreateAdmin.create(adminRepository),
+    impersonate: ImpersonatePartner.create(partnerRepository, authorization),
+  },
+
   partner: {
     login: LoginPartner.create(partnerRepository, authorization),
     logout: LogoutPartner.create(partnerRepository, authorization),

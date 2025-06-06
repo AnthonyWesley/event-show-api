@@ -4,6 +4,7 @@ import {
   DeletePartnerInputDto,
 } from "../../../usecase/partner/DeletePartner";
 import { IRoute, HttpMethod } from "../IRoute";
+import { Authorization } from "../../../infra/http/middlewares/Authorization";
 
 export type DeletePartnerResponseDto = {
   id: string;
@@ -12,14 +13,19 @@ export class DeletePartnerRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
-    private readonly deletePartnerService: DeletePartner
+    private readonly deletePartnerService: DeletePartner,
+    private readonly authorization: Authorization
   ) {}
 
-  static create(deletePartnerService: DeletePartner) {
+  static create(
+    deletePartnerService: DeletePartner,
+    authorization: Authorization
+  ) {
     return new DeletePartnerRoute(
       "/partner/:id",
       HttpMethod.DELETE,
-      deletePartnerService
+      deletePartnerService,
+      authorization
     );
   }
   getHandler() {
@@ -40,5 +46,9 @@ export class DeletePartnerRoute implements IRoute {
 
   getMethod(): HttpMethod {
     return this.method;
+  }
+
+  public getMiddlewares() {
+    return this.authorization.adminAuthorizationRoute;
   }
 }
