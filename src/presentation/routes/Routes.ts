@@ -8,6 +8,12 @@ import { FindPartnerEventRoute } from "./event/FindPartnerEventsRoute";
 import { ListPartnerEventRoute } from "./event/ListPartnerEventsRoute";
 import { SwitchPartnerEventStateRoute } from "./event/SwitchPartnerEventStateRoute";
 import { UpdatePartnerEventRoute } from "./event/UpdatePartnerEventRoute";
+import { CreateLeadRoute } from "./lead/CreateLeadRoute";
+import { DeleteLeadRoute } from "./lead/DeleteLeadRoute";
+import { FindLeadRoute } from "./lead/FindLeadRoute";
+import { ListLeadByEventRoute } from "./lead/ListLeadByEventRoute";
+import { ListLeadByPartners } from "./lead/ListLeadByPartners";
+import { UpdateLeadRoute } from "./lead/UpdateLeadRoute";
 import { CreatePartnerRoute } from "./partner/CreatePartnerRoute";
 import { DeletePartnerRoute } from "./partner/DeletePartnerRoute";
 import { FindPartnerRoute } from "./partner/FindPartnerRoute";
@@ -70,6 +76,13 @@ export const routes = [
   FindPartnerProductRoute.create(useCases.product.findOne, authorization),
   DeletePartnerProductRoute.create(useCases.product.delete, authorization),
   UpdatePartnerProductRoute.create(useCases.product.update, authorization),
+
+  CreateLeadRoute.create(useCases.lead.create, authorization),
+  ListLeadByEventRoute.create(useCases.lead.listByEvent, authorization),
+  ListLeadByPartners.create(useCases.lead.listByPartner, authorization),
+  FindLeadRoute.create(useCases.lead.findOne, authorization),
+  DeleteLeadRoute.create(useCases.lead.delete, authorization),
+  UpdateLeadRoute.create(useCases.lead.update, authorization),
 
   CreateEventSellerRoute.create(useCases.seller.create, authorization),
   ListEventSellerRoute.create(useCases.seller.list, authorization),

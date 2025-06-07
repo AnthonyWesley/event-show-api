@@ -1,194 +1,64 @@
 import { prisma } from "../package/prisma";
-import { EventRepositoryPrisma } from "./repositories/event/EventRepositoryPrisma";
-import { PartnerRepositoryPrisma } from "./repositories/partner/PartnerRepositoryPrisma";
-
-import { CreatePartnerEvent } from "../usecase/event/CreatePartnerEvent";
-import { DeletePartnerEvent } from "../usecase/event/DeletePartnerEvent";
-import { ListPartnerEvent } from "../usecase/event/ListPartnerEvent";
-import { UpdatePartnerEvent } from "../usecase/event/UpdatePartnerEvent";
-
-import { CreatePartner } from "../usecase/partner/CreatePartner";
-import { DeletePartner } from "../usecase/partner/DeletePartner";
-import { ListPartner } from "../usecase/partner/ListPartner";
-import { UpdatePartner } from "../usecase/partner/UpdatePartner";
-import { LoginPartner } from "../usecase/partner/LoginPartner";
-import { Authorization } from "./http/middlewares/Authorization";
-import { RefreshPartner } from "../usecase/partner/RefreshPartner";
-import { CreateEventSeller } from "../usecase/seller/CreateEventSeller";
-import { ListEventSeller } from "../usecase/seller/ListEventSeller";
-import { DeleteEventSeller } from "../usecase/seller/DeleteEventSeller";
-import { UpdateEventSeller } from "../usecase/seller/UpdateEventSeller";
-import { SellerRepositoryPrisma } from "./repositories/seller/SellerRepositoryPrisma";
-import { CreatePartnerProduct } from "../usecase/product/CreatePartnerProduct";
-import { ProductRepositoryPrisma } from "./repositories/product/ProductRepositoryPrisma";
-import { DeletePartnerProduct } from "../usecase/product/DeletePartnerProduct";
-import { ListPartnerProduct } from "../usecase/product/ListPartnerProduct";
-import { UpdatePartnerProduct } from "../usecase/product/UpdatePartnerProduct";
-import { FindPartnerEvent } from "../usecase/event/FindPartnerEvent";
-import { FindPartnerProduct } from "../usecase/product/FindPartnerProduct";
-import { FindEventSeller } from "../usecase/seller/FindEventSeller";
-import { CreateSale } from "../usecase/sale/CreateSale";
-import { ListSale } from "../usecase/sale/ListSale";
-import { FindSale } from "../usecase/sale/FindSale";
-import { DeleteSale } from "../usecase/sale/DeleteSale";
-import { UpdateSale } from "../usecase/sale/UpdateSale";
-import { SaleRepositoryPrisma } from "./repositories/sale/SaleRepositoryPrisma";
-import { LogoutPartner } from "../usecase/partner/LogoutPartner";
-import { FindPartner } from "../usecase/partner/FindPartner";
-import { SwitchPartnerEventState } from "../usecase/event/SwitchPartnerEventState";
-import { CreateSellerEvent } from "../usecase/sellerEvent/CreateSellerEvent";
-import { SellerEventRepositoryPrisma } from "./repositories/sellerEvent/SellerEventRepositoryPrisma";
-import { ListSellerByEvent } from "../usecase/sellerEvent/ListSellerByEvent";
-import { ListEventsBySeller } from "../usecase/sellerEvent/ListEventsBySeller";
-import { DeleteSellerEvent } from "../usecase/sellerEvent/DeleteSellerEvent";
-import { FindEventSellerByEmail } from "../usecase/seller/FindEventSellerByEmail";
-import { CreatePendingAction } from "../usecase/pendingAction/CreatePendingAction";
-import { PendingActionRepositoryPrisma } from "./repositories/pendingAction/PendingActionRepositoryPrisma";
-import { ListPendingAction } from "../usecase/pendingAction/ListPendingAction";
-import { ApproveOrRejectPendingAction } from "../usecase/pendingAction/ApproveOrRejectPendingAction ";
-import { GuestAccess } from "../usecase/sellerEvent/GuestAccess";
-import { LoginAdmin } from "../usecase/adm/LoginAdm";
 import { AdminRepositoryPrisma } from "./repositories/adm/AdminRepositoryPrisma";
-import { CreateAdmin } from "../usecase/adm/CreateAdmin";
-import { ImpersonatePartner } from "../usecase/adm/ImpersonatePartner";
+import { PartnerRepositoryPrisma } from "./repositories/partner/PartnerRepositoryPrisma";
+import { EventRepositoryPrisma } from "./repositories/event/EventRepositoryPrisma";
+import { ProductRepositoryPrisma } from "./repositories/product/ProductRepositoryPrisma";
+import { SellerRepositoryPrisma } from "./repositories/seller/SellerRepositoryPrisma";
+import { SaleRepositoryPrisma } from "./repositories/sale/SaleRepositoryPrisma";
+import { SellerEventRepositoryPrisma } from "./repositories/sellerEvent/SellerEventRepositoryPrisma";
+import { PendingActionRepositoryPrisma } from "./repositories/pendingAction/PendingActionRepositoryPrisma";
+import { Authorization } from "./http/middlewares/Authorization";
+import { makeAdminUseCases } from "./container/admin";
+import { makePartnerUseCases } from "./container/partner";
+import { makeEventUseCases } from "./container/event";
+import { makeProductUseCases } from "./container/product";
+import { makeSellerUseCases } from "./container/seller";
+import { makeSellerEventUseCases } from "./container/sellerEvent";
+import { makeSaleUseCases } from "./container/sale";
+import { makePendingActionUseCases } from "./container/pendingAction";
+import { LeadRepositoryPrisma } from "./repositories/lead/LeadRepositoryPrisma";
+import { makeLeadUseCases } from "./container/lead";
 
-const adminRepository = AdminRepositoryPrisma.create(prisma);
-const partnerRepository = PartnerRepositoryPrisma.create(prisma);
-const eventRepository = EventRepositoryPrisma.create(prisma);
-const productRepository = ProductRepositoryPrisma.create(prisma);
-const sellerRepository = SellerRepositoryPrisma.create(prisma);
-const saleRepository = SaleRepositoryPrisma.create(prisma);
-const sellerEventRepository = SellerEventRepositoryPrisma.create(prisma);
-const pendingActionRepository = PendingActionRepositoryPrisma.create(prisma);
+export const adminRepository = AdminRepositoryPrisma.create(prisma);
+export const partnerRepository = PartnerRepositoryPrisma.create(prisma);
+export const eventRepository = EventRepositoryPrisma.create(prisma);
+export const leadRepository = LeadRepositoryPrisma.create(prisma);
+export const productRepository = ProductRepositoryPrisma.create(prisma);
+export const sellerRepository = SellerRepositoryPrisma.create(prisma);
+export const saleRepository = SaleRepositoryPrisma.create(prisma);
+export const sellerEventRepository = SellerEventRepositoryPrisma.create(prisma);
+export const pendingActionRepository =
+  PendingActionRepositoryPrisma.create(prisma);
 
 const secretKey = process.env.SECRET_KEY as string;
-// const newResend = new Resend(process.env.RESEND_API_KEY as string);
-// const mailer = new ResendAdapter(newResend);
-
-// const whatsappClient = new Client({
-//   authStrategy: new LocalAuth(), // autenticação persistente
-//   puppeteer: {
-//     headless: false, // ou false se quiser ver o navegador
-//     args: ["--no-sandbox"],
-//   },
-// });
-
-// whatsappClient.initialize();
-
-// const whatsappService = WhatsappWebAdapter.create(whatsappClient);
 export const authorization = Authorization.create(secretKey);
+
+export const admin = makeAdminUseCases(
+  adminRepository,
+  authorization,
+  partnerRepository
+);
+export const partner = makePartnerUseCases(partnerRepository, authorization);
+export const event = makeEventUseCases(eventRepository);
+export const product = makeProductUseCases(productRepository);
+export const lead = makeLeadUseCases(
+  leadRepository,
+  eventRepository,
+  partnerRepository
+);
+export const seller = makeSellerUseCases(sellerRepository, authorization);
+export const sellerEvent = makeSellerEventUseCases(sellerEventRepository);
+export const sale = makeSaleUseCases(saleRepository);
+export const pendingAction = makePendingActionUseCases(pendingActionRepository);
+
 export const useCases = {
-  admin: {
-    login: LoginAdmin.create(adminRepository, authorization),
-    create: CreateAdmin.create(adminRepository),
-    impersonate: ImpersonatePartner.create(partnerRepository, authorization),
-  },
-
-  partner: {
-    login: LoginPartner.create(partnerRepository, authorization),
-    logout: LogoutPartner.create(partnerRepository, authorization),
-    refresh: RefreshPartner.create(partnerRepository, authorization),
-    create: CreatePartner.create(partnerRepository),
-    findOne: FindPartner.create(partnerRepository),
-    list: ListPartner.create(partnerRepository),
-    delete: DeletePartner.create(partnerRepository),
-    update: UpdatePartner.create(partnerRepository),
-  },
-  event: {
-    create: CreatePartnerEvent.create(eventRepository, partnerRepository),
-    list: ListPartnerEvent.create(eventRepository, partnerRepository),
-    findOne: FindPartnerEvent.create(eventRepository, partnerRepository),
-    SwitchStatus: SwitchPartnerEventState.create(
-      eventRepository,
-      partnerRepository
-    ),
-    delete: DeletePartnerEvent.create(eventRepository, partnerRepository),
-    update: UpdatePartnerEvent.create(eventRepository, partnerRepository),
-  },
-  product: {
-    create: CreatePartnerProduct.create(productRepository, partnerRepository),
-    list: ListPartnerProduct.create(productRepository, partnerRepository),
-    findOne: FindPartnerProduct.create(productRepository, partnerRepository),
-    delete: DeletePartnerProduct.create(productRepository, partnerRepository),
-    update: UpdatePartnerProduct.create(productRepository, partnerRepository),
-  },
-  seller: {
-    create: CreateEventSeller.create(sellerRepository, partnerRepository),
-    list: ListEventSeller.create(sellerRepository, partnerRepository),
-    findOne: FindEventSeller.create(sellerRepository, partnerRepository),
-    findByEmail: FindEventSellerByEmail.create(
-      sellerRepository,
-      partnerRepository
-    ),
-    delete: DeleteEventSeller.create(sellerRepository, partnerRepository),
-    update: UpdateEventSeller.create(sellerRepository, partnerRepository),
-  },
-  sellerEvent: {
-    create: CreateSellerEvent.create(sellerEventRepository),
-    // register: SendGuestAccessInvite.create(
-    //   sellerRepository,
-    //   authorization,
-    //   mailer,
-    //   whatsappService
-    // ),
-    guestAccess: GuestAccess.create(
-      partnerRepository,
-      eventRepository,
-      sellerRepository,
-      authorization
-    ),
-    listSeller: ListSellerByEvent.create(
-      sellerEventRepository,
-      partnerRepository,
-      eventRepository
-    ),
-    listEvent: ListEventsBySeller.create(
-      sellerEventRepository,
-      partnerRepository,
-      eventRepository
-    ),
-    delete: DeleteSellerEvent.create(sellerEventRepository),
-    // update: UpdateEventSeller.create(sellerRepository, partnerRepository),
-  },
-
-  sale: {
-    create: CreateSale.create(
-      saleRepository,
-      eventRepository,
-      productRepository,
-      sellerRepository
-    ),
-    list: ListSale.create(
-      saleRepository,
-      eventRepository,
-      productRepository,
-      sellerRepository
-    ),
-    findOne: FindSale.create(
-      saleRepository,
-      eventRepository,
-      productRepository,
-      sellerRepository
-    ),
-    delete: DeleteSale.create(
-      saleRepository,
-      eventRepository,
-      productRepository,
-      sellerRepository
-    ),
-    update: UpdateSale.create(
-      saleRepository,
-      eventRepository,
-      productRepository,
-      sellerRepository
-    ),
-  },
-  pendingAction: {
-    create: CreatePendingAction.create(pendingActionRepository),
-    list: ListPendingAction.create(pendingActionRepository),
-    approveOrReject: ApproveOrRejectPendingAction.create(
-      pendingActionRepository,
-      saleRepository
-    ),
-  },
+  admin,
+  partner,
+  event,
+  lead,
+  product,
+  seller,
+  sellerEvent,
+  sale,
+  pendingAction,
 };

@@ -31,6 +31,7 @@ model Partner {
   products     Product[]
   sellers      Seller[]
   pendingAction PendingAction[]
+  leads        Lead[]    
 
   @@index([plan])
 }
@@ -43,7 +44,7 @@ model Product {
   createdAt  DateTime @default(now())
   partner    Partner  @relation(fields: [partnerId], references: [id], onDelete: Cascade)
   sales      Sale[]
-
+  leads      Lead[]    @relation("LeadProducts") // <-- relação reversa
   @@index([partnerId])
 }
 
@@ -60,11 +61,37 @@ model Event {
   partner      Partner       @relation(fields: [partnerId], references: [id], onDelete: Cascade)
   sellerEvents SellerEvent[] 
   sales        Sale[]
+  leads        Lead[]    
 
   @@index([partnerId])
   @@index([isActive])
   @@index([partnerId, isActive])
 }
+
+
+model Lead {
+  id              String     @id @default(uuid())
+  name            String
+  email           String?
+  phone           String?
+  customInterest  String?                
+  notes           String?
+  source          String     
+  sellerId        String?    
+  eventId         String
+  partnerId       String
+  createdAt       DateTime   @default(now())
+
+  event           Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  partner         Partner    @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  seller          Seller?    @relation(fields: [sellerId], references: [id], onDelete: SetNull)
+  products        Product[]  @relation("LeadProducts")
+
+  @@index([eventId])
+  @@index([partnerId])
+  @@index([sellerId])
+}
+
 
 model Seller {
   id        String        @id @default(uuid())
@@ -77,6 +104,7 @@ model Seller {
   partner   Partner       @relation(fields: [partnerId], references: [id], onDelete: Cascade)
   sales     Sale[]
   events    SellerEvent[] 
+  leads        Lead[]    
   @@unique([partnerId, email]) 
   @@index([partnerId])
 }

@@ -3,7 +3,7 @@ GET http://localhost:8000/partners
 
 ###
 GET http://localhost:8000/auth/me
-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlgwSlowVjlGNlFCNTVHTVlHQUpBMVBNIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ5MTU0MTg3LCJleHAiOjE3NDkyNDA1ODd9.MOKMnPIdXBogaJOtCw9B0a90PFSbOSKyU5pXOwZHzVM
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxSlg1N05RSFZSN0tQUVlCN1ZEVEtRNTNFIiwiZW1haWwiOiJwYXJjZWlybzFAZW1haWwuY29tIiwiaWF0IjoxNzQ5MzAxMjU3LCJleHAiOjE3NDkzODc2NTd9.5--eCH783lgSN6niDq502xYaXJb2R80otKL6iAajH8c
 
 ###
 POST http://localhost:8000/auth/register
