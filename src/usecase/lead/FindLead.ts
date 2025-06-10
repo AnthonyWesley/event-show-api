@@ -5,6 +5,7 @@ import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 
 export type FindLeadInputDto = {
+  eventId: string;
   partnerId: string;
   leadId: string;
 };
@@ -48,6 +49,7 @@ export class FindLead
     const lead = await this.leadGateway.findById({
       leadId: input.leadId,
       partnerId: input.partnerId,
+      eventId: input.eventId,
     });
     if (!lead) {
       throw new NotFoundError("Lead");

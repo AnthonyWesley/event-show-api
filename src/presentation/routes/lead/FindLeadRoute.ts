@@ -30,7 +30,7 @@ export class FindLeadRoute implements IRoute {
     authorization: Authorization
   ) {
     return new FindLeadRoute(
-      "/leads/:leadId",
+      "/events/:eventId/leads/:leadId",
       HttpMethod.GET,
       findLeadService,
       authorization
@@ -39,11 +39,12 @@ export class FindLeadRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
-      const { leadId } = request.params;
+      const { eventId, leadId } = request.params;
       const { partner } = request as any;
 
       const input: FindLeadInputDto = {
         partnerId: partner.id,
+        eventId,
         leadId,
       };
       const result: FindLeadOutputDto =

@@ -15,6 +15,7 @@ export type UpdateLeadInputDto = {
 
   leadId: string;
   partnerId: string;
+  eventId: string;
 };
 
 export type UpdateLeadOutputDto = {
@@ -49,6 +50,7 @@ export class UpdateLead {
     const lead = await this.leadGateway.findById({
       leadId: input.leadId,
       partnerId: input.partnerId,
+      eventId: input.eventId,
     });
     if (!lead) {
       throw new NotFoundError("Lead");

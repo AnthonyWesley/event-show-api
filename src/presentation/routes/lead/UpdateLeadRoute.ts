@@ -17,7 +17,7 @@ export class UpdateLeadRoute implements IRoute {
 
   static create(updateLeadService: UpdateLead, authorization: Authorization) {
     return new UpdateLeadRoute(
-      "/leads/:leadId",
+      "/events/:eventId/leads/:leadId",
       HttpMethod.PUT,
       updateLeadService,
       authorization
@@ -26,7 +26,7 @@ export class UpdateLeadRoute implements IRoute {
 
   getHandler() {
     return async (request: Request, response: Response) => {
-      const { leadId } = request.params;
+      const { eventId, leadId } = request.params;
       const { partner } = request as any;
 
       const { name, email, phone, notes, source, customInterest, products } =
@@ -34,6 +34,7 @@ export class UpdateLeadRoute implements IRoute {
 
       const input: UpdateLeadInputDto = {
         partnerId: partner.id,
+        eventId,
         leadId,
         name,
         email,
