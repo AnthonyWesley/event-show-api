@@ -44,7 +44,7 @@ model Product {
   createdAt  DateTime @default(now())
   partner    Partner  @relation(fields: [partnerId], references: [id], onDelete: Cascade)
   sales      Sale[]
-  leads      Lead[]    @relation("LeadProducts") // <-- relação reversa
+  leads      Lead[]    @relation("LeadProducts") 
   @@index([partnerId])
 }
 

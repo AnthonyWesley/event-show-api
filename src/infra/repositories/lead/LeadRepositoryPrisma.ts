@@ -156,6 +156,7 @@ export class LeadRepositoryPrisma implements ILeadGateway {
     const lead = await this.findById({
       leadId: input.id,
       partnerId: input.partnerId,
+      eventId: input.eventId,
     });
     if (!lead) throw new Error("Lead not found.");
 
