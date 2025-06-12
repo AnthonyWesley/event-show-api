@@ -31,14 +31,25 @@ export class SellerRepositoryPrisma implements ISellerGateway {
     }
   }
 
-  async list(partnerId: string): Promise<Seller[]> {
+  async list(partnerId: string, search?: string): Promise<Seller[]> {
     try {
-      const Sellers = await this.prismaClient.seller.findMany({
-        where: { partnerId },
+      const filters: any = {
+        partnerId,
+      };
+
+      if (search) {
+        filters.OR = [
+          { name: { contains: search } },
+          { email: { contains: search } },
+        ];
+      }
+
+      const sellers = await this.prismaClient.seller.findMany({
+        where: filters,
         include: { sales: true },
       });
 
-      return Sellers.map((s) =>
+      return sellers.map((s) =>
         Seller.with({
           id: s.id,
           name: s.name,

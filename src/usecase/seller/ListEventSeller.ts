@@ -1,4 +1,3 @@
-import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
@@ -7,6 +6,7 @@ import { IUseCases } from "../IUseCases";
 export type ListEventSellerInputDto = {
   partnerId: string;
   // sellerId: string;
+  search?: string;
 };
 
 export type ListEventSellerOutputDto = {
@@ -44,7 +44,10 @@ export class ListEventSeller
       throw new NotFoundError("Partner");
     }
 
-    const aSeller = await this.sellerGateway.list(partnerExists.id);
+    const aSeller = await this.sellerGateway.list(
+      partnerExists.id,
+      input.search
+    );
     if (!aSeller) {
       throw new Error("Failed to list sellers");
     }

@@ -6,7 +6,7 @@ import { Seller } from "./Seller";
 
 export interface ISellerGateway {
   save(seller: Seller): Promise<void>;
-  list(eventId: string): Promise<Seller[]>;
+  list(eventId: string, search?: string): Promise<Seller[]>;
   findById(input: FindEventSellerInputDto): Promise<Seller | null>;
   findByEmail(input: FindEventSellerByEmailInputDto): Promise<Seller | null>;
   update(input: UpdateEventSellerInputDto): Promise<Seller>;

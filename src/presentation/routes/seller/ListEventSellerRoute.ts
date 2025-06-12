@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
-import {
-  ListEventSeller,
-  ListEventSellerOutputDto,
-} from "../../../usecase/seller/ListEventSeller";
+import { ListEventSeller } from "../../../usecase/seller/ListEventSeller";
 import { Authorization } from "../../../infra/http/middlewares/Authorization";
 
 export type ListEventSellerResponseDto = {
@@ -39,11 +36,11 @@ export class ListEventSellerRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
       const { partner } = request as any;
-
-      const output: ListEventSellerOutputDto =
-        await this.listEventSellerService.execute({
-          partnerId: partner.id,
-        });
+      const search = request.query.search as string | undefined;
+      const output = await this.listEventSellerService.execute({
+        partnerId: partner.id,
+        search: typeof search === "string" ? search.trim() : undefined,
+      });
 
       const result = {
         sellers: output.sellers.map((seller) => ({
