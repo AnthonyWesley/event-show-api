@@ -9,7 +9,7 @@ import { IUseCases } from "../IUseCases";
 import { SellerEventProps } from "../../domain/entities/sellerEvent/SellerEvent";
 import { SellerProps } from "../../domain/entities/seller/Seller";
 
-export type ListPartnerEventInputDto = { partnerId: string };
+export type ListPartnerEventInputDto = { partnerId: string; search?: string };
 
 export type ListPartnerEventOutputDto = {
   events: {
@@ -52,7 +52,7 @@ export class ListPartnerEvent
     const partner = await this.partnerGateway.findById(input.partnerId);
     if (!partner) throw new NotFoundError("Partner");
 
-    const events = await this.eventGateway.list(partner.id);
+    const events = await this.eventGateway.list(partner.id, input.search);
     if (!events || events.length === 0) return { events: [] };
 
     return {

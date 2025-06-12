@@ -28,9 +28,19 @@ export class ProductRepositoryPrisma implements IProductGateway {
     }
   }
 
-  async list(partnerId: string): Promise<Product[]> {
+  async list(partnerId: string, search: string): Promise<Product[]> {
+    const filters: any = {
+      partnerId,
+    };
+
+    if (search) {
+      filters.OR = [
+        { name: { contains: search } },
+        { price: { contains: search } },
+      ];
+    }
     const products = await this.prismaClient.product.findMany({
-      where: { partnerId },
+      where: filters,
       include: { sales: true },
     });
 

@@ -5,7 +5,7 @@ import { Event } from "./Event";
 
 export interface IEventGateway {
   save(event: Event): Promise<void>;
-  list(eventId: string): Promise<Event[]>;
+  list(eventId: string, search?: string): Promise<Event[]>;
   findById(input: FindPartnerEventInputDto): Promise<Event | null>;
   findActiveByPartnerId(input: FindPartnerEventInputDto): Promise<Event[]>;
   findLastEventByPartner(partnerId: string): Promise<Event | null>;

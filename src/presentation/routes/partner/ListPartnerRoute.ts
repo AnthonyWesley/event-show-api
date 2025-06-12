@@ -45,9 +45,10 @@ export class ListPartnerRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
-      const output: ListPartnerOutputDto =
-        await this.listPartnerServer.execute();
-
+      const search = request.query.search as string | undefined;
+      const output = await this.listPartnerServer.execute({
+        search: typeof search === "string" ? search.trim() : undefined,
+      });
       const result = {
         partners: output.partners.map((partner) => ({
           id: partner.id,

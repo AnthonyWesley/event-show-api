@@ -38,8 +38,18 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
     }
   }
 
-  async list(): Promise<Partner[]> {
+  async list(search?: string): Promise<Partner[]> {
+    const filters: any = {};
+
+    if (search) {
+      filters.OR = [
+        { name: { contains: search } },
+        { email: { contains: search } },
+        { phone: { contains: search } },
+      ];
+    }
     const partners = await this.prismaClient.partner.findMany({
+      where: filters,
       include: { events: true },
     });
 

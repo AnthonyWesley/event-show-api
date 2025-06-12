@@ -2,7 +2,7 @@ import { Partner } from "./Partner";
 
 export interface IPartnerGateway {
   save(partner: Partner): Promise<void>;
-  list(): Promise<Partner[]>;
+  list(search?: string): Promise<Partner[]>;
   findById(id: string): Promise<Partner | null>;
   findByEmail(email: string): Promise<Partner | null>;
   findByRefreshToken(refreshToken: string): Promise<string | null>;

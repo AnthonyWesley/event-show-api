@@ -32,9 +32,16 @@ export class EventRepositoryPrisma implements IEventGateway {
     }
   }
 
-  async list(partnerId: string): Promise<Event[]> {
+  async list(partnerId: string, search: string): Promise<Event[]> {
+    const filters: any = {
+      partnerId,
+    };
+
+    if (search) {
+      filters.OR = [{ name: { contains: search } }];
+    }
     const events = await this.prismaClient.event.findMany({
-      where: { partnerId },
+      where: filters,
       include: {
         sales: true,
         sellerEvents: true,

@@ -3,7 +3,7 @@ import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
 import { StatusType } from "../../domain/entities/partner/Partner";
 import { IUseCases } from "../IUseCases";
 
-export type ListPartnerInputDto = void;
+export type ListPartnerInputDto = { search?: string };
 
 export type ListPartnerOutputDto = {
   partners: {
@@ -31,8 +31,10 @@ export class ListPartner
     return new ListPartner(partnerGateway);
   }
 
-  public async execute(): Promise<ListPartnerOutputDto> {
-    const aPartners = await this.partnerGateway.list();
+  public async execute(
+    input: ListPartnerInputDto
+  ): Promise<ListPartnerOutputDto> {
+    const aPartners = await this.partnerGateway.list(input.search);
     if (!aPartners) {
       throw new Error("Failed do list partners");
     }

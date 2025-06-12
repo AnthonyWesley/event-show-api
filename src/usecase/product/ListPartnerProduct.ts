@@ -3,7 +3,11 @@ import { IProductGateway } from "../../domain/entities/product/IProductGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 
-export type ListPartnerProductInputDto = { partnerId: string };
+export type ListPartnerProductInputDto = {
+  partnerId: string;
+  // sellerId: string;
+  search?: string;
+};
 
 export type ListPartnerProductOutputDto = {
   products: {
@@ -37,7 +41,10 @@ export class ListPartnerProduct
     if (!partnerExists) {
       throw new NotFoundError("Partner");
     }
-    const aProducts = await this.productGateway.list(partnerExists.id);
+    const aProducts = await this.productGateway.list(
+      partnerExists.id,
+      input.search
+    );
     if (!aProducts) {
       throw new Error("Failed do list products");
     }
