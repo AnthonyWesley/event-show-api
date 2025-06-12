@@ -9,7 +9,6 @@
     "start": "node dist/main.js",
     "vercel-build": "prisma generate",
     "postinstall": "prisma generate"
-    // "seed": "tsx prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
