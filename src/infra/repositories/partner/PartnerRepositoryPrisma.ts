@@ -6,7 +6,6 @@ import {
   PartnerProps,
   StatusType,
 } from "../../../domain/entities/partner/Partner";
-import { EventProps } from "../../../domain/entities/event/Event";
 import { SellerProps } from "../../../domain/entities/seller/Seller";
 
 export class PartnerRepositoryPrisma implements IPartnerGateway {
@@ -23,7 +22,6 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
       email: partner.email,
       password: partner.password,
       phone: partner.phone,
-      maxConcurrentEvents: partner.maxConcurrentEvents,
       plan: partner.plan,
       status: partner.status,
       accessExpiresAt: partner.accessExpiresAt,
@@ -64,7 +62,6 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
         status: p.status as StatusType,
         refreshToken: p.refreshToken as string,
         events: [],
-        maxConcurrentEvents: p.maxConcurrentEvents,
 
         accessExpiresAt: p.accessExpiresAt ?? new Date(),
         createdAt: p.createdAt,
@@ -99,7 +96,6 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
         password: updatedPartner.password,
         phone: updatedPartner.phone as string,
         events: [],
-        maxConcurrentEvents: updatedPartner.maxConcurrentEvents,
 
         plan: updatedPartner.plan as PlanType,
         status: updatedPartner.status as StatusType,
@@ -145,7 +141,6 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
         plan: partner.plan as PlanType,
         status: partner.status as StatusType,
         refreshToken: partner.refreshToken as string,
-        maxConcurrentEvents: partner.maxConcurrentEvents,
 
         events: [],
         products: partner.products,
@@ -173,7 +168,6 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
         email: partner.email,
         password: partner.password,
         phone: partner.phone as string,
-        maxConcurrentEvents: partner.maxConcurrentEvents,
 
         events: [],
         plan: partner.plan as PlanType,

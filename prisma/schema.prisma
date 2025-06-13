@@ -22,7 +22,6 @@ model Partner {
   password     String
   phone        String?
   plan         Plan            @default(FREE)
-  maxConcurrentEvents Int      @default(1) 
   status       Status          @default(ACTIVE)
   refreshToken String?
   accessExpiresAt  DateTime?
@@ -171,7 +170,6 @@ enum Plan {
 enum Status {
   ACTIVE
   SUSPENDED
-  TRIAL_EXPIRED
 }
 
 enum GoalType {

@@ -6,7 +6,7 @@ import { ProductProps } from "../product/Product";
 import { SellerProps } from "../seller/Seller";
 
 export type PlanType = "FREE" | "BASIC" | "PREMIUM";
-export type StatusType = "ACTIVE" | "SUSPENDED" | "TRIAL_EXPIRED";
+export type StatusType = "ACTIVE" | "SUSPENDED";
 
 export const PlanType = {
   FREE: "FREE" as PlanType,
@@ -30,7 +30,6 @@ export type PartnerProps = {
   status: StatusType;
   refreshToken?: string;
   products?: ProductProps[];
-  maxConcurrentEvents: number;
   events?: EventProps[];
   sellers?: SellerProps[];
   accessExpiresAt: Date;
@@ -87,7 +86,6 @@ export class Partner {
       refreshToken: undefined,
       products: [],
       events: [],
-      maxConcurrentEvents: 1,
       sellers: [],
       accessExpiresAt,
       createdAt,
@@ -100,6 +98,20 @@ export class Partner {
       email: props.email.trim().toLowerCase(),
       phone: Partner.normalizePhone(props.phone ?? ""),
     });
+  }
+
+  public toResponse() {
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email,
+      phone: this.phone,
+      plan: this.plan,
+      status: this.status,
+      accessExpiresAt: this.accessExpiresAt,
+      createdAt: this.createdAt,
+      maxConcurrentEvents: this.maxConcurrentEvents, // ✅ aqui ele entra
+    };
   }
 
   public updateEmail(newEmail: string) {
@@ -181,8 +193,13 @@ export class Partner {
     return this.props.createdAt;
   }
 
-  public get maxConcurrentEvents() {
-    return this.props.maxConcurrentEvents;
+  public get maxConcurrentEvents(): number {
+    switch (this.props.plan) {
+      case "PREMIUM":
+        return 5;
+      default:
+        return 1;
+    }
   }
 
   public setRefreshToken(token: string) {
