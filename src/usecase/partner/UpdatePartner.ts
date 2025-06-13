@@ -43,7 +43,7 @@ export class UpdatePartner
       products: existingPartner.products,
       status: existingPartner.status,
       events: existingPartner.events,
-      trialEndsAt: existingPartner.trialEndsAt,
+      accessExpiresAt: existingPartner.accessExpiresAt,
       createdAt: existingPartner.createdAt,
     });
 

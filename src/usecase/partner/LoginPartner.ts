@@ -22,7 +22,7 @@ export type PartnerDto = {
   refreshToken: string;
   products: ProductProps[];
   events: EventProps[];
-  trialEndsAt: Date;
+  accessExpiresAt: Date;
   createdAt: Date;
 };
 

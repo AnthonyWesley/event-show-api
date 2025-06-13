@@ -26,7 +26,7 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
       maxConcurrentEvents: partner.maxConcurrentEvents,
       plan: partner.plan,
       status: partner.status,
-      trialEndsAt: partner.trialEndsAt,
+      accessExpiresAt: partner.accessExpiresAt,
       createdAt: partner.createdAt,
       refreshToken: partner.refreshToken,
     };
@@ -66,7 +66,7 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
         events: [],
         maxConcurrentEvents: p.maxConcurrentEvents,
 
-        trialEndsAt: p.trialEndsAt ?? new Date(),
+        accessExpiresAt: p.accessExpiresAt ?? new Date(),
         createdAt: p.createdAt,
       })
     );
@@ -87,7 +87,7 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
           plan: data.plan,
           status: data.status,
           refreshToken: data.refreshToken,
-          trialEndsAt: data.trialEndsAt,
+          accessExpiresAt: data.accessExpiresAt,
         },
         include: { events: true },
       });
@@ -105,7 +105,7 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
         status: updatedPartner.status as StatusType,
         refreshToken: updatedPartner.refreshToken as string,
 
-        trialEndsAt: updatedPartner.trialEndsAt ?? new Date(),
+        accessExpiresAt: updatedPartner.accessExpiresAt ?? new Date(),
         createdAt: updatedPartner.createdAt,
       });
     } catch (error: any) {
@@ -150,7 +150,7 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
         events: [],
         products: partner.products,
         sellers: partner.sellers as SellerProps[],
-        trialEndsAt: partner.trialEndsAt ?? new Date(),
+        accessExpiresAt: partner.accessExpiresAt ?? new Date(),
         createdAt: partner.createdAt,
       });
     } catch (error: any) {
@@ -180,7 +180,7 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
         status: partner.status as StatusType,
         refreshToken: partner.refreshToken as string,
 
-        trialEndsAt: partner.trialEndsAt ?? new Date(),
+        accessExpiresAt: partner.accessExpiresAt ?? new Date(),
         createdAt: partner.createdAt,
       });
     } catch (error: any) {

@@ -15,7 +15,7 @@ export type FindPartnerOutputDto = {
 
   plan: PlanType;
   status: StatusType;
-  trialEndsAt: Date;
+  accessExpiresAt: Date;
   createdAt: Date;
 };
 
@@ -43,7 +43,7 @@ export class FindPartner
       maxConcurrentEvents: aPartner.maxConcurrentEvents,
 
       status: aPartner.status,
-      trialEndsAt: aPartner.trialEndsAt,
+      accessExpiresAt: aPartner.accessExpiresAt,
       createdAt: aPartner.createdAt,
     };
   }

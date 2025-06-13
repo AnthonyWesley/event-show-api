@@ -17,7 +17,7 @@ export type ListPartnerOutputDto = {
     status: StatusType;
     // products: ProductProps[];
     events: EventProps[];
-    trialEndsAt: Date;
+    accessExpiresAt: Date;
     createdAt: Date;
   }[];
 };
@@ -50,7 +50,7 @@ export class ListPartner
         maxConcurrentEvents: c.maxConcurrentEvents,
 
         events: c.events ?? [],
-        trialEndsAt: c.trialEndsAt,
+        accessExpiresAt: c.accessExpiresAt,
         createdAt: c.createdAt,
       })),
     };
