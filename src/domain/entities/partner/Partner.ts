@@ -110,8 +110,20 @@ export class Partner {
       status: this.status,
       accessExpiresAt: this.accessExpiresAt,
       createdAt: this.createdAt,
-      maxConcurrentEvents: this.maxConcurrentEvents, // ✅ aqui ele entra
+      maxConcurrentEvents: this.maxConcurrentEvents,
     };
+  }
+
+  public updatePlan(newPlan: PlanType) {
+    if (!["FREE", "BASIC", "PREMIUM"].includes(newPlan)) {
+      throw new Error("Invalid plan type.");
+    }
+
+    this.props.plan = newPlan;
+
+    const now = new Date();
+    this.props.accessExpiresAt =
+      newPlan === "FREE" ? addDays(now, 7) : addDays(now, 30);
   }
 
   public updateEmail(newEmail: string) {
