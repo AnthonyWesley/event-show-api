@@ -25,7 +25,7 @@ model Partner {
   maxConcurrentEvents Int      @default(1) 
   status       Status          @default(ACTIVE)
   refreshToken String?
-  trialEndsAt  DateTime?
+  accessExpiresAt  DateTime?
   createdAt    DateTime        @default(now())
   events       Event[]
   products     Product[]

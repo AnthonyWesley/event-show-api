@@ -33,7 +33,7 @@ export type PartnerProps = {
   maxConcurrentEvents: number;
   events?: EventProps[];
   sellers?: SellerProps[];
-  trialEndsAt: Date;
+  accessExpiresAt: Date;
   createdAt: Date;
 };
 
@@ -72,7 +72,8 @@ export class Partner {
     }
 
     const createdAt = new Date();
-    const trialEndsAt = plan === "FREE" ? addDays(createdAt, 7) : createdAt;
+    const accessExpiresAt =
+      plan === "FREE" ? addDays(createdAt, 7) : addDays(createdAt, 30);
     const hashedPassword = await bcrypt.hash(password, 10);
 
     return new Partner({
@@ -81,14 +82,14 @@ export class Partner {
       email: email.trim().toLowerCase(),
       password: hashedPassword,
       phone: normalizedPhone,
-      plan: "FREE",
+      plan,
       status: "ACTIVE",
       refreshToken: undefined,
       products: [],
       events: [],
       maxConcurrentEvents: 1,
       sellers: [],
-      trialEndsAt,
+      accessExpiresAt,
       createdAt,
     });
   }
@@ -172,8 +173,8 @@ export class Partner {
     return this.props.products;
   }
 
-  public get trialEndsAt() {
-    return this.props.trialEndsAt;
+  public get accessExpiresAt() {
+    return this.props.accessExpiresAt;
   }
 
   public get createdAt() {
