@@ -37,15 +37,17 @@ export class UpdatePartner
       email: input.email,
       password: existingPartner.password,
       phone: input.phone,
-      plan: input.plan,
-      maxConcurrentEvents: input.maxConcurrentEvents,
-
+      plan: existingPartner.plan,
       products: existingPartner.products,
       status: existingPartner.status,
       events: existingPartner.events,
       accessExpiresAt: existingPartner.accessExpiresAt,
       createdAt: existingPartner.createdAt,
     });
+
+    if (input.plan !== existingPartner.plan) {
+      updatedPartner.updatePlan(input.plan);
+    }
 
     await this.partnerGateway.update(updatedPartner.id, updatedPartner);
 
