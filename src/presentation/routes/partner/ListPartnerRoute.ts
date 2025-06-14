@@ -18,7 +18,7 @@ export type ListPartnerResponseDto = {
     status: StatusType;
     events: EventProps[];
 
-    trialEndsAt: Date;
+    accessExpiresAt: Date;
     createdAt: Date;
   }[];
 };
@@ -60,7 +60,7 @@ export class ListPartnerRoute implements IRoute {
           status: partner.status,
           events: partner.events,
           maxConcurrentEvents: partner.maxConcurrentEvents,
-          trialEndsAt: partner.trialEndsAt,
+          accessExpiresAt: partner.accessExpiresAt,
           createdAt: partner.createdAt,
         })),
       };

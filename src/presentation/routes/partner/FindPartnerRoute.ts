@@ -51,7 +51,7 @@ export class FindPartnerRoute implements IRoute {
         plan: output.plan,
         status: output.status,
         maxConcurrentEvents: output.maxConcurrentEvents,
-        trialEndsAt: output.trialEndsAt,
+        accessExpiresAt: output.accessExpiresAt,
         createdAt: output.createdAt,
       };
       response.status(200).json(result);

@@ -1,70 +1,200 @@
 import { PrismaClient } from "@prisma/client";
+import { ulid } from "ulid";
+
 const prisma = new PrismaClient();
 
-const partnerId = "01JXHJQGNYEA13244DVJ2QWRJE";
+const partnerId = "01JXMPB51EEBG9R3PN10XF9GXJ";
+
+const sellerNames = [
+  "Alice Silva",
+  "Bruno Costa",
+  "Carla Oliveira",
+  "Daniel Souza",
+  "Eduarda Lima",
+  "Felipe Rocha",
+  "Gabriela Mendes",
+  "Henrique Ribeiro",
+  "Isabela Martins",
+  "João Almeida",
+  "Karen Fernandes",
+  "Lucas Pereira",
+  "Mariana Azevedo",
+  "Nathan Torres",
+  "Olívia Castro",
+  "Pedro Santos",
+  "Queila Dias",
+  "Rafael Gomes",
+  "Sabrina Monteiro",
+  "Tiago Barros",
+  "Ursula Nunes",
+  "Vinicius Teixeira",
+  "Wesley Moura",
+  "Xuxa Amaral",
+  "Yasmin Duarte",
+  "Zeca Lins",
+  "Alan Viana",
+  "Bianca Freitas",
+  "Caio Ramos",
+  "Diana Prado",
+  "Eduardo Matos",
+  "Fernanda Luz",
+  "Gustavo Melo",
+  "Helena Barbosa",
+  "Igor Farias",
+  "Juliana Reis",
+  "Kevin Braga",
+  "Larissa Cunha",
+  "Murilo Andrade",
+  "Nathalia Paiva",
+];
+
+const productNames = [
+  "Camiseta Estampada",
+  "Calça Jeans",
+  "Tênis Esportivo",
+  "Bolsa Couro",
+  "Relógio Digital",
+  "Óculos de Sol",
+  "Jaqueta Jeans",
+  "Vestido Floral",
+  "Camisa Social",
+  "Sandália Plataforma",
+  "Mochila Escolar",
+  "Blusa de Lã",
+  "Shorts Sarja",
+  "Boné Casual",
+  "Calça Legging",
+  "Tênis Casual",
+  "Saia Jeans",
+  "Chinelo Slide",
+  "Relógio Analógico",
+  "Cinto de Couro",
+  "Camisa Polo",
+  "Bermuda Masculina",
+  "Sapato Social",
+  "Blazer Slim",
+  "Meia Cano Alto",
+  "Top Fitness",
+  "Macacão Jeans",
+  "Regata Dry",
+  "Sapatênis",
+  "Tênis Skate",
+];
+
+const eventNames = [
+  "Outlet de Verão",
+  "Feira Fashion",
+  "Liquida Inverno",
+  "Bazar Primavera",
+  "Festival da Economia",
+  "Semana do Consumidor",
+  "Mega Promoção",
+];
+
+const leadSources = ["Instagram", "Facebook", "LinkedIn", "Feira", "WhatsApp"];
+
+function getRandomInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 async function main() {
-  // Create Events
-  const events = await prisma.event.createMany({
-    data: Array.from({ length: 5 }).map((_, i) => ({
-      id: `e${i + 1}`,
-      name: `Evento ${i + 1}`,
-      startDate: new Date(`2025-06-${1 + i * 5}`),
-      endDate: new Date(`2025-06-${5 + i * 5}`),
+  // 🧹 Limpa o banco
+  await prisma.lead.deleteMany();
+  await prisma.sellerEvent.deleteMany();
+  await prisma.sale.deleteMany();
+  await prisma.event.deleteMany();
+  await prisma.product.deleteMany();
+  await prisma.seller.deleteMany();
+
+  // 🛍️ Produtos
+  await prisma.product.createMany({
+    data: productNames.map((name) => ({
+      id: ulid(),
+      name,
+      price: getRandomInt(20, 200),
       partnerId,
     })),
   });
+  const products = await prisma.product.findMany();
 
-  // Create Sellers
-  const sellers = await prisma.seller.createMany({
-    data: Array.from({ length: 15 }).map((_, i) => ({
-      id: `s${i + 1}`,
-      name: `Seller ${i + 1}`,
-      email: `seller${i + 1}@test.com`,
-      phone: `9999-000${i + 1}`,
+  // 👨‍💼 Sellers
+  await prisma.seller.createMany({
+    data: sellerNames.map((name, i) => ({
+      id: ulid(),
+      name,
+      email: `vendedor${i + 1}@mail.com`,
+      phone: `1199999-00${i + 1}`,
       partnerId,
     })),
   });
+  const sellers = await prisma.seller.findMany();
 
-  // Create Products
-  const products = await prisma.product.createMany({
-    data: Array.from({ length: 10 }).map((_, i) => ({
-      id: `p${i + 1}`,
-      name: `Produto ${String.fromCharCode(65 + i)}`,
-      price: 10 + i * 5,
-      partnerId,
-    })),
-  });
+  // 📅 Eventos
+  const baseDate = new Date("2025-07-01");
+  const eventIds: string[] = [];
 
-  // Create Leads
-  for (let i = 0; i < 20; i++) {
-    await prisma.lead.create({
+  for (let i = 0; i < 7; i++) {
+    const id = ulid();
+    eventIds.push(id);
+    const isActive = i < 3;
+
+    const startDate = new Date(baseDate);
+    startDate.setDate(baseDate.getDate() + i * 5);
+
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 3);
+
+    await prisma.event.create({
       data: {
-        id: `l${i + 1}`,
-        name: `Lead ${i + 1}`,
-        email: i % 3 === 0 ? null : `lead${i + 1}@test.com`,
-        phone: i % 4 === 0 ? null : `1111-00${i + 1}`,
-        source: ["Instagram", "Facebook", "LinkedIn", "Feira"][i % 4],
-        customInterest: i % 5 === 0 ? "Produto A" : null,
-        notes: i % 2 === 0 ? "Interessado" : null,
-        eventId: `e${(i % 5) + 1}`,
+        id,
+        name: eventNames[i],
+        startDate,
+        endDate,
+        isActive,
         partnerId,
-        sellerId: i % 3 === 0 ? null : `s${(i % 15) + 1}`,
-        products: {
-          connect: i % 2 === 0 ? [{ id: `p${(i % 10) + 1}` }] : [],
-        },
       },
     });
   }
 
-  console.log("✅ Seed completo!");
+  // 🧲 Leads por evento
+  for (const eventId of eventIds) {
+    const leadCount = getRandomInt(10, 20);
+
+    for (let i = 0; i < leadCount; i++) {
+      const product = products[getRandomInt(0, products.length - 1)];
+      const seller =
+        Math.random() > 0.2
+          ? sellers[getRandomInt(0, sellers.length - 1)]
+          : null;
+
+      await prisma.lead.create({
+        data: {
+          id: ulid(),
+          name: `Lead ${Math.random().toString(36).substring(2, 7)}`,
+          email:
+            Math.random() > 0.3 ? `lead${ulid().slice(0, 6)}@mail.com` : null,
+          phone:
+            Math.random() > 0.3 ? `1198888-${getRandomInt(1000, 9999)}` : null,
+          source: leadSources[getRandomInt(0, leadSources.length - 1)],
+          customInterest: Math.random() > 0.8 ? product.name : null,
+          notes: Math.random() > 0.5 ? "Interessado com urgência" : null,
+          eventId,
+          partnerId,
+          sellerId: seller?.id ?? null,
+          products: {
+            connect: [{ id: product.id }],
+          },
+        },
+      });
+    }
+  }
+
+  console.log("✅ Seed finalizado com sucesso!");
 }
 
 main()
   .catch((e) => {
-    console.error("Erro no seed:", e);
+    console.error("❌ Erro ao executar seed:", e);
     process.exit(1);
   })
-  .finally(() => {
-    prisma.$disconnect();
-  });
+  .finally(() => prisma.$disconnect());

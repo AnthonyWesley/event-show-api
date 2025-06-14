@@ -6,7 +6,7 @@ import { ProductProps } from "../product/Product";
 import { SellerProps } from "../seller/Seller";
 
 export type PlanType = "FREE" | "BASIC" | "PREMIUM";
-export type StatusType = "ACTIVE" | "SUSPENDED" | "TRIAL_EXPIRED";
+export type StatusType = "ACTIVE" | "SUSPENDED";
 
 export const PlanType = {
   FREE: "FREE" as PlanType,
@@ -30,10 +30,9 @@ export type PartnerProps = {
   status: StatusType;
   refreshToken?: string;
   products?: ProductProps[];
-  maxConcurrentEvents: number;
   events?: EventProps[];
   sellers?: SellerProps[];
-  trialEndsAt: Date;
+  accessExpiresAt: Date;
   createdAt: Date;
 };
 
@@ -72,7 +71,8 @@ export class Partner {
     }
 
     const createdAt = new Date();
-    const trialEndsAt = plan === "FREE" ? addDays(createdAt, 7) : createdAt;
+    const accessExpiresAt =
+      plan === "FREE" ? addDays(createdAt, 7) : addDays(createdAt, 30);
     const hashedPassword = await bcrypt.hash(password, 10);
 
     return new Partner({
@@ -81,14 +81,13 @@ export class Partner {
       email: email.trim().toLowerCase(),
       password: hashedPassword,
       phone: normalizedPhone,
-      plan: "FREE",
+      plan,
       status: "ACTIVE",
       refreshToken: undefined,
       products: [],
       events: [],
-      maxConcurrentEvents: 1,
       sellers: [],
-      trialEndsAt,
+      accessExpiresAt,
       createdAt,
     });
   }
@@ -99,6 +98,32 @@ export class Partner {
       email: props.email.trim().toLowerCase(),
       phone: Partner.normalizePhone(props.phone ?? ""),
     });
+  }
+
+  public toResponse() {
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email,
+      phone: this.phone,
+      plan: this.plan,
+      status: this.status,
+      accessExpiresAt: this.accessExpiresAt,
+      createdAt: this.createdAt,
+      maxConcurrentEvents: this.maxConcurrentEvents,
+    };
+  }
+
+  public updatePlan(newPlan: PlanType) {
+    if (!["FREE", "BASIC", "PREMIUM"].includes(newPlan)) {
+      throw new Error("Invalid plan type.");
+    }
+
+    this.props.plan = newPlan;
+
+    const now = new Date();
+    this.props.accessExpiresAt =
+      newPlan === "FREE" ? addDays(now, 7) : addDays(now, 30);
   }
 
   public updateEmail(newEmail: string) {
@@ -172,16 +197,21 @@ export class Partner {
     return this.props.products;
   }
 
-  public get trialEndsAt() {
-    return this.props.trialEndsAt;
+  public get accessExpiresAt() {
+    return this.props.accessExpiresAt;
   }
 
   public get createdAt() {
     return this.props.createdAt;
   }
 
-  public get maxConcurrentEvents() {
-    return this.props.maxConcurrentEvents;
+  public get maxConcurrentEvents(): number {
+    switch (this.props.plan) {
+      case "PREMIUM":
+        return 5;
+      default:
+        return 1;
+    }
   }
 
   public setRefreshToken(token: string) {

@@ -10,6 +10,7 @@ import { SwitchPartnerEventStateRoute } from "./event/SwitchPartnerEventStateRou
 import { UpdatePartnerEventRoute } from "./event/UpdatePartnerEventRoute";
 import { CreateLeadRoute } from "./lead/CreateLeadRoute";
 import { DeleteLeadRoute } from "./lead/DeleteLeadRoute";
+import { ExportLeadRoute } from "./lead/ExportLeadRoute";
 import { FindLeadRoute } from "./lead/FindLeadRoute";
 import { ListLeadByEventRoute } from "./lead/ListLeadByEventRoute";
 import { ListLeadByPartners } from "./lead/ListLeadByPartners";
@@ -79,6 +80,7 @@ export const routes = [
 
   CreateLeadRoute.create(useCases.lead.create, authorization),
   ListLeadByEventRoute.create(useCases.lead.listByEvent, authorization),
+  ExportLeadRoute.create(useCases.lead.exportLead, authorization),
   ListLeadByPartners.create(useCases.lead.listByPartner, authorization),
   FindLeadRoute.create(useCases.lead.findOne, authorization),
   DeleteLeadRoute.create(useCases.lead.delete, authorization),
