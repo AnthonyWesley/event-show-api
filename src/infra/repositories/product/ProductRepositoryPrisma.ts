@@ -35,13 +35,12 @@ export class ProductRepositoryPrisma implements IProductGateway {
 
     if (search) {
       filters.OR = [
-        { name: { contains: search } },
-        { price: { contains: search } },
+        { name: { contains: search, mode: "insensitive" } },
+        // { price: { contains: search } },
       ];
     }
     const products = await this.prismaClient.product.findMany({
       where: filters,
-      include: { sales: true },
     });
 
     return products.map((e) =>

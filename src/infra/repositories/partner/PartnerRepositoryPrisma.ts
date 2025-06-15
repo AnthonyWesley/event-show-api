@@ -41,9 +41,9 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
 
     if (search) {
       filters.OR = [
-        { name: { contains: search } },
-        { email: { contains: search } },
-        { phone: { contains: search } },
+        { name: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, mode: "insensitive" } },
+        { phone: { contains: search, mode: "insensitive" } },
       ];
     }
     const partners = await this.prismaClient.partner.findMany({

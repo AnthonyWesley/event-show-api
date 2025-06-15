@@ -38,7 +38,7 @@ export class EventRepositoryPrisma implements IEventGateway {
     };
 
     if (search) {
-      filters.OR = [{ name: { contains: search } }];
+      filters.OR = [{ name: { contains: search, mode: "insensitive" } }];
     }
     const events = await this.prismaClient.event.findMany({
       where: filters,

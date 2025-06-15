@@ -2,7 +2,6 @@ import { Event, PrismaClient } from "@prisma/client";
 import { ISellerEventGateway } from "../../../domain/entities/sellerEvent/ISellerEventGateway";
 import { SellerEvent } from "../../../domain/entities/sellerEvent/SellerEvent";
 import { SellerProps } from "../../../domain/entities/seller/Seller";
-import { EventProps } from "../../../domain/entities/event/Event"; // ajuste se necessário
 
 export class SellerEventRepositoryPrisma implements ISellerEventGateway {
   private constructor(private readonly prismaClient: PrismaClient) {}
