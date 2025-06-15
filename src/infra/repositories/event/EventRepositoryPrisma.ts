@@ -33,6 +33,18 @@ export class EventRepositoryPrisma implements IEventGateway {
   }
 
   async list(partnerId: string, search: string): Promise<Event[]> {
+    const now = new Date();
+    await this.prismaClient.event.updateMany({
+      where: {
+        isActive: true,
+        endDate: {
+          lte: now,
+        },
+      },
+      data: {
+        isActive: false,
+      },
+    });
     const filters: any = {
       partnerId,
     };
