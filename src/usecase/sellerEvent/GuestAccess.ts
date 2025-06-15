@@ -87,8 +87,6 @@ export class GuestAccess
       (sale) => sale.eventId === input.eventId
     );
 
-    console.log(filteredSales);
-
     const stats = SellerStatsHelper.computeStats(
       filteredSales,
       partner.products ?? []

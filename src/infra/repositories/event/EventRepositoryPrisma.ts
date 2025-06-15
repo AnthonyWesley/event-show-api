@@ -32,11 +32,11 @@ export class EventRepositoryPrisma implements IEventGateway {
     }
   }
   async deactivateEventsIfAccessExpired(partnerId: string): Promise<void> {
-    // Primeiro, pegar o partner
     const partner = await this.prismaClient.partner.findUnique({
       where: { id: partnerId },
       select: { accessExpiresAt: true },
     });
+    console.log();
 
     if (!partner) {
       throw new Error("Partner não encontrado");

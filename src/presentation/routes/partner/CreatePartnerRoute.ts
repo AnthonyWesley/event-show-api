@@ -27,7 +27,6 @@ export class CreatePartnerRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response) => {
       const { name, email, password, plan, phone } = request.body;
-      console.log();
 
       const input: CreatePartnerInputDto = {
         name,

@@ -81,7 +81,6 @@ export class SendGuestAccessInvite
     //     <a href="${link}">${link}</a>
     //     <p><i>Este link expira em 24 horas.</i></p>`
     // );
-    console.log(seller.phone);
 
     const message =
       `Olá, ${seller.name}! Você foi cadastrado no sistema de ranking de vendas.\n\n` +

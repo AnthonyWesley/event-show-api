@@ -50,8 +50,6 @@ export class SwitchPartnerEventState {
         partnerId: input.partnerId,
       });
 
-      console.log(activeEvents);
-
       if (activeEvents.length >= partnerExists.maxConcurrentEvents) {
         throw new ConflictError(
           "Maximum number of active events reached for this partner."
