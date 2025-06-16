@@ -31,6 +31,27 @@ export class EventRepositoryPrisma implements IEventGateway {
       throw new Error(`Error saving event: ${error.message}`);
     }
   }
+
+  async activatePartnerIfPaymentConfirmed(partnerId: string): Promise<void> {
+    const partner = await this.prismaClient.partner.findUnique({
+      where: { id: partnerId },
+      select: { accessExpiresAt: true },
+    });
+
+    if (!partner) {
+      throw new Error("Partner not found.");
+    }
+
+    const now = new Date();
+
+    if (partner.accessExpiresAt && partner.accessExpiresAt > now) {
+      await this.prismaClient.partner.update({
+        where: { id: partnerId },
+        data: { status: "ACTIVE" },
+      });
+    }
+  }
+
   async deactivateEventsIfAccessExpired(partnerId: string): Promise<void> {
     const partner = await this.prismaClient.partner.findUnique({
       where: { id: partnerId },
@@ -38,7 +59,7 @@ export class EventRepositoryPrisma implements IEventGateway {
     });
 
     if (!partner) {
-      throw new Error("Partner não encontrado");
+      throw new Error("Partner not found.");
     }
 
     const now = new Date();
@@ -63,6 +84,7 @@ export class EventRepositoryPrisma implements IEventGateway {
 
   async list(partnerId: string, search: string): Promise<Event[]> {
     await this.deactivateEventsIfAccessExpired(partnerId);
+    await this.activatePartnerIfPaymentConfirmed(partnerId);
 
     const filters: any = {
       partnerId,
