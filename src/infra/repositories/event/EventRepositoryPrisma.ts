@@ -36,7 +36,6 @@ export class EventRepositoryPrisma implements IEventGateway {
       where: { id: partnerId },
       select: { accessExpiresAt: true },
     });
-    console.log();
 
     if (!partner) {
       throw new Error("Partner não encontrado");
@@ -53,6 +52,11 @@ export class EventRepositoryPrisma implements IEventGateway {
         data: {
           isActive: false,
         },
+      });
+
+      await this.prismaClient.partner.update({
+        where: { id: partnerId },
+        data: { status: "SUSPENDED" },
       });
     }
   }
