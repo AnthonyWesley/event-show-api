@@ -38,9 +38,9 @@ export class ActivatePartnerRoute implements IRoute {
 
   getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
-      const { partner } = request as any;
+      const { id } = request.params;
 
-      const result = await this.activePartnerService.execute(partner?.id);
+      const result = await this.activePartnerService.execute({ id });
       response.status(200).json(result);
     };
   }

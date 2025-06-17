@@ -1,11 +1,7 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 import { PlanType } from "../../../domain/entities/partner/Partner";
-import {
-  SuspendPartner,
-  SuspendPartnerInputDto,
-  SuspendPartnerOutputDto,
-} from "../../../usecase/partner/SuspendPartner";
+import { SuspendPartner } from "../../../usecase/partner/SuspendPartner";
 import { Authorization } from "../../../infra/http/middlewares/Authorization";
 
 export type suspendPartnerResponseDto = {
@@ -38,9 +34,8 @@ export class SuspendPartnerRoute implements IRoute {
 
   getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
-      const { partner } = request as any;
-
-      const result = await this.suspendPartnerService.execute(partner?.id);
+      const { id } = request.params;
+      const result = await this.suspendPartnerService.execute({ id });
       response.status(200).json(result);
     };
   }

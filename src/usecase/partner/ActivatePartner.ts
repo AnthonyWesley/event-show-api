@@ -1,20 +1,10 @@
 import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
-import {
-  PlanType,
-  Partner,
-  StatusType,
-} from "../../domain/entities/partner/Partner";
+
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 
 export type ActivatePartnerInputDto = {
   id: string;
-  name: string;
-  email: string;
-  phone: string;
-  maxConcurrentEvents: number;
-  status: StatusType;
-  plan: PlanType;
 };
 export type ActivatePartnerOutputDto = {
   id: string;

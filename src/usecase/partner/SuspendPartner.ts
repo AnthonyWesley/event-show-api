@@ -1,15 +1,9 @@
 import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
-import { PlanType, StatusType } from "../../domain/entities/partner/Partner";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 
 export type SuspendPartnerInputDto = {
   id: string;
-  name: string;
-  email: string;
-  phone: string;
-  maxConcurrentEvents: number;
-  plan: PlanType;
 };
 export type SuspendPartnerOutputDto = {
   id: string;
