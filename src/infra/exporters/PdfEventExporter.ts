@@ -21,7 +21,7 @@ export class PdfEventExporter {
     const browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: null,
-      executablePath: await chromium.executablePath(), // crucial para Vercel
+      executablePath: await chromium.executablePath(),
       headless: true,
     });
 
