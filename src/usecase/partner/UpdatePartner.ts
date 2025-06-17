@@ -43,7 +43,7 @@ export class UpdatePartner
       phone: input.phone,
       plan: existingPartner.plan,
       products: existingPartner.products,
-      status: existingPartner.status,
+      status: input.status,
       events: existingPartner.events,
       accessExpiresAt: existingPartner.accessExpiresAt,
       createdAt: existingPartner.createdAt,

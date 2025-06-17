@@ -94,7 +94,7 @@ export class Partner {
   public static with(props: PartnerProps) {
     return new Partner({
       ...props,
-      email: props.email.trim().toLowerCase(),
+      email: props?.email?.trim().toLowerCase(),
       phone: Partner.normalizePhone(props.phone ?? ""),
     });
   }
