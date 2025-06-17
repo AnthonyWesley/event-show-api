@@ -33,7 +33,8 @@ export class UpdatePartnerRoute implements IRoute {
   getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
       const { id } = request.params;
-      const { name, email, plan, phone, maxConcurrentEvents } = request.body;
+      const { name, email, plan, phone, maxConcurrentEvents, status } =
+        request.body;
 
       const input: UpdatePartnerInputDto = {
         id,
@@ -42,6 +43,7 @@ export class UpdatePartnerRoute implements IRoute {
         phone,
         plan,
         maxConcurrentEvents,
+        status,
       };
 
       const output: UpdatePartnerOutputDto =

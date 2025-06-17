@@ -1,5 +1,9 @@
 import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
-import { PlanType, Partner } from "../../domain/entities/partner/Partner";
+import {
+  PlanType,
+  Partner,
+  StatusType,
+} from "../../domain/entities/partner/Partner";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 
@@ -9,7 +13,7 @@ export type UpdatePartnerInputDto = {
   email: string;
   phone: string;
   maxConcurrentEvents: number;
-
+  status: StatusType;
   plan: PlanType;
 };
 export type UpdatePartnerOutputDto = {

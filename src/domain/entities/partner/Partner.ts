@@ -17,7 +17,6 @@ export const PlanType = {
 export const StatusType = {
   ACTIVE: "ACTIVE" as StatusType,
   SUSPENDED: "SUSPENDED" as StatusType,
-  TRIAL_EXPIRED: "TRIAL_EXPIRED" as StatusType,
 } as const;
 
 export type PartnerProps = {
