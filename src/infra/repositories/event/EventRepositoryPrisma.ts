@@ -45,9 +45,15 @@ export class EventRepositoryPrisma implements IEventGateway {
     const now = new Date();
 
     if (partner.accessExpiresAt && partner.accessExpiresAt > now) {
+      const newAccessDate = new Date();
+      newAccessDate.setDate(newAccessDate.getDate() + 30);
+
       await this.prismaClient.partner.update({
         where: { id: partnerId },
-        data: { status: "ACTIVE" },
+        data: {
+          status: "ACTIVE",
+          accessExpiresAt: newAccessDate,
+        },
       });
     }
   }
@@ -77,7 +83,10 @@ export class EventRepositoryPrisma implements IEventGateway {
 
       await this.prismaClient.partner.update({
         where: { id: partnerId },
-        data: { status: "SUSPENDED" },
+        data: {
+          status: "SUSPENDED",
+          accessExpiresAt: now,
+        },
       });
     }
   }
