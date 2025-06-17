@@ -19,6 +19,7 @@ import { makePendingActionUseCases } from "./container/pendingAction";
 import { LeadRepositoryPrisma } from "./repositories/lead/LeadRepositoryPrisma";
 import { makeLeadUseCases } from "./container/lead";
 import { CsvLeadExporter } from "./exporters/CsvLeadExporter";
+import { PdfEventExporter } from "./exporters/PdfEventExporter";
 
 export const adminRepository = AdminRepositoryPrisma.create(prisma);
 export const partnerRepository = PartnerRepositoryPrisma.create(prisma);
@@ -34,6 +35,7 @@ export const pendingActionRepository =
 const secretKey = process.env.SECRET_KEY as string;
 export const authorization = Authorization.create(secretKey);
 const exporter = new CsvLeadExporter();
+const exporterPdf = new PdfEventExporter({});
 
 export const admin = makeAdminUseCases(
   adminRepository,
@@ -41,7 +43,7 @@ export const admin = makeAdminUseCases(
   partnerRepository
 );
 export const partner = makePartnerUseCases(partnerRepository, authorization);
-export const event = makeEventUseCases(eventRepository);
+export const event = makeEventUseCases(eventRepository, exporterPdf);
 export const product = makeProductUseCases(productRepository);
 export const lead = makeLeadUseCases(
   leadRepository,

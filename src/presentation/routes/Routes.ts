@@ -5,6 +5,7 @@ import { LoginAdminRoute } from "./admin/LoginAdminRoute";
 import { CreatePartnerEventRoute } from "./event/CreatePartnerEventRoute";
 import { DeletePartnerEventRoute } from "./event/DeletePartnerEventRoute";
 import { FindPartnerEventRoute } from "./event/FindPartnerEventsRoute";
+import { GenerateEventReportRoute } from "./event/GenerateEventReportRoute";
 import { ListPartnerEventRoute } from "./event/ListPartnerEventsRoute";
 import { SwitchPartnerEventStateRoute } from "./event/SwitchPartnerEventStateRoute";
 import { UpdatePartnerEventRoute } from "./event/UpdatePartnerEventRoute";
@@ -75,6 +76,7 @@ export const routes = [
   ),
   DeletePartnerEventRoute.create(useCases.event.delete, authorization),
   UpdatePartnerEventRoute.create(useCases.event.update, authorization),
+  GenerateEventReportRoute.create(useCases.event.export, authorization),
 
   CreatePartnerProductRoute.create(useCases.product.create, authorization),
   ListPartnerProductRoute.create(useCases.product.list, authorization),

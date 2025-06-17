@@ -1,152 +1,148 @@
-import puppeteer from "puppeteer";
-import { IEventExporter } from "../../infra/exporters/IEventExporter";
+import { GoalType } from "@prisma/client";
+import { IEventGateway } from "../../domain/entities/event/IEventGateway";
+import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
+import { SellerStatsHelper } from "../../helpers/SellerStatsHelper";
+import { NotFoundError } from "../../shared/errors/NotFoundError";
+import { IUseCases } from "../IUseCases";
+import { PdfEventExporter } from "../../infra/exporters/PdfEventExporter";
+import { CurrencyFormatter } from "../../helpers/currencyFormatter";
+import { formatDate } from "../../helpers/formatDate";
 
-export class PdfEventExporter implements IEventExporter {
-  public readonly contentType = "application/pdf";
-  public readonly fileName = "relatorio-eventos.pdf";
+export type GenerateEventReportInputDto = {
+  partnerId: string;
+  eventId: string;
+};
 
-  constructor(readonly props?: any) {}
+export type GenerateEventReportOutputDto = {
+  id: string;
+  pdfBuffer: Buffer;
+};
 
-  async export(data: any[]): Promise<Buffer> {
-    const html = this.generateHTML(data[0]);
+export class GenerateEventReport
+  implements
+    IUseCases<GenerateEventReportInputDto, GenerateEventReportOutputDto>
+{
+  private constructor(
+    private readonly eventGateway: IEventGateway,
+    private readonly partnerGateway: IPartnerGateway,
+    private readonly exporter: PdfEventExporter
+  ) {}
 
-    const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
-
-    const buffer = await page.pdf({
-      format: "A4",
-      printBackground: true,
-      margin: { top: "20mm", bottom: "20mm", left: "15mm", right: "15mm" },
-    });
-
-    await browser.close();
-    return Buffer.from(await page.pdf());
+  public static create(
+    eventGateway: IEventGateway,
+    partnerGateway: IPartnerGateway,
+    exporter: PdfEventExporter
+  ) {
+    return new GenerateEventReport(eventGateway, partnerGateway, exporter);
   }
 
-  private generateHTML(event: any): string {
-    const goalLabel = event.goalType === "QUANTITY" ? "Unidades" : "Valor (R$)";
-    const goalReached = event.totalAchieved >= event.goal;
+  public async execute(
+    input: GenerateEventReportInputDto
+  ): Promise<GenerateEventReportOutputDto> {
+    const partner = await this.partnerGateway.findById(input.partnerId);
+    if (!partner) throw new NotFoundError("Partner");
 
-    const sellerRows = event.allSellers
-      .map(
-        (s: any, i: any) => `
-      <tr>
-        <td>${i + 1}</td>
-        <td>${s.name}</td>
-        <td>${s.totalSalesCount}</td>
-        <td>R$ ${s.totalSalesValue.toFixed(2)}</td>
-        <td>${s.metaPercent?.toFixed(1) ?? 0}%</td>
-        <td>${s.metaAchieved ? "✔️" : "❌"}</td>
-      </tr>
-    `
-      )
-      .join("");
+    const eventList = await this.eventGateway.list(partner.id);
+    const event = eventList.find((e) => e.id === input.eventId);
+    if (!event) throw new NotFoundError("Event");
 
-    const chartImgBase64 = this.generatePieChartBase64(event);
+    const sellerIds = event.sellerEvents.map((se: any) => se.sellerId);
+    const sellers = (partner.sellers ?? []).filter((s) =>
+      sellerIds.includes(s.id)
+    );
 
-    return `
-      <html>
-      <head>
-        <style>
-          body { font-family: Arial, sans-serif; padding: 20px; }
-          h1 { color: #c00; }
-          table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-          th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-          th { background-color: #eee; }
-          .summary { margin-top: 20px; }
-          .summary p { margin: 6px 0; }
-        </style>
-      </head>
-      <body>
-        <h1>Relatório do Evento: ${event.name}</h1>
-        <p><strong>Período:</strong> ${this.formatDate(event.startDate)} - ${event.endDate ? this.formatDate(event.endDate) : "em andamento"}</p>
-        <p><strong>Meta:</strong> ${event.goal} ${goalLabel} (${event.goalType})</p>
-        <p><strong>Status:</strong> ${goalReached ? "🎯 Meta Atingida" : "⛔ Meta Não Atingida"}</p>
-        <div class="summary">
-          <p><strong>Total de Vendas:</strong> ${event.totalSalesCount} unidades / R$ ${event.totalSalesValue.toFixed(2)}</p>
-          <p><strong>Vendedores no Evento:</strong> ${event.allSellers.length}</p>
-          <p><strong>Leads Registrados:</strong> ${event.totalLeads}</p>
-        </div>
+    const stats = SellerStatsHelper.computeStats(
+      event.sales,
+      partner.products ?? []
+    );
 
-        <h2>Ranking de Vendedores</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Nome</th>
-              <th>Qtd. Vendida</th>
-              <th>Valor Total</th>
-              <th>% da Meta</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${sellerRows}
-          </tbody>
-        </table>
+    const sellersWithStats = SellerStatsHelper.applyStatsToSellers(
+      sellers,
+      stats
+    );
 
-        <h2>Distribuição de Meta</h2>
-        <img src="data:image/png;base64,${chartImgBase64}" width="500" />
-      </body>
-      </html>
-    `;
-  }
+    const allSellers = SellerStatsHelper.sortByGoalType(
+      sellersWithStats,
+      event.goalType as GoalType
+    );
 
-  private formatDate(date: string | Date): string {
-    const d = new Date(date);
-    return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}/${d.getFullYear()}`;
-  }
+    const totalUnits = allSellers.reduce(
+      (acc, seller) => acc + seller.totalSalesCount,
+      0
+    );
 
-  private generatePieChartBase64(event: any): string {
-    const { createCanvas } = require("canvas");
-    const Chart = require("chart.js/auto");
-    const { registerFont } = require("canvas");
-    const { Buffer } = require("buffer");
+    const totalValue = allSellers.reduce(
+      (acc, seller) => acc + seller.totalSalesValue,
+      0
+    );
 
-    const canvas = createCanvas(500, 300);
-    const ctx = canvas.getContext("2d");
+    const goalReached =
+      event.goalType === GoalType.QUANTITY
+        ? totalUnits >= event.goal
+        : totalValue >= event.goal;
+
+    const sellerGoal = Math.ceil(
+      sellers.length > 0 ? event.goal / sellers.length : 0
+    );
 
     const data = {
-      labels: event.allSellers.map((s: any) => s.name),
-      datasets: [
-        {
-          data: event.allSellers.map((s: any) => s.metaPercent ?? 0),
-          backgroundColor: this.generateHexColors(event.allSellers.length),
-        },
-      ],
+      event: {
+        name: event.name,
+        startDate: formatDate(event.startDate),
+        endDate: formatDate(event.endDate),
+
+        goal: CurrencyFormatter.ToBRL(event.goal),
+        goalType: event.goalType,
+        totalUnits,
+        totalValue: CurrencyFormatter.ToBRL(totalValue),
+        goalReached,
+        isActive: event.isActive,
+      },
+      sellers: allSellers.map((seller) => {
+        const goalHit =
+          event.goalType === GoalType.QUANTITY
+            ? seller.totalSalesCount >= sellerGoal
+            : seller.totalSalesValue >= sellerGoal;
+
+        return {
+          name: seller.name,
+          email: seller.email,
+          phone: seller.phone,
+          totalUnits: seller.totalSalesCount,
+          totalValue: CurrencyFormatter.ToBRL(seller.totalSalesValue),
+          goal:
+            event.goalType === GoalType.QUANTITY
+              ? sellerGoal
+              : CurrencyFormatter.ToBRL(sellerGoal),
+          goalReached: goalHit,
+        };
+      }),
+      sales: event.sales
+        .map((sale) => {
+          const product = partner?.products?.find(
+            (p) => p.id === sale.productId
+          );
+          const seller = partner?.sellers?.find((s) => s.id === sale.sellerId);
+          if (!product || !seller) return null;
+
+          const unitPrice = product.price || 0;
+
+          return {
+            date: sale.createdAt.toISOString().split("T")[0],
+            seller: seller.name || "Desconhecido",
+            product: product.name || "Desconhecido",
+            quantity: sale.quantity,
+            unitPrice: CurrencyFormatter.ToBRL(unitPrice),
+            total: CurrencyFormatter.ToBRL(sale.quantity * unitPrice),
+          };
+        })
+        .filter((sale) => sale !== null),
     };
 
-    new Chart(ctx, {
-      type: "pie",
-      data: data,
-      options: { responsive: false },
-    });
+    // const exporter = new PdfEventExporter({});
+    // const pdfBuffer = await exporter.export(data);
+    const pdfBuffer = await this.exporter.export(data);
 
-    return canvas.toBuffer("image/png").toString("base64");
-  }
-
-  private generateHexColors(n: number): string[] {
-    const colors = [];
-    for (let i = 0; i < n; i++) {
-      const hue = ((i * 360) / n) % 360;
-      colors.push(`hsl(${hue}, 70%, 60%)`);
-    }
-    return colors.map((hsl) => this.hslToHex(hsl));
-  }
-
-  private hslToHex(hsl: string): string {
-    const [h, s, l] = hsl.match(/\d+/g)!.map(Number);
-    const a = (s * Math.min(l / 100, 1 - l / 100)) / 100;
-    const f = (n: number) => {
-      const k = (n + h / 30) % 12;
-      const color = l / 100 - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-      return Math.round(255 * color)
-        .toString(16)
-        .padStart(2, "0");
-    };
-    return `#${f(0)}${f(8)}${f(4)}`;
+    return { id: event.id, pdfBuffer };
   }
 }
