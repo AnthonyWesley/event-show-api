@@ -5,8 +5,8 @@ import { SellerStatsHelper } from "../../helpers/SellerStatsHelper";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 import { PdfEventExporter } from "../../infra/exporters/PdfEventExporter";
-import { CurrencyFormatter } from "../../helpers/currencyFormatter";
 import { formatDate } from "../../helpers/formatDate";
+import { currencyFormatter } from "../../helpers/currencyFormatter";
 
 export type GenerateEventReportInputDto = {
   partnerId: string;
@@ -91,10 +91,10 @@ export class GenerateEventReport
         startDate: formatDate(event.startDate),
         endDate: formatDate(event.endDate),
 
-        goal: CurrencyFormatter.ToBRL(event.goal),
+        goal: currencyFormatter.ToBRL(event.goal),
         goalType: event.goalType,
         totalUnits,
-        totalValue: CurrencyFormatter.ToBRL(totalValue),
+        totalValue: currencyFormatter.ToBRL(totalValue),
         goalReached,
         isActive: event.isActive,
       },
@@ -109,11 +109,11 @@ export class GenerateEventReport
           email: seller.email,
           phone: seller.phone,
           totalUnits: seller.totalSalesCount,
-          totalValue: CurrencyFormatter.ToBRL(seller.totalSalesValue),
+          totalValue: currencyFormatter.ToBRL(seller.totalSalesValue),
           goal:
             event.goalType === GoalType.QUANTITY
               ? sellerGoal
-              : CurrencyFormatter.ToBRL(sellerGoal),
+              : currencyFormatter.ToBRL(sellerGoal),
           goalReached: goalHit,
         };
       }),
@@ -132,8 +132,8 @@ export class GenerateEventReport
             seller: seller.name || "Desconhecido",
             product: product.name || "Desconhecido",
             quantity: sale.quantity,
-            unitPrice: CurrencyFormatter.ToBRL(unitPrice),
-            total: CurrencyFormatter.ToBRL(sale.quantity * unitPrice),
+            unitPrice: currencyFormatter.ToBRL(unitPrice),
+            total: currencyFormatter.ToBRL(sale.quantity * unitPrice),
           };
         })
         .filter((sale) => sale !== null),

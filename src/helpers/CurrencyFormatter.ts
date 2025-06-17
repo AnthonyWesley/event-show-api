@@ -1,4 +1,4 @@
-export const CurrencyFormatter = {
+export const currencyFormatter = {
   ToBRL: (value: string | number): string => {
     if (typeof value === "number") {
       return value.toLocaleString("pt-BR", {
