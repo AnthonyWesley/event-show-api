@@ -6,7 +6,6 @@ import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 import { PdfEventExporter } from "../../infra/exporters/PdfEventExporter";
 import { formatDate } from "../../helpers/formatDate";
-import { currencyFormatter } from "../../helpers/currencyFormatter";
 
 export type GenerateEventReportInputDto = {
   partnerId: string;
@@ -91,10 +90,10 @@ export class GenerateEventReport
         startDate: formatDate(event.startDate),
         endDate: formatDate(event.endDate),
 
-        goal: currencyFormatter.ToBRL(event.goal),
+        goal: this.currencyFormatter.ToBRL(event.goal),
         goalType: event.goalType,
         totalUnits,
-        totalValue: currencyFormatter.ToBRL(totalValue),
+        totalValue: this.currencyFormatter.ToBRL(totalValue),
         goalReached,
         isActive: event.isActive,
       },
@@ -109,11 +108,11 @@ export class GenerateEventReport
           email: seller.email,
           phone: seller.phone,
           totalUnits: seller.totalSalesCount,
-          totalValue: currencyFormatter.ToBRL(seller.totalSalesValue),
+          totalValue: this.currencyFormatter.ToBRL(seller.totalSalesValue),
           goal:
             event.goalType === GoalType.QUANTITY
               ? sellerGoal
-              : currencyFormatter.ToBRL(sellerGoal),
+              : this.currencyFormatter.ToBRL(sellerGoal),
           goalReached: goalHit,
         };
       }),
@@ -132,8 +131,8 @@ export class GenerateEventReport
             seller: seller.name || "Desconhecido",
             product: product.name || "Desconhecido",
             quantity: sale.quantity,
-            unitPrice: currencyFormatter.ToBRL(unitPrice),
-            total: currencyFormatter.ToBRL(sale.quantity * unitPrice),
+            unitPrice: this.currencyFormatter.ToBRL(unitPrice),
+            total: this.currencyFormatter.ToBRL(sale.quantity * unitPrice),
           };
         })
         .filter((sale) => sale !== null),
@@ -145,4 +144,40 @@ export class GenerateEventReport
 
     return { id: event.id, pdfBuffer };
   }
+
+  currencyFormatter = {
+    ToBRL: (value: string | number): string => {
+      if (typeof value === "number") {
+        return value.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+
+      if (typeof value === "string") {
+        const numeric = value.replace(/\D/g, "");
+        const number = parseFloat(numeric || "0") / 100;
+
+        return number.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+
+      return "R$ 0,00";
+    },
+
+    ToNumber(value: string | number): number {
+      if (typeof value !== "string") {
+        value = String(value);
+      }
+
+      const cleaned = value
+        .replace(/[R$\s]/g, "")
+        .replace(/\./g, "")
+        .replace(",", ".");
+
+      return parseFloat(cleaned) || 0;
+    },
+  };
 }
