@@ -2,12 +2,13 @@ import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 import { PlanType } from "../../../domain/entities/partner/Partner";
 import {
-  UpdatePartner,
-  UpdatePartnerInputDto,
-  UpdatePartnerOutputDto,
-} from "../../../usecase/partner/UpdatePartner";
+  SuspendPartner,
+  SuspendPartnerInputDto,
+  SuspendPartnerOutputDto,
+} from "../../../usecase/partner/SuspendPartner";
+import { Authorization } from "../../../infra/http/middlewares/Authorization";
 
-export type UpdatePartnerResponseDto = {
+export type suspendPartnerResponseDto = {
   id: string;
   name: string;
   email: string;
@@ -19,37 +20,27 @@ export class SuspendPartnerRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
-    private readonly updatePartnerService: UpdatePartner
+    private readonly suspendPartnerService: SuspendPartner,
+    private readonly authorization: Authorization
   ) {}
 
-  static create(updatePartnerService: UpdatePartner) {
+  static create(
+    suspendPartnerService: SuspendPartner,
+    authorization: Authorization
+  ) {
     return new SuspendPartnerRoute(
       "/partners/:id/suspend",
       HttpMethod.PUT,
-      updatePartnerService
+      suspendPartnerService,
+      authorization
     );
   }
 
   getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
-      const { id } = request.params;
-      const { name, email, plan, phone, maxConcurrentEvents, status } =
-        request.body;
+      const { partner } = request as any;
 
-      const input: UpdatePartnerInputDto = {
-        id,
-        name,
-        email,
-        phone,
-        plan,
-        maxConcurrentEvents,
-        status,
-      };
-
-      const output: UpdatePartnerOutputDto =
-        await this.updatePartnerService.execute(input);
-
-      const result = { id: output.id };
+      const result = await this.suspendPartnerService.execute(partner?.id);
       response.status(200).json(result);
     };
   }
@@ -60,5 +51,9 @@ export class SuspendPartnerRoute implements IRoute {
 
   getMethod(): HttpMethod {
     return this.method;
+  }
+
+  public getMiddlewares() {
+    return this.authorization.authorizationRoute;
   }
 }

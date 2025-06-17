@@ -13,7 +13,6 @@ export type UpdatePartnerInputDto = {
   email: string;
   phone: string;
   maxConcurrentEvents: number;
-  status: StatusType;
   plan: PlanType;
 };
 export type UpdatePartnerOutputDto = {
@@ -43,7 +42,7 @@ export class UpdatePartner
       phone: input.phone,
       plan: existingPartner.plan,
       products: existingPartner.products,
-      status: input.status,
+      status: existingPartner.status,
       events: existingPartner.events,
       accessExpiresAt: existingPartner.accessExpiresAt,
       createdAt: existingPartner.createdAt,

@@ -6,6 +6,7 @@ import {
   UpdatePartnerOutputDto,
 } from "../../../usecase/partner/UpdatePartner";
 import { ActivatePartner } from "../../../usecase/partner/ActivatePartner";
+import { Authorization } from "../../../infra/http/middlewares/Authorization";
 
 export type UpdatePartnerResponseDto = {
   id: string;
@@ -19,37 +20,27 @@ export class ActivatePartnerRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
-    private readonly activePartnerService: ActivatePartner
+    private readonly activePartnerService: ActivatePartner,
+    private readonly authorization: Authorization
   ) {}
 
-  static create(activePartnerService: ActivatePartner) {
+  static create(
+    activePartnerService: ActivatePartner,
+    authorization: Authorization
+  ) {
     return new ActivatePartnerRoute(
       "/partners/:id/activate",
       HttpMethod.PUT,
-      activePartnerService
+      activePartnerService,
+      authorization
     );
   }
 
   getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
-      const { id } = request.params;
-      const { name, email, plan, phone, maxConcurrentEvents, status } =
-        request.body;
+      const { partner } = request as any;
 
-      const input: UpdatePartnerInputDto = {
-        id,
-        name,
-        email,
-        phone,
-        plan,
-        maxConcurrentEvents,
-        status,
-      };
-
-      const output: UpdatePartnerOutputDto =
-        await this.activePartnerService.execute(input);
-
-      const result = { id: output.id };
+      const result = await this.activePartnerService.execute(partner?.id);
       response.status(200).json(result);
     };
   }
@@ -60,5 +51,9 @@ export class ActivatePartnerRoute implements IRoute {
 
   getMethod(): HttpMethod {
     return this.method;
+  }
+
+  public getMiddlewares() {
+    return this.authorization.authorizationRoute;
   }
 }

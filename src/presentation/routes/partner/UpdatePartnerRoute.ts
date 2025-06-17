@@ -6,6 +6,7 @@ import {
   UpdatePartnerInputDto,
   UpdatePartnerOutputDto,
 } from "../../../usecase/partner/UpdatePartner";
+import { Authorization } from "../../../infra/http/middlewares/Authorization";
 
 export type UpdatePartnerResponseDto = {
   id: string;
@@ -19,22 +20,26 @@ export class UpdatePartnerRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
-    private readonly updatePartnerService: UpdatePartner
+    private readonly updatePartnerService: UpdatePartner,
+    private readonly authorization: Authorization
   ) {}
 
-  static create(updatePartnerService: UpdatePartner) {
+  static create(
+    updatePartnerService: UpdatePartner,
+    authorization: Authorization
+  ) {
     return new UpdatePartnerRoute(
       "/partner/:id",
       HttpMethod.PUT,
-      updatePartnerService
+      updatePartnerService,
+      authorization
     );
   }
 
   getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
       const { id } = request.params;
-      const { name, email, plan, phone, maxConcurrentEvents, status } =
-        request.body;
+      const { name, email, plan, phone, maxConcurrentEvents } = request.body;
 
       const input: UpdatePartnerInputDto = {
         id,
@@ -43,7 +48,6 @@ export class UpdatePartnerRoute implements IRoute {
         phone,
         plan,
         maxConcurrentEvents,
-        status,
       };
 
       const output: UpdatePartnerOutputDto =
@@ -60,5 +64,9 @@ export class UpdatePartnerRoute implements IRoute {
 
   getMethod(): HttpMethod {
     return this.method;
+  }
+
+  public getMiddlewares() {
+    return this.authorization.authorizationRoute;
   }
 }

@@ -9,7 +9,6 @@ export type SuspendPartnerInputDto = {
   email: string;
   phone: string;
   maxConcurrentEvents: number;
-  status: StatusType;
   plan: PlanType;
 };
 export type SuspendPartnerOutputDto = {

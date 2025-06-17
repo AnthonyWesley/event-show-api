@@ -15,6 +15,7 @@ import { FindLeadRoute } from "./lead/FindLeadRoute";
 import { ListLeadByEventRoute } from "./lead/ListLeadByEventRoute";
 import { ListLeadByPartners } from "./lead/ListLeadByPartners";
 import { UpdateLeadRoute } from "./lead/UpdateLeadRoute";
+import { ActivatePartnerRoute } from "./partner/ActivatePartnerRoute";
 import { CreatePartnerRoute } from "./partner/CreatePartnerRoute";
 import { DeletePartnerRoute } from "./partner/DeletePartnerRoute";
 import { FindPartnerRoute } from "./partner/FindPartnerRoute";
@@ -22,7 +23,8 @@ import { ListPartnerRoute } from "./partner/ListPartnerRoute";
 import { LoginPartnerRoute } from "./partner/LoginPartnerRoute";
 import { LogoutPartnerRoute } from "./partner/LogoutPartnerRoute";
 import { RefreshPartnerRoute } from "./partner/RefreshPartnerRoute";
-import { UpdatePartnerRoute } from "./partner/SuspendPartnerRoute";
+import { SuspendPartnerRoute } from "./partner/SuspendPartnerRoute";
+import { UpdatePartnerRoute } from "./partner/UpdatePartnerRoute";
 import { ApproveOrRejectPendingActionRoute } from "./pendingAction/ApproveOrRejectPendingActionRoute";
 import { CreatePendingActionRoute } from "./pendingAction/CreatePendingActionRoute";
 import { ListPendingActionRoute } from "./pendingAction/ListPendingActionRoute";
@@ -56,11 +58,13 @@ export const routes = [
   LoginPartnerRoute.create(useCases.partner.login),
   RefreshPartnerRoute.create(useCases.partner.refresh),
   LogoutPartnerRoute.create(useCases.partner.logout),
+  ActivatePartnerRoute.create(useCases.partner.active, authorization),
+  SuspendPartnerRoute.create(useCases.partner.suspend, authorization),
   FindPartnerRoute.create(useCases.partner.findOne, authorization),
   CreatePartnerRoute.create(useCases.partner.create),
   ListPartnerRoute.create(useCases.partner.list, authorization),
   DeletePartnerRoute.create(useCases.partner.delete, authorization),
-  UpdatePartnerRoute.create(useCases.partner.update),
+  UpdatePartnerRoute.create(useCases.partner.update, authorization),
 
   CreatePartnerEventRoute.create(useCases.event.create, authorization),
   ListPartnerEventRoute.create(useCases.event.list, authorization),
