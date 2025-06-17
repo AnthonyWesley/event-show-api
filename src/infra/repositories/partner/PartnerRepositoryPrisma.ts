@@ -69,6 +69,69 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
     );
   }
 
+  async activatePartner(partnerId: string): Promise<void> {
+    const now = new Date();
+    const newAccess = new Date();
+    newAccess.setDate(now.getDate() + 30);
+
+    await this.prismaClient.partner.update({
+      where: { id: partnerId },
+      data: {
+        status: "ACTIVE",
+        accessExpiresAt: newAccess,
+      },
+    });
+  }
+
+  async suspendPartner(partnerId: string): Promise<void> {
+    const now = new Date();
+
+    await this.prismaClient.event.updateMany({
+      where: {
+        partnerId,
+        isActive: true,
+      },
+      data: {
+        isActive: false,
+      },
+    });
+
+    await this.prismaClient.partner.update({
+      where: { id: partnerId },
+      data: {
+        status: "SUSPENDED",
+        accessExpiresAt: now,
+      },
+    });
+  }
+
+  async updatePartnerAccessStatus(partnerId: string): Promise<void> {
+    const partner = await this.prismaClient.partner.findUnique({
+      where: { id: partnerId },
+      select: { accessExpiresAt: true, status: true },
+    });
+
+    if (!partner) throw new Error("Partner not found.");
+
+    const now = new Date();
+
+    if (
+      partner.accessExpiresAt &&
+      partner.accessExpiresAt <= now &&
+      partner.status !== "SUSPENDED"
+    ) {
+      await this.suspendPartner(partnerId);
+    }
+
+    if (
+      partner.accessExpiresAt &&
+      partner.accessExpiresAt > now &&
+      partner.status !== "ACTIVE"
+    ) {
+      await this.activatePartner(partnerId);
+    }
+  }
+
   async update(
     id: string,
     data: Partial<Omit<PartnerProps, "createdAt">>
@@ -124,6 +187,8 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
   }
 
   async findById(id: string): Promise<Partner | null> {
+    await this.updatePartnerAccessStatus(id);
+
     try {
       const partner = await this.prismaClient.partner.findUnique({
         where: { id },

@@ -9,4 +9,6 @@ export interface IPartnerGateway {
   updateRefreshToken(partnerId: string, refreshToken: string): Promise<void>;
   update(id: string, data: Partner): Promise<Partner>;
   delete(id: string): Promise<void>;
+  activatePartner(partnerId: string): Promise<void>;
+  suspendPartner(partnerId: string): Promise<void>;
 }

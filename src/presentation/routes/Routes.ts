@@ -22,7 +22,7 @@ import { ListPartnerRoute } from "./partner/ListPartnerRoute";
 import { LoginPartnerRoute } from "./partner/LoginPartnerRoute";
 import { LogoutPartnerRoute } from "./partner/LogoutPartnerRoute";
 import { RefreshPartnerRoute } from "./partner/RefreshPartnerRoute";
-import { UpdatePartnerRoute } from "./partner/UpdatePartnerRoute";
+import { UpdatePartnerRoute } from "./partner/SuspendPartnerRoute";
 import { ApproveOrRejectPendingActionRoute } from "./pendingAction/ApproveOrRejectPendingActionRoute";
 import { CreatePendingActionRoute } from "./pendingAction/CreatePendingActionRoute";
 import { ListPendingActionRoute } from "./pendingAction/ListPendingActionRoute";

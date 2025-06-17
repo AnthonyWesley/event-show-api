@@ -32,69 +32,66 @@ export class EventRepositoryPrisma implements IEventGateway {
     }
   }
 
-  async activatePartnerIfPaymentConfirmed(partnerId: string): Promise<void> {
-    const partner = await this.prismaClient.partner.findUnique({
-      where: { id: partnerId },
-      select: { accessExpiresAt: true },
-    });
+  // async activatePartnerIfPaymentConfirmed(partnerId: string): Promise<void> {
+  //   const partner = await this.prismaClient.partner.findUnique({
+  //     where: { id: partnerId },
+  //     select: { accessExpiresAt: true },
+  //   });
 
-    if (!partner) {
-      throw new Error("Partner not found.");
-    }
+  //   if (!partner) {
+  //     throw new Error("Partner not found.");
+  //   }
 
-    const now = new Date();
+  //   const now = new Date();
 
-    if (partner.accessExpiresAt && partner.accessExpiresAt > now) {
-      const newAccessDate = new Date();
-      newAccessDate.setDate(newAccessDate.getDate() + 30);
+  //   if (partner.accessExpiresAt && partner.accessExpiresAt > now) {
+  //     const newAccessDate = new Date();
+  //     newAccessDate.setDate(newAccessDate.getDate() + 30);
 
-      await this.prismaClient.partner.update({
-        where: { id: partnerId },
-        data: {
-          status: "ACTIVE",
-          accessExpiresAt: newAccessDate,
-        },
-      });
-    }
-  }
+  //     await this.prismaClient.partner.update({
+  //       where: { id: partnerId },
+  //       data: {
+  //         status: "ACTIVE",
+  //         accessExpiresAt: newAccessDate,
+  //       },
+  //     });
+  //   }
+  // }
 
-  async deactivateEventsIfAccessExpired(partnerId: string): Promise<void> {
-    const partner = await this.prismaClient.partner.findUnique({
-      where: { id: partnerId },
-      select: { accessExpiresAt: true },
-    });
+  // async deactivateEventsIfAccessExpired(partnerId: string): Promise<void> {
+  //   const partner = await this.prismaClient.partner.findUnique({
+  //     where: { id: partnerId },
+  //     select: { accessExpiresAt: true },
+  //   });
 
-    if (!partner) {
-      throw new Error("Partner not found.");
-    }
+  //   if (!partner) {
+  //     throw new Error("Partner not found.");
+  //   }
 
-    const now = new Date();
+  //   const now = new Date();
 
-    if (partner.accessExpiresAt && partner.accessExpiresAt <= now) {
-      await this.prismaClient.event.updateMany({
-        where: {
-          partnerId,
-          isActive: true,
-        },
-        data: {
-          isActive: false,
-        },
-      });
+  //   if (partner.accessExpiresAt && partner.accessExpiresAt <= now) {
+  //     await this.prismaClient.event.updateMany({
+  //       where: {
+  //         partnerId,
+  //         isActive: true,
+  //       },
+  //       data: {
+  //         isActive: false,
+  //       },
+  //     });
 
-      await this.prismaClient.partner.update({
-        where: { id: partnerId },
-        data: {
-          status: "SUSPENDED",
-          accessExpiresAt: now,
-        },
-      });
-    }
-  }
+  //     await this.prismaClient.partner.update({
+  //       where: { id: partnerId },
+  //       data: {
+  //         status: "SUSPENDED",
+  //         accessExpiresAt: now,
+  //       },
+  //     });
+  //   }
+  // }
 
   async list(partnerId: string, search: string): Promise<Event[]> {
-    await this.deactivateEventsIfAccessExpired(partnerId);
-    await this.activatePartnerIfPaymentConfirmed(partnerId);
-
     const filters: any = {
       partnerId,
     };
