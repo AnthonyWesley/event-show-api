@@ -5,6 +5,7 @@ import { SellerStatsHelper } from "../../helpers/SellerStatsHelper";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 import { formatDate } from "../../helpers/formatDate";
+import { PdfEventExporter } from "../../infra/exporters/PdfEventExporter";
 
 export type GenerateEventReportInputDto = {
   partnerId: string;

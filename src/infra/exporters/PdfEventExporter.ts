@@ -1,12 +1,16 @@
-// PdfEventExporter.js (CommonJS)
-const puppeteer = require("puppeteer-core");
-const Handlebars = require("handlebars");
-const fs = require("fs/promises");
-const path = require("path");
+import puppeteer from "puppeteer-core";
+import Handlebars from "handlebars";
+import fs from "fs/promises";
+import path from "path";
 
-class PdfEventExporter {
-  async export(data: any) {
-    const { default: chromium } = await import("@sparticuz/chromium");
+export class PdfEventExporter {
+  constructor(readonly props: any) {}
+
+  async export(data: any): Promise<Buffer> {
+    // const chromiumModule = await import("@sparticuz/chromium");
+    const chromiumModule = (await import("@sparticuz/chromium")).default;
+
+    const chromium = chromiumModule; // pega o default export corretamente
 
     const templatePath = path.resolve(
       __dirname,
@@ -38,5 +42,3 @@ class PdfEventExporter {
     return Buffer.from(pdf);
   }
 }
-
-module.exports = { PdfEventExporter };
