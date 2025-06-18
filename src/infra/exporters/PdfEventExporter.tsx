@@ -1,5 +1,3 @@
-import React from "react";
-import { pdf } from "@react-pdf/renderer";
 import EventReport, { EventReportPdfProps } from "./templates/EventReportPdf";
 import { Readable } from "stream";
 
@@ -7,6 +5,8 @@ export class PdfEventExporter {
   constructor(readonly props: any) {}
 
   async export(data: EventReportPdfProps["data"]): Promise<Buffer> {
+    const { pdf } = await import("@react-pdf/renderer");
+
     const doc = <EventReport data={data} />;
 
     const pdfInstance = pdf(doc);
