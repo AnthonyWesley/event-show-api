@@ -52,15 +52,49 @@ export class PdfEventExporter {
     doc.fontSize(14).text("Vendedores", { underline: true });
     doc.moveDown(0.5);
 
+    doc.fontSize(14).text("Vendedores", { underline: true });
+    doc.moveDown(0.5);
+
+    // Define colunas
+    const tableTop = doc.y;
+    const itemHeight = 20;
+
+    const columns = [
+      { label: "Nome", prop: "name", width: 100 },
+      { label: "Email", prop: "email", width: 120 },
+      { label: "Telefone", prop: "phone", width: 80 },
+      { label: "Unid.", prop: "totalUnits", width: 50 },
+      { label: "Valor", prop: "totalValue", width: 60 },
+      { label: "Meta", prop: "goal", width: 50 },
+      { label: "Atingiu", prop: "goalReached", width: 50 },
+    ];
+
+    // Cabeçalho
+    let x = doc.x;
+    columns.forEach((col) => {
+      doc.rect(x, tableTop, col.width, itemHeight).stroke();
+      doc.text(col.label, x + 2, tableTop + 6, { width: col.width - 4 });
+      x += col.width;
+    });
+
+    // Linhas
+    let y = tableTop + itemHeight;
     sellers.forEach((seller) => {
-      doc.fontSize(11).text(`Nome: ${seller.name}`);
-      doc.text(`Email: ${seller.email}`);
-      doc.text(`Telefone: ${seller.phone}`);
-      doc.text(`Total Unidades: ${seller.totalUnits}`);
-      doc.text(`Total Valor: ${seller.totalValue}`);
-      doc.text(`Meta: ${seller.goal}`);
-      doc.text(`Meta Atingida: ${seller.goalReached ? "Sim" : "Não"}`);
-      doc.moveDown();
+      let x = doc.x;
+      columns.forEach((col) => {
+        let text = seller[col.prop as keyof typeof seller];
+        if (col.prop === "goalReached") text = text ? "Sim" : "Não";
+        doc.rect(x, y, col.width, itemHeight).stroke();
+        doc.text(String(text), x + 2, y + 6, { width: col.width - 4 });
+        x += col.width;
+      });
+      y += itemHeight;
+
+      // Se passar da página, quebra e reinicia
+      if (y > doc.page.height - 50) {
+        doc.addPage();
+        y = doc.y;
+      }
     });
 
     doc.addPage();
