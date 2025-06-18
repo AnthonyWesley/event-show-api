@@ -4,7 +4,6 @@ import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
 import { SellerStatsHelper } from "../../helpers/SellerStatsHelper";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
-import { PdfEventExporter } from "../../infra/exporters/PdfEventExporter";
 import { formatDate } from "../../helpers/formatDate";
 
 export type GenerateEventReportInputDto = {
