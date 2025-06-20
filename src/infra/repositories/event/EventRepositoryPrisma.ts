@@ -99,6 +99,8 @@ export class EventRepositoryPrisma implements IEventGateway {
       return Event.with({
         id: updated.id,
         name: updated.name,
+        photo: updated.photo ?? undefined,
+        photoPublicId: updated.photoPublicId ?? undefined,
         startDate: updated.startDate,
         endDate: updated.endDate ?? undefined,
         partnerId: updated.partnerId,
