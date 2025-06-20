@@ -1,10 +1,10 @@
-// middlewares/multer.ts
 import multer from "multer";
-import path from "path";
 import fs from "fs";
 
-const uploadDir = path.resolve(__dirname, "..", "..", "tmp");
+// Diretório temporário para ambientes serverless
+const uploadDir = process.env.TMPDIR || "/tmp";
 
+// (opcional, mas geralmente já existe em serverless)
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
