@@ -55,6 +55,6 @@ export class CreatePendingActionRoute implements IRoute {
   }
 
   getMiddlewares() {
-    return this.authorization.authorizationRoute;
+    return [this.authorization.authorizationRoute];
   }
 }

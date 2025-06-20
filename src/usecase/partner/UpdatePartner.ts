@@ -1,9 +1,5 @@
 import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
-import {
-  PlanType,
-  Partner,
-  StatusType,
-} from "../../domain/entities/partner/Partner";
+import { PlanType, Partner } from "../../domain/entities/partner/Partner";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 

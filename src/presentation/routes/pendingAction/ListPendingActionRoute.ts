@@ -48,6 +48,6 @@ export class ListPendingActionRoute implements IRoute {
   }
 
   getMiddlewares() {
-    return this.authorization.authorizationRoute;
+    return [this.authorization.authorizationRoute];
   }
 }

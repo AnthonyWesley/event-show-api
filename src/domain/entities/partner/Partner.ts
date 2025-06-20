@@ -25,6 +25,8 @@ export type PartnerProps = {
   email: string;
   password: string;
   phone: string;
+  photo?: string;
+  photoPublicId?: string;
   plan: PlanType;
   status: StatusType;
   refreshToken?: string;
@@ -43,7 +45,9 @@ export class Partner {
     email: string,
     password: string,
     phone: string,
-    plan: PlanType
+    plan: PlanType,
+    photo?: string,
+    photoPublicId?: string
   ) {
     if (!name.trim()) {
       throw new Error("Partner name is required.");
@@ -80,6 +84,8 @@ export class Partner {
       email: email.trim().toLowerCase(),
       password: hashedPassword,
       phone: normalizedPhone,
+      photo,
+      photoPublicId,
       plan,
       status: "ACTIVE",
       refreshToken: undefined,
@@ -170,6 +176,14 @@ export class Partner {
 
   public get phone() {
     return this.props.phone;
+  }
+
+  public get photo() {
+    return this.props.photo;
+  }
+
+  public get photoPublicId() {
+    return this.props.photoPublicId;
   }
 
   public get plan() {

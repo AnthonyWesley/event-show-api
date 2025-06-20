@@ -57,6 +57,7 @@ export class SellerRepositoryPrisma implements ISellerGateway {
           email: s.email,
           phone: s.phone ?? "",
           photo: s.photo ?? "",
+          photoPublicId: s.photoPublicId ?? "",
           partnerId: s.partnerId,
           createdAt: s.createdAt,
         })
@@ -68,30 +69,35 @@ export class SellerRepositoryPrisma implements ISellerGateway {
 
   async update(input: UpdateEventSellerInputDto): Promise<Seller> {
     try {
-      if (input.email) {
-        const emailExist = await this.findByEmail({ email: input.email });
+      const dataToUpdate: any = {};
 
+      if (input.name !== undefined) dataToUpdate.name = input.name;
+
+      if (input.email !== undefined) {
+        const emailExist = await this.findByEmail({ email: input.email });
         if (emailExist && emailExist.id !== input.sellerId) {
           throw new Error("Email already in use by another seller.");
         }
+        dataToUpdate.email = input.email;
       }
+
+      if (input.phone !== undefined) dataToUpdate.phone = input.phone;
+      if (input.photo !== undefined) dataToUpdate.photo = input.photo;
+      if (input.photoPublicId !== undefined)
+        dataToUpdate.photoPublicId = input.photoPublicId;
 
       const updatedSeller = await this.prismaClient.seller.update({
         where: { id: input.sellerId, partnerId: input.partnerId },
-        data: {
-          name: input.name,
-          email: input.email,
-          phone: input.phone,
-          photo: input.photo,
-          partnerId: input.partnerId,
-        },
+        data: dataToUpdate,
       });
+
       return Seller.with({
         id: updatedSeller.id,
         name: updatedSeller.name,
         email: updatedSeller.email,
         phone: updatedSeller.phone ?? "",
         photo: updatedSeller.photo ?? "",
+        photoPublicId: updatedSeller.photoPublicId ?? "",
         partnerId: updatedSeller.partnerId,
         createdAt: updatedSeller.createdAt,
       });
@@ -133,6 +139,7 @@ export class SellerRepositoryPrisma implements ISellerGateway {
         email: sellers.email,
         phone: sellers.phone ?? "",
         photo: sellers.photo ?? "",
+        photoPublicId: sellers.photoPublicId ?? "",
         sales: sellers.sales,
         partnerId: sellers.partnerId,
         createdAt: sellers.createdAt,
@@ -164,6 +171,7 @@ export class SellerRepositoryPrisma implements ISellerGateway {
         email: seller.email,
         phone: seller.phone ?? "",
         photo: seller.photo ?? "",
+        photoPublicId: seller.photoPublicId ?? "",
         partnerId: seller.partnerId,
         createdAt: seller.createdAt,
       });

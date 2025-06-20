@@ -8,11 +8,14 @@ import { LogoutPartner } from "../../usecase/partner/LogoutPartner";
 import { RefreshPartner } from "../../usecase/partner/RefreshPartner";
 import { SuspendPartner } from "../../usecase/partner/SuspendPartner";
 import { UpdatePartner } from "../../usecase/partner/UpdatePartner";
+import { UpdatePartnerPhoto } from "../../usecase/partner/UpdatePartnerPhoto";
 import { Authorization } from "../http/middlewares/Authorization";
 import { PartnerRepositoryPrisma } from "../repositories/partner/PartnerRepositoryPrisma";
+import { CloudinaryUploadService } from "../services/CloudinaryUploadService";
 
 export function makePartnerUseCases(
   partnerRepository: PartnerRepositoryPrisma,
+  uploadPhotoService: CloudinaryUploadService,
   authorization: Authorization
 ) {
   return {
@@ -26,5 +29,9 @@ export function makePartnerUseCases(
     list: ListPartner.create(partnerRepository),
     delete: DeletePartner.create(partnerRepository),
     update: UpdatePartner.create(partnerRepository),
+    updatePhoto: UpdatePartnerPhoto.create(
+      partnerRepository,
+      uploadPhotoService
+    ),
   };
 }

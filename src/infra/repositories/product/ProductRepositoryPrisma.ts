@@ -17,6 +17,7 @@ export class ProductRepositoryPrisma implements IProductGateway {
       id: product.id,
       name: product.name,
       price: product.price,
+      photo: product.photo,
       partnerId: product.partnerId,
       createdAt: product.createdAt,
     };
@@ -48,6 +49,8 @@ export class ProductRepositoryPrisma implements IProductGateway {
         id: e.id,
         name: e.name,
         price: e.price,
+        photo: e.photo ?? "",
+        photoPublicId: e.photoPublicId ?? "",
         partnerId: e.partnerId,
         createdAt: e.createdAt,
       })
@@ -56,13 +59,20 @@ export class ProductRepositoryPrisma implements IProductGateway {
 
   async update(input: UpdatePartnerProductInputDto): Promise<Product> {
     try {
+      const dataToUpdate: any = {};
+
+      if (input.name !== undefined) dataToUpdate.name = input.name;
+      if (input.price !== undefined) dataToUpdate.price = input.price;
+      if (input.photo !== undefined) dataToUpdate.photo = input.photo;
+      if (input.photoPublicId !== undefined)
+        dataToUpdate.photoPublicId = input.photoPublicId;
+
       const updatedProduct = await this.prismaClient.product.update({
-        where: { id: input.productId, partnerId: input.partnerId },
-        data: {
-          name: input.name,
-          price: input.price,
+        where: {
+          id: input.productId,
           partnerId: input.partnerId,
         },
+        data: dataToUpdate,
         include: { sales: true },
       });
 
@@ -70,6 +80,8 @@ export class ProductRepositoryPrisma implements IProductGateway {
         id: updatedProduct.id,
         name: updatedProduct.name,
         price: updatedProduct.price,
+        photo: updatedProduct.photo ?? "",
+        photoPublicId: updatedProduct.photoPublicId ?? "",
         partnerId: updatedProduct.partnerId,
         createdAt: updatedProduct.createdAt,
       });
@@ -109,6 +121,8 @@ export class ProductRepositoryPrisma implements IProductGateway {
         id: product.id,
         name: product.name,
         price: product.price,
+        photo: product.photo ?? "",
+        photoPublicId: product.photoPublicId ?? "",
         partnerId: product.partnerId,
         createdAt: product.createdAt,
       });

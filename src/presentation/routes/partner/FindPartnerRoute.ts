@@ -12,6 +12,8 @@ export type FindPartnerResponseDto = {
   startDate: Date;
   endDate: Date;
   goal: number;
+  photo: string;
+  photoPublicId: string;
   goalType: Goal;
   partnerId: string;
   createdAt: Date;
@@ -47,6 +49,8 @@ export class FindPartnerRoute implements IRoute {
         id: output.id,
         name: output.name,
         phone: output.phone,
+        photo: output.photo,
+        photoPublicId: output.photoPublicId,
         email: output.email,
         plan: output.plan,
         status: output.status,
@@ -67,6 +71,6 @@ export class FindPartnerRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return this.authorization.authorizationRoute;
+    return [this.authorization.authorizationRoute];
   }
 }

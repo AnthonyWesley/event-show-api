@@ -12,6 +12,8 @@ export type FindPartnerProductOutputDto = {
   id: string;
   name: string;
   price: number;
+  photo: string;
+  photoPublicId: string;
   partnerId: string;
   createdAt: Date;
 };
@@ -48,6 +50,8 @@ export class FindPartnerProduct
       id: product.id,
       name: product.name,
       price: product.price,
+      photo: product.photo ?? "",
+      photoPublicId: product.photoPublicId ?? "",
       partnerId: product.partnerId,
       createdAt: product.createdAt,
     };

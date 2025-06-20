@@ -1,15 +1,14 @@
 import { Response, Request } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
-import {
-  ListPartnerProduct,
-  ListPartnerProductOutputDto,
-} from "../../../usecase/product/ListPartnerProduct";
+import { ListPartnerProduct } from "../../../usecase/product/ListPartnerProduct";
 import { Authorization } from "../../../infra/http/middlewares/Authorization";
 
 export type ListPartnerProductResponseDto = {
   products: {
     id: string;
     name: string;
+    photo: string;
+    photoPublicId: string;
     startDate: Date;
     endDate: Date;
     partnerId: string;
@@ -51,6 +50,8 @@ export class ListPartnerProductRoute implements IRoute {
           id: product.id,
           name: product.name,
           price: product.price,
+          photo: product.photo,
+          photoPublicId: product.photoPublicId,
           partnerId: product.partnerId,
           createdAt: product.createdAt,
         })),
@@ -68,6 +69,6 @@ export class ListPartnerProductRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return this.authorization.authorizationRoute;
+    return [this.authorization.authorizationRoute];
   }
 }

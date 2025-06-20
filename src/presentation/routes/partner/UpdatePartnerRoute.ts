@@ -30,7 +30,7 @@ export class UpdatePartnerRoute implements IRoute {
   ) {
     return new UpdatePartnerRoute(
       "/partner/:id",
-      HttpMethod.PUT,
+      HttpMethod.PATCH,
       updatePartnerService,
       authorization
     );
@@ -67,6 +67,6 @@ export class UpdatePartnerRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return this.authorization.authorizationRoute;
+    return [this.authorization.authorizationRoute];
   }
 }

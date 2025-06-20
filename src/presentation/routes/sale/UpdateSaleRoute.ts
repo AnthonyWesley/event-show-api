@@ -17,7 +17,7 @@ export class UpdateSaleRoute implements IRoute {
   static create(updateSaleService: UpdateSale, authorization: Authorization) {
     return new UpdateSaleRoute(
       "/events/:eventId/sales/:saleId",
-      HttpMethod.PUT,
+      HttpMethod.PATCH,
       updateSaleService,
       authorization
     );
@@ -52,6 +52,6 @@ export class UpdateSaleRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return this.authorization.authorizationRoute;
+    return [this.authorization.authorizationRoute];
   }
 }

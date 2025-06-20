@@ -13,9 +13,10 @@ export type ListPartnerOutputDto = {
     password: string;
     phone: string;
     plan: any;
+    photo?: string;
+    photoPublicId?: string;
     maxConcurrentEvents: number;
     status: StatusType;
-    // products: ProductProps[];
     events: EventProps[];
     accessExpiresAt: Date;
     createdAt: Date;
@@ -45,10 +46,11 @@ export class ListPartner
         email: c.email,
         password: c.password,
         phone: c.phone,
+        photo: c.photo,
+        photoPublicId: c.photoPublicId,
         plan: c.plan,
         status: c.status,
         maxConcurrentEvents: c.maxConcurrentEvents,
-
         events: c.events ?? [],
         accessExpiresAt: c.accessExpiresAt,
         createdAt: c.createdAt,

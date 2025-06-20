@@ -14,6 +14,7 @@ export type FindEventSellerByEmailOutputDto = {
   email: string;
   phone?: string;
   photo?: string;
+  photoPublicId?: string;
   partnerId: string;
   // sales     Sale[]
   createdAt: Date;

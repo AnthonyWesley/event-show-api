@@ -7,6 +7,7 @@ export type SellerProps = {
   email: string;
   phone?: string;
   photo?: string;
+  photoPublicId?: string;
   partnerId: string;
   sales?: SaleProps[];
   createdAt: Date;
@@ -88,6 +89,10 @@ export class Seller {
 
   public get photo() {
     return this.props.photo;
+  }
+
+  public get photoPublicId() {
+    return this.props.photoPublicId;
   }
 
   public get partnerId() {

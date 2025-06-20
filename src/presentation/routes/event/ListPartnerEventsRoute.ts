@@ -1,9 +1,6 @@
 import { Response, Request } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
-import {
-  ListPartnerEvent,
-  ListPartnerEventOutputDto,
-} from "../../../usecase/event/ListPartnerEvent";
+import { ListPartnerEvent } from "../../../usecase/event/ListPartnerEvent";
 import { Authorization } from "../../../infra/http/middlewares/Authorization";
 import { Goal } from "../../../domain/entities/event/Event";
 
@@ -11,6 +8,9 @@ export type ListPartnerEventResponseDto = {
   Events: {
     id: string;
     name: string;
+    photo?: string;
+    photoPublicId?: string;
+    file?: any;
     startDate: Date;
     endDate: Date;
     isActive: boolean;
@@ -43,7 +43,6 @@ export class ListPartnerEventRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
-      // const { partnerId } = request.params;
       const { partner } = request as any;
       const search = request.query.search as string | undefined;
       const output = await this.listPartnerEventServer.execute({
@@ -55,6 +54,8 @@ export class ListPartnerEventRoute implements IRoute {
         events: output.events.map((event) => ({
           id: event.id,
           name: event.name,
+          photo: event.photo,
+          photoPublicId: event.photoPublicId,
           startDate: event.startDate,
           endDate: event.endDate,
           goal: event.goal,
@@ -79,6 +80,6 @@ export class ListPartnerEventRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return this.authorization.authorizationRoute;
+    return [this.authorization.authorizationRoute];
   }
 }

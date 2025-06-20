@@ -12,7 +12,8 @@ export type FindPartnerOutputDto = {
   email: string;
   phone: string;
   maxConcurrentEvents: number;
-
+  photo?: string;
+  photoPublicId?: string;
   plan: PlanType;
   status: StatusType;
   accessExpiresAt: Date;
@@ -39,9 +40,10 @@ export class FindPartner
       name: aPartner.name,
       email: aPartner.email,
       phone: aPartner.phone,
+      photo: aPartner.photo,
+      photoPublicId: aPartner.photoPublicId,
       plan: aPartner.plan,
       maxConcurrentEvents: aPartner.maxConcurrentEvents,
-
       status: aPartner.status,
       accessExpiresAt: aPartner.accessExpiresAt,
       createdAt: aPartner.createdAt,

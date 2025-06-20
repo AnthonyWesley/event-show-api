@@ -78,27 +78,6 @@ export class Authorization {
     }
   };
 
-  partnerAndGuestAuthorizationRoute = (
-    request: AuthRequest,
-    response: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const partnerToken = request.header("Partner-Authorization");
-
-      if (partnerToken) {
-        const decoded = this.verifyToken(partnerToken.replace("Bearer ", ""));
-        request.partner = decoded;
-      }
-
-      next();
-    } catch (error) {
-      return response
-        .status(403)
-        .json({ message: "Invalid or expired partner or guest token." });
-    }
-  };
-
   decodeToken(token: string) {
     try {
       return jwt.decode(token);

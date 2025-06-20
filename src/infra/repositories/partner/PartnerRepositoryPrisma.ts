@@ -57,6 +57,8 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
         name: p.name,
         email: p.email,
         password: p.password,
+        photo: p.photo ?? "",
+        photoPublicId: p.photoPublicId ?? "",
         phone: p.phone as string,
         plan: p.plan as PlanType,
         status: p.status as StatusType,
@@ -132,23 +134,27 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
     }
   }
 
-  async update(
-    id: string,
-    data: Partial<Omit<PartnerProps, "createdAt">>
-  ): Promise<Partner> {
+  async update(id: string, data: Partner): Promise<Partner> {
     try {
+      const dataToUpdate: any = {};
+
+      if (data.name !== undefined) dataToUpdate.name = data.name;
+      if (data.email !== undefined) dataToUpdate.email = data.email;
+      if (data.password !== undefined) dataToUpdate.password = data.password;
+      if (data.phone !== undefined) dataToUpdate.phone = data.phone;
+      if (data.photo !== undefined) dataToUpdate.photo = data.photo;
+      if (data.photoPublicId !== undefined)
+        dataToUpdate.photoPublicId = data.photoPublicId;
+      if (data.plan !== undefined) dataToUpdate.plan = data.plan;
+      if (data.status !== undefined) dataToUpdate.status = data.status;
+      if (data.refreshToken !== undefined)
+        dataToUpdate.refreshToken = data.refreshToken;
+      if (data.accessExpiresAt !== undefined)
+        dataToUpdate.accessExpiresAt = data.accessExpiresAt;
+
       const updatedPartner = await this.prismaClient.partner.update({
         where: { id },
-        data: {
-          name: data.name,
-          email: data.email,
-          password: data.password,
-          phone: data.phone,
-          plan: data.plan,
-          status: data.status,
-          refreshToken: data.refreshToken,
-          accessExpiresAt: data.accessExpiresAt,
-        },
+        data: dataToUpdate,
         include: { events: true },
       });
 
@@ -157,13 +163,13 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
         name: updatedPartner.name,
         email: updatedPartner.email,
         password: updatedPartner.password,
-        phone: updatedPartner.phone as string,
-        events: [],
-
+        phone: updatedPartner.phone ?? "",
+        photo: updatedPartner.photo ?? "",
+        photoPublicId: updatedPartner.photoPublicId ?? "",
+        // events: updatedPartner.events ?? [],
         plan: updatedPartner.plan as PlanType,
         status: updatedPartner.status as StatusType,
-        refreshToken: updatedPartner.refreshToken as string,
-
+        refreshToken: updatedPartner.refreshToken ?? "",
         accessExpiresAt: updatedPartner.accessExpiresAt ?? new Date(),
         createdAt: updatedPartner.createdAt,
       });
@@ -203,6 +209,8 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
         email: partner.email,
         password: partner.password,
         phone: partner.phone as string,
+        photo: partner.photo ?? "",
+        photoPublicId: partner.photoPublicId ?? "",
         plan: partner.plan as PlanType,
         status: partner.status as StatusType,
         refreshToken: partner.refreshToken as string,
@@ -233,7 +241,8 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
         email: partner.email,
         password: partner.password,
         phone: partner.phone as string,
-
+        photo: partner.photo ?? "",
+        photoPublicId: partner.photoPublicId ?? "",
         events: [],
         plan: partner.plan as PlanType,
         status: partner.status as StatusType,

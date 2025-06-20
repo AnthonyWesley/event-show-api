@@ -1,8 +1,5 @@
 import { Response, Request } from "express";
-import {
-  ListPartner,
-  ListPartnerOutputDto,
-} from "../../../usecase/partner/ListPartner";
+import { ListPartner } from "../../../usecase/partner/ListPartner";
 import { HttpMethod, IRoute } from "../IRoute";
 import { PlanType, StatusType } from "../../../domain/entities/partner/Partner";
 import { EventProps } from "../../../domain/entities/event/Event";
@@ -14,10 +11,11 @@ export type ListPartnerResponseDto = {
     name: string;
     email: string;
     phone: string;
+    photo: string;
+    photoPublicId: string;
     plan: PlanType;
     status: StatusType;
     events: EventProps[];
-
     accessExpiresAt: Date;
     createdAt: Date;
   }[];
@@ -55,6 +53,8 @@ export class ListPartnerRoute implements IRoute {
           name: partner.name,
           email: partner.email,
           phone: partner.phone,
+          photo: partner.photo,
+          photoPublicId: partner.photoPublicId,
           password: partner.password,
           plan: partner.plan,
           status: partner.status,
@@ -64,6 +64,8 @@ export class ListPartnerRoute implements IRoute {
           createdAt: partner.createdAt,
         })),
       };
+      console.log(result);
+
       response.status(200).json(result);
     };
   }
@@ -77,6 +79,6 @@ export class ListPartnerRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return this.authorization.adminAuthorizationRoute;
+    return [this.authorization.adminAuthorizationRoute];
   }
 }

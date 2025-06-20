@@ -16,6 +16,7 @@ export type ListEventSellerOutputDto = {
     email: string;
     phone?: string;
     photo?: string;
+    photoPublicId?: string;
     partnerId: string;
     createdAt: Date;
   }[];

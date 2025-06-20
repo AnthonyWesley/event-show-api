@@ -11,6 +11,9 @@ import { Goal } from "../../../domain/entities/event/Event";
 export type FindPartnerEventResponseDto = {
   id: string;
   name: string;
+  photo?: string;
+  photoPublicId?: string;
+  file?: any;
   startDate: Date;
   endDate: Date;
   goal: number;
@@ -75,6 +78,6 @@ export class FindPartnerEventRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return this.authorization.authorizationRoute;
+    return [this.authorization.authorizationRoute];
   }
 }

@@ -17,15 +17,17 @@ export type SellerEvent = {
 export type EventProps = {
   id: string;
   name: string;
+  photo?: string;
+  photoPublicId?: string;
   startDate: Date;
   endDate?: Date;
-  isActive?: boolean;
+  isActive: boolean;
   partnerId: string;
   goal: number;
   goalType: string;
   createdAt: Date;
   sales: SaleProps[];
-  sellerEvents: SellerEvent[]; // <- important
+  sellerEvents: SellerEvent[];
 };
 
 export class Event {
@@ -35,8 +37,8 @@ export class Event {
     name: string,
     goal: number,
     goalType: Goal,
-    // isActive: boolean,
-    partnerId: string
+    partnerId: string,
+    photo?: string
   ) {
     if (!name.trim()) {
       throw new Error("Event name is required.");
@@ -53,6 +55,7 @@ export class Event {
     return new Event({
       id: generateId(),
       name,
+      photo,
       startDate: new Date(),
       // endDate,
       isActive: false,
@@ -75,6 +78,14 @@ export class Event {
 
   public get name() {
     return this.props.name;
+  }
+
+  public get photo() {
+    return this.props.photo;
+  }
+
+  public get photoPublicId() {
+    return this.props.photoPublicId;
   }
 
   public get startDate() {

@@ -6,7 +6,6 @@ import { IWhatsAppService } from "../../infra/mail/IWhatsAppService";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { ValidationError } from "../../shared/errors/ValidationError";
 import { IUseCases } from "../IUseCases";
-import { Resend } from "resend";
 
 export type SendGuestAccessInviteInputDto = {
   partnerId: string;

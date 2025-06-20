@@ -97,6 +97,12 @@ function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function generatePhotoUrl(index: number) {
+  return `https://images.unsplash.com/photo-15${index
+    .toString()
+    .padStart(6, "0")}-1000x1000`;
+}
+
 async function main() {
   // 🧹 Limpa o banco
   await prisma.lead.deleteMany();
@@ -108,23 +114,25 @@ async function main() {
 
   // 🛍️ Produtos
   await prisma.product.createMany({
-    data: productNames.map((name) => ({
+    data: productNames.map((name, index) => ({
       id: ulid(),
       name,
       price: getRandomInt(20, 200),
       partnerId,
+      photo: generatePhotoUrl(index + 100), // +100 para evitar colisão com sellers/events
     })),
   });
   const products = await prisma.product.findMany();
 
   // 👨‍💼 Sellers
   await prisma.seller.createMany({
-    data: sellerNames.map((name, i) => ({
+    data: sellerNames.map((name, index) => ({
       id: ulid(),
       name,
-      email: `vendedor${i + 1}@mail.com`,
-      phone: `1199999-00${i + 1}`,
+      email: `vendedor${index + 1}@mail.com`,
+      phone: `1199999-00${index + 1}`,
       partnerId,
+      photo: generatePhotoUrl(index + 200), // sellers
     })),
   });
   const sellers = await prisma.seller.findMany();
@@ -133,7 +141,7 @@ async function main() {
   const baseDate = new Date("2025-07-01");
   const eventIds: string[] = [];
 
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < eventNames.length; i++) {
     const id = ulid();
     eventIds.push(id);
     const isActive = i < 3;
@@ -152,6 +160,7 @@ async function main() {
         endDate,
         isActive,
         partnerId,
+        photo: generatePhotoUrl(i + 300), // eventos
       },
     });
   }
@@ -192,6 +201,12 @@ async function main() {
   console.log("✅ Seed finalizado com sucesso!");
 }
 
+main()
+  .catch((e) => {
+    console.error("❌ Erro ao executar seed:", e);
+    process.exit(1);
+  })
+  .finally(() => prisma.$disconnect());
 main()
   .catch((e) => {
     console.error("❌ Erro ao executar seed:", e);

@@ -26,7 +26,7 @@ export class SuspendPartnerRoute implements IRoute {
   ) {
     return new SuspendPartnerRoute(
       "/partners/:id/suspend",
-      HttpMethod.PUT,
+      HttpMethod.PATCH,
       suspendPartnerService,
       authorization
     );
@@ -49,6 +49,6 @@ export class SuspendPartnerRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return this.authorization.authorizationRoute;
+    return [this.authorization.authorizationRoute];
   }
 }

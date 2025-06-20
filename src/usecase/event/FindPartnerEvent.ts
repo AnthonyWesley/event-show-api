@@ -18,6 +18,9 @@ export type FindPartnerEventInputDto = {
 export type FindPartnerEventOutputDto = {
   id: string;
   name: string;
+  photo?: string;
+  photoPublicId?: string;
+  file?: any;
   startDate: Date;
   endDate?: Date;
   sellerEvents: SellerEventProps[];
@@ -77,6 +80,8 @@ export class FindPartnerEvent
     return {
       id: event.id,
       name: event.name,
+      photo: event.photo,
+      photoPublicId: event.photoPublicId,
       startDate: event.startDate,
       endDate: event.endDate ?? undefined,
       sellerEvents: event.sellerEvents,

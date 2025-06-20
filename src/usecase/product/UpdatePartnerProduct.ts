@@ -1,4 +1,3 @@
-import { urlToHttpOptions } from "url";
 import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
 import { IProductGateway } from "../../domain/entities/product/IProductGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
@@ -8,6 +7,8 @@ export type UpdatePartnerProductInputDto = {
   productId: string;
   name?: string;
   price?: number;
+  photo?: string;
+  photoPublicId?: string;
 };
 
 export type UpdatePartnerProductResponseDto = {
@@ -15,6 +16,8 @@ export type UpdatePartnerProductResponseDto = {
   name: string;
   price: number;
   partnerId: string;
+  photo?: string;
+  photoPublicId?: string;
 };
 
 export class UpdatePartnerProduct {

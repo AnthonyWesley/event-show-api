@@ -3,9 +3,9 @@ import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 
 export type DeleteLeadInputDto = {
-  id: string;
   eventId: string;
   partnerId: string;
+  leadId: string;
 };
 
 export class DeleteLead {
@@ -25,8 +25,9 @@ export class DeleteLead {
     }
 
     const lead = await this.leadGateway.findById({
-      leadId: input.id,
+      leadId: input.leadId,
       partnerId: input.partnerId,
+      eventId: input.eventId,
     });
     if (!lead) {
       throw new NotFoundError("Lead");

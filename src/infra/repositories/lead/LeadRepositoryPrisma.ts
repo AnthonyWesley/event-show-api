@@ -112,23 +112,29 @@ export class LeadRepositoryPrisma implements ILeadGateway {
 
   async update(input: UpdateLeadInputDto): Promise<Lead> {
     try {
+      const dataToUpdate: any = {};
+
+      if (input.name !== undefined) dataToUpdate.name = input.name;
+      if (input.email !== undefined) dataToUpdate.email = input.email;
+      if (input.phone !== undefined) dataToUpdate.phone = input.phone;
+      if (input.notes !== undefined) dataToUpdate.notes = input.notes;
+      if (input.source !== undefined) dataToUpdate.source = input.source;
+      if (input.customInterest !== undefined)
+        dataToUpdate.customInterest = input.customInterest;
+
+      if (input.products !== undefined) {
+        dataToUpdate.products = {
+          set: [], // Remove todos os anteriores
+          connect: input.products.map((p) => ({ id: p.id })),
+        };
+      }
+
       const updated = await this.prismaClient.lead.update({
         where: {
           id: input.leadId,
           partnerId: input.partnerId,
         },
-        data: {
-          name: input.name,
-          email: input.email,
-          phone: input.phone,
-          notes: input.notes,
-          source: input.source,
-          customInterest: input.customInterest,
-          products: {
-            set: [],
-            connect: input.products?.map((p) => ({ id: p.id })) ?? [],
-          },
-        },
+        data: dataToUpdate,
         include: {
           products: true,
         },

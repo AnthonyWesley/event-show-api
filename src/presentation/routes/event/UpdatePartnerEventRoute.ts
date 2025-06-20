@@ -20,7 +20,7 @@ export class UpdatePartnerEventRoute implements IRoute {
   ) {
     return new UpdatePartnerEventRoute(
       "/events/:eventId",
-      HttpMethod.PUT,
+      HttpMethod.PATCH,
       updatePartnerEventService,
       authorization
     );
@@ -58,6 +58,6 @@ export class UpdatePartnerEventRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return this.authorization.authorizationRoute;
+    return [this.authorization.authorizationRoute];
   }
 }

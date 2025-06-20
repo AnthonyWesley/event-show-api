@@ -52,6 +52,6 @@ export class ApproveOrRejectPendingActionRoute implements IRoute {
   }
 
   getMiddlewares() {
-    return this.authorization.authorizationRoute;
+    return [this.authorization.authorizationRoute];
   }
 }

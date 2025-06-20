@@ -49,6 +49,6 @@ export class DeletePartnerRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return this.authorization.adminAuthorizationRoute;
+    return [this.authorization.adminAuthorizationRoute];
   }
 }

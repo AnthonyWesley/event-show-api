@@ -9,6 +9,7 @@ export type UpdateEventSellerInputDto = {
   email?: string;
   phone?: string;
   photo?: string;
+  photoPublicId?: string;
   // sales     Sale[]
 };
 
@@ -18,6 +19,7 @@ export type UpdateEventSellerResponseDto = {
   email: string;
   phone?: string;
   photo?: string;
+  photoPublicId?: string;
   // sales     Sale[]
 };
 
@@ -57,6 +59,7 @@ export class UpdateEventSeller {
       email: updatedSeller.email,
       phone: updatedSeller.phone,
       photo: updatedSeller.photo,
+      photoPublicId: updatedSeller.photoPublicId,
     };
   }
 }

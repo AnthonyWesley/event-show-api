@@ -47,8 +47,9 @@ export class FindLeadRoute implements IRoute {
         eventId,
         leadId,
       };
-      const result: FindLeadOutputDto =
-        await this.findLeadService.execute(input);
+      const result: FindLeadOutputDto = await this.findLeadService.execute(
+        input
+      );
 
       response.status(200).json(result);
     };
@@ -63,6 +64,6 @@ export class FindLeadRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return this.authorization.authorizationRoute;
+    return [this.authorization.authorizationRoute];
   }
 }

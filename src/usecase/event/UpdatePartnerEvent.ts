@@ -13,6 +13,9 @@ export type UpdatePartnerEventInputDto = {
   endDate?: Date | null;
   goal?: number;
   goalType?: Goal;
+  photo?: string;
+  photoPublicId?: string;
+  file?: any;
 };
 
 export type UpdatePartnerEventResponseDto = {

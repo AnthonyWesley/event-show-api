@@ -16,6 +16,7 @@ export type FindEventSellerOutputDto = {
   email: string;
   phone?: string;
   photo?: string;
+  photoPublicId?: string;
   partnerId: string;
   sales: SaleProps[];
   createdAt: Date;
@@ -54,6 +55,7 @@ export class FindEventSeller
       email: seller.email,
       phone: seller.phone,
       photo: seller.photo,
+      photoPublicId: seller.photoPublicId,
       sales: seller.sales ?? [],
       partnerId: seller.partnerId,
       createdAt: seller.createdAt,

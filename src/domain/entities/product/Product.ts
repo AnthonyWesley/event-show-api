@@ -4,6 +4,8 @@ export type ProductProps = {
   id: string;
   name: string;
   price: number;
+  photo?: string;
+  photoPublicId?: string;
   partnerId: string;
   createdAt: Date;
 };
@@ -11,7 +13,12 @@ export type ProductProps = {
 export class Product {
   private constructor(private readonly props: ProductProps) {}
 
-  public static create(name: string, price: number, partnerId: string) {
+  public static create(
+    name: string,
+    price: number,
+    partnerId: string,
+    photo?: string
+  ) {
     if (!name.trim()) {
       throw new Error("Product name is required.");
     }
@@ -30,6 +37,7 @@ export class Product {
       id: generateId(),
       name,
       price,
+      photo,
       partnerId,
       createdAt: new Date(),
     });
@@ -49,6 +57,14 @@ export class Product {
 
   public get price() {
     return this.props.price;
+  }
+
+  public get photo() {
+    return this.props.photo;
+  }
+
+  public get photoPublicId() {
+    return this.props.photoPublicId;
   }
 
   public get partnerId() {

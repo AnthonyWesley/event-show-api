@@ -1,4 +1,5 @@
 import { useCases, authorization } from "../../infra/Container";
+import { upload } from "../../infra/http/middlewares/multer";
 import { CreateAdminRoute } from "./admin/CreateAdminRoute";
 import { ImpersonatePartnerRoute } from "./admin/ImpersonatePartnerRoute";
 import { LoginAdminRoute } from "./admin/LoginAdminRoute";
@@ -7,6 +8,7 @@ import { DeletePartnerEventRoute } from "./event/DeletePartnerEventRoute";
 import { FindPartnerEventRoute } from "./event/FindPartnerEventsRoute";
 import { ListPartnerEventRoute } from "./event/ListPartnerEventsRoute";
 import { SwitchPartnerEventStateRoute } from "./event/SwitchPartnerEventStateRoute";
+import { UpdateEventPhotoRoute } from "./event/UpdateEventPhotoRoute";
 import { UpdatePartnerEventRoute } from "./event/UpdatePartnerEventRoute";
 import { CreateLeadRoute } from "./lead/CreateLeadRoute";
 import { DeleteLeadRoute } from "./lead/DeleteLeadRoute";
@@ -24,6 +26,7 @@ import { LoginPartnerRoute } from "./partner/LoginPartnerRoute";
 import { LogoutPartnerRoute } from "./partner/LogoutPartnerRoute";
 import { RefreshPartnerRoute } from "./partner/RefreshPartnerRoute";
 import { SuspendPartnerRoute } from "./partner/SuspendPartnerRoute";
+import { UpdatePartnerPhotoRoute } from "./partner/UpdatePartnerPhotoRoute";
 import { UpdatePartnerRoute } from "./partner/UpdatePartnerRoute";
 import { ApproveOrRejectPendingActionRoute } from "./pendingAction/ApproveOrRejectPendingActionRoute";
 import { CreatePendingActionRoute } from "./pendingAction/CreatePendingActionRoute";
@@ -33,6 +36,7 @@ import { DeletePartnerProductRoute } from "./product/DeletePartnerProductRoute";
 import { FindPartnerProductRoute } from "./product/FindPartnerProductRoute";
 import { ListPartnerProductRoute } from "./product/ListPartnerProductRoute";
 import { UpdatePartnerProductRoute } from "./product/UpdatePartnerProductRoute";
+import { UpdateProductPhotoRoute } from "./product/UpdateProductPhotoRoute";
 import { CreateSaleRoute } from "./sale/CreateSaleRoute";
 import { DeleteSaleRoute } from "./sale/DeleteSaleRoute";
 import { FindSaleRoute } from "./sale/FindSaleRoute";
@@ -44,6 +48,7 @@ import { FindEventSellerByEmailRoute } from "./seller/FindEventSellerByEmailRout
 import { FindEventSellerRoute } from "./seller/FindEventSellerRoute";
 import { ListEventSellerRoute } from "./seller/ListEventSellerRoute";
 import { UpdateEventSellerRoute } from "./seller/UpdateEventSellerRoute";
+import { UpdateSellerPhotoRoute } from "./seller/UpdateSellerPhotoRoute";
 import { CreateSellerEventRoute } from "./sellerEvent/CreateSellerEventRoute";
 import { DeleteSellerEventRoute } from "./sellerEvent/DeleteSellerEventRoute";
 import { GuestAccessRoute } from "./sellerEvent/GuestAccessRoute";
@@ -65,6 +70,11 @@ export const routes = [
   ListPartnerRoute.create(useCases.partner.list, authorization),
   DeletePartnerRoute.create(useCases.partner.delete, authorization),
   UpdatePartnerRoute.create(useCases.partner.update, authorization),
+  UpdatePartnerPhotoRoute.create(
+    useCases.partner.updatePhoto,
+    authorization,
+    upload
+  ),
 
   CreatePartnerEventRoute.create(useCases.event.create, authorization),
   ListPartnerEventRoute.create(useCases.event.list, authorization),
@@ -75,12 +85,22 @@ export const routes = [
   ),
   DeletePartnerEventRoute.create(useCases.event.delete, authorization),
   UpdatePartnerEventRoute.create(useCases.event.update, authorization),
+  UpdateEventPhotoRoute.create(
+    useCases.event.updatePhoto,
+    authorization,
+    upload
+  ),
 
   CreatePartnerProductRoute.create(useCases.product.create, authorization),
   ListPartnerProductRoute.create(useCases.product.list, authorization),
   FindPartnerProductRoute.create(useCases.product.findOne, authorization),
   DeletePartnerProductRoute.create(useCases.product.delete, authorization),
   UpdatePartnerProductRoute.create(useCases.product.update, authorization),
+  UpdateProductPhotoRoute.create(
+    useCases.product.updatePhoto,
+    authorization,
+    upload
+  ),
 
   CreateLeadRoute.create(useCases.lead.create, authorization),
   ListLeadByEventRoute.create(useCases.lead.listByEvent, authorization),
@@ -99,6 +119,11 @@ export const routes = [
   ),
   DeleteEventSellerRoute.create(useCases.seller.delete, authorization),
   UpdateEventSellerRoute.create(useCases.seller.update, authorization),
+  UpdateSellerPhotoRoute.create(
+    useCases.seller.updatePhoto,
+    authorization,
+    upload
+  ),
 
   CreateSaleRoute.create(useCases.sale.create, authorization),
   ListSaleRoute.create(useCases.sale.list, authorization),

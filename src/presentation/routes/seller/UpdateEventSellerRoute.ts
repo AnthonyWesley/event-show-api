@@ -20,7 +20,7 @@ export class UpdateEventSellerRoute implements IRoute {
   ) {
     return new UpdateEventSellerRoute(
       "/sellers/:sellerId",
-      HttpMethod.PUT,
+      HttpMethod.PATCH,
       updateEventSellerService,
       authorization
     );
@@ -31,7 +31,7 @@ export class UpdateEventSellerRoute implements IRoute {
       const { sellerId } = request.params;
       const { partner } = request as any;
 
-      const { name, email, phone, photo } = request.body;
+      const { name, email, phone } = request.body;
 
       if (!name || !email) {
         response.status(400).json({ error: "Missing required fields" });
@@ -40,11 +40,10 @@ export class UpdateEventSellerRoute implements IRoute {
       const input: UpdateEventSellerInputDto = {
         sellerId,
         partnerId: partner.id,
-
         name,
         email,
         phone,
-        photo,
+        // photo,
       };
 
       const result = await this.updateEventSellerService.execute(input);
@@ -61,6 +60,6 @@ export class UpdateEventSellerRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return this.authorization.authorizationRoute;
+    return [this.authorization.authorizationRoute];
   }
 }

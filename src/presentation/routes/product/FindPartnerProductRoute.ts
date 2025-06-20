@@ -11,6 +11,8 @@ import {
 export type FindPartnerProductResponseDto = {
   id: string;
   name: string;
+  photo: string;
+  photoPublicId: string;
   startDate: Date;
   endDate: Date;
   partnerId: string;
@@ -53,6 +55,8 @@ export class FindPartnerProductRoute implements IRoute {
         id: output.id,
         name: output.name,
         price: output.price,
+        photo: output.photo ?? "",
+        photoPublicId: output.photoPublicId ?? "",
         partnerId: output.partnerId,
         createdAt: output.createdAt,
       };
@@ -69,6 +73,6 @@ export class FindPartnerProductRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return this.authorization.authorizationRoute;
+    return [this.authorization.authorizationRoute];
   }
 }

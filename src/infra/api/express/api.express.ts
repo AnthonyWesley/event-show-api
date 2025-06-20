@@ -38,13 +38,18 @@ export class ApiExpress {
   }
 
   private registerRoutes(routes: IRoute[]): void {
-    this.app.get("/test-error", (req, res) => {
-      throw new ValidationError("Testing error middleware");
-    });
     routes.forEach((route) => {
+      const rawMiddlewares = route.getMiddlewares?.();
+
+      const middlewares = Array.isArray(rawMiddlewares)
+        ? rawMiddlewares
+        : rawMiddlewares
+        ? [rawMiddlewares]
+        : [];
+
       this.app[route.getMethod()](
         route.getPath(),
-        route.getMiddlewares?.() ?? [],
+        ...middlewares,
         route.getHandler()
       );
     });

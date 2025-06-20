@@ -18,7 +18,7 @@ export class UpdateLeadRoute implements IRoute {
   static create(updateLeadService: UpdateLead, authorization: Authorization) {
     return new UpdateLeadRoute(
       "/events/:eventId/leads/:leadId",
-      HttpMethod.PUT,
+      HttpMethod.PATCH,
       updateLeadService,
       authorization
     );
@@ -60,6 +60,6 @@ export class UpdateLeadRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return this.authorization.authorizationRoute;
+    return [this.authorization.authorizationRoute];
   }
 }

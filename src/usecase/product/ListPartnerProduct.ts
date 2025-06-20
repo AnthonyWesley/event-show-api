@@ -14,6 +14,8 @@ export type ListPartnerProductOutputDto = {
     id: string;
     name: string;
     price: number;
+    photo: string;
+    photoPublicId: string;
     partnerId: string;
     createdAt: Date;
   }[];
@@ -54,6 +56,8 @@ export class ListPartnerProduct
           id: p.id,
           name: p.name,
           price: p.price,
+          photo: p.photo ?? "",
+          photoPublicId: p.photoPublicId ?? "",
           partnerId: p.partnerId,
           createdAt: p.createdAt,
         };

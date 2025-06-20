@@ -18,6 +18,8 @@ export type PartnerDto = {
   name: string;
   email: string;
   plan: any;
+  photo?: string;
+  photoPublicId?: string;
   status: StatusType;
   refreshToken: string;
   products: ProductProps[];

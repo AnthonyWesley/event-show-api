@@ -18,6 +18,7 @@ export class EventRepositoryPrisma implements IEventGateway {
         data: {
           id: event.id,
           name: event.name,
+          photo: event.photo,
           startDate: event.startDate,
           endDate: event.endDate,
           partnerId: event.partnerId,
@@ -31,65 +32,6 @@ export class EventRepositoryPrisma implements IEventGateway {
       throw new Error(`Error saving event: ${error.message}`);
     }
   }
-
-  // async activatePartnerIfPaymentConfirmed(partnerId: string): Promise<void> {
-  //   const partner = await this.prismaClient.partner.findUnique({
-  //     where: { id: partnerId },
-  //     select: { accessExpiresAt: true },
-  //   });
-
-  //   if (!partner) {
-  //     throw new Error("Partner not found.");
-  //   }
-
-  //   const now = new Date();
-
-  //   if (partner.accessExpiresAt && partner.accessExpiresAt > now) {
-  //     const newAccessDate = new Date();
-  //     newAccessDate.setDate(newAccessDate.getDate() + 30);
-
-  //     await this.prismaClient.partner.update({
-  //       where: { id: partnerId },
-  //       data: {
-  //         status: "ACTIVE",
-  //         accessExpiresAt: newAccessDate,
-  //       },
-  //     });
-  //   }
-  // }
-
-  // async deactivateEventsIfAccessExpired(partnerId: string): Promise<void> {
-  //   const partner = await this.prismaClient.partner.findUnique({
-  //     where: { id: partnerId },
-  //     select: { accessExpiresAt: true },
-  //   });
-
-  //   if (!partner) {
-  //     throw new Error("Partner not found.");
-  //   }
-
-  //   const now = new Date();
-
-  //   if (partner.accessExpiresAt && partner.accessExpiresAt <= now) {
-  //     await this.prismaClient.event.updateMany({
-  //       where: {
-  //         partnerId,
-  //         isActive: true,
-  //       },
-  //       data: {
-  //         isActive: false,
-  //       },
-  //     });
-
-  //     await this.prismaClient.partner.update({
-  //       where: { id: partnerId },
-  //       data: {
-  //         status: "SUSPENDED",
-  //         accessExpiresAt: now,
-  //       },
-  //     });
-  //   }
-  // }
 
   async list(partnerId: string, search: string): Promise<Event[]> {
     const filters: any = {
@@ -112,6 +54,8 @@ export class EventRepositoryPrisma implements IEventGateway {
       Event.with({
         id: event.id,
         name: event.name,
+        photo: event.photo ?? "",
+        photoPublicId: event.photoPublicId ?? "",
         startDate: event.startDate,
         endDate: event.endDate ?? undefined,
         partnerId: event.partnerId,
@@ -127,19 +71,25 @@ export class EventRepositoryPrisma implements IEventGateway {
 
   async update(input: UpdatePartnerEventInputDto): Promise<Event> {
     try {
+      const dataToUpdate: any = {};
+
+      if (input.name !== undefined) dataToUpdate.name = input.name;
+      if (input.photo !== undefined) dataToUpdate.photo = input.photo;
+      if (input.photoPublicId !== undefined)
+        dataToUpdate.photoPublicId = input.photoPublicId;
+      if (input.startDate !== undefined)
+        dataToUpdate.startDate = input.startDate;
+      if (input.endDate !== undefined) dataToUpdate.endDate = input.endDate;
+      if (input.isActive !== undefined) dataToUpdate.isActive = input.isActive;
+      if (input.goal !== undefined) dataToUpdate.goal = input.goal;
+      if (input.goalType !== undefined) dataToUpdate.goalType = input.goalType;
+
       const updated = await this.prismaClient.event.update({
         where: {
           id: input.eventId,
           partnerId: input.partnerId,
         },
-        data: {
-          name: input.name,
-          startDate: input.startDate,
-          endDate: input.endDate,
-          isActive: input.isActive,
-          goal: input.goal,
-          goalType: input.goalType,
-        },
+        data: dataToUpdate,
         include: {
           sales: true,
           sellerEvents: true,
@@ -198,6 +148,8 @@ export class EventRepositoryPrisma implements IEventGateway {
       return Event.with({
         id: event.id,
         name: event.name,
+        photo: event.photo ?? "",
+        photoPublicId: event.photoPublicId ?? "",
         startDate: event.startDate,
         endDate: event.endDate ?? undefined,
         partnerId: event.partnerId,
@@ -235,6 +187,8 @@ export class EventRepositoryPrisma implements IEventGateway {
         Event.with({
           id: event.id,
           name: event.name,
+          photo: event.photo ?? "",
+          photoPublicId: event.photoPublicId ?? "",
           startDate: event.startDate,
           endDate: event.endDate ?? undefined,
           partnerId: event.partnerId,
@@ -267,6 +221,8 @@ export class EventRepositoryPrisma implements IEventGateway {
       return Event.with({
         id: event.id,
         name: event.name,
+        photo: event.photo ?? "",
+        photoPublicId: event.photoPublicId ?? "",
         startDate: event.startDate,
         endDate: event.endDate ?? undefined,
         partnerId: event.partnerId,

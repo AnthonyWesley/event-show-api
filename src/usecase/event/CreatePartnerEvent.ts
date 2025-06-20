@@ -4,7 +4,6 @@ import { IUseCases } from "../IUseCases";
 import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
 import { ValidationError } from "../../shared/errors/ValidationError";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
-import { ConflictError } from "../../shared/errors/ConflictError";
 
 export type CreatePartnerEventInputDto = {
   name: string;

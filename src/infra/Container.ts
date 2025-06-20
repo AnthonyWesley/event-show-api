@@ -19,6 +19,7 @@ import { makePendingActionUseCases } from "./container/pendingAction";
 import { LeadRepositoryPrisma } from "./repositories/lead/LeadRepositoryPrisma";
 import { makeLeadUseCases } from "./container/lead";
 import { CsvLeadExporter } from "./exporters/CsvLeadExporter";
+import { CloudinaryUploadService } from "./services/CloudinaryUploadService";
 
 export const adminRepository = AdminRepositoryPrisma.create(prisma);
 export const partnerRepository = PartnerRepositoryPrisma.create(prisma);
@@ -34,22 +35,27 @@ export const pendingActionRepository =
 const secretKey = process.env.SECRET_KEY as string;
 export const authorization = Authorization.create(secretKey);
 const exporter = new CsvLeadExporter();
+const uploader = new CloudinaryUploadService();
 
 export const admin = makeAdminUseCases(
   adminRepository,
   authorization,
   partnerRepository
 );
-export const partner = makePartnerUseCases(partnerRepository, authorization);
-export const event = makeEventUseCases(eventRepository);
-export const product = makeProductUseCases(productRepository);
+export const partner = makePartnerUseCases(
+  partnerRepository,
+  uploader,
+  authorization
+);
+export const event = makeEventUseCases(eventRepository, uploader);
+export const product = makeProductUseCases(productRepository, uploader);
 export const lead = makeLeadUseCases(
   leadRepository,
   eventRepository,
   partnerRepository,
   exporter
 );
-export const seller = makeSellerUseCases(sellerRepository, authorization);
+export const seller = makeSellerUseCases(sellerRepository, uploader);
 export const sellerEvent = makeSellerEventUseCases(sellerEventRepository);
 export const sale = makeSaleUseCases(saleRepository);
 export const pendingAction = makePendingActionUseCases(pendingActionRepository);

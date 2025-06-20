@@ -21,6 +21,8 @@ model Partner {
   email        String          @unique
   password     String
   phone        String?
+  photo        String?
+  photoPublicId String?
   plan         Plan            @default(FREE)
   status       Status          @default(ACTIVE)
   refreshToken String?
@@ -39,6 +41,8 @@ model Product {
   id         String   @id @default(uuid())
   name       String
   price      Float
+  photo      String?
+  photoPublicId String?
   partnerId  String
   createdAt  DateTime @default(now())
   partner    Partner  @relation(fields: [partnerId], references: [id], onDelete: Cascade)
@@ -50,6 +54,8 @@ model Product {
 model Event {
   id           String        @id @default(uuid())
   name         String
+  photo        String?
+  photoPublicId String?
   startDate    DateTime
   endDate      DateTime?
   isActive     Boolean       @default(true) 
@@ -98,6 +104,7 @@ model Seller {
   email     String        
   phone     String?
   photo     String?
+  photoPublicId String?
   partnerId String
   createdAt DateTime      @default(now())
   partner   Partner       @relation(fields: [partnerId], references: [id], onDelete: Cascade)

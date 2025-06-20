@@ -4,13 +4,14 @@ import { FindEventSeller } from "../../usecase/seller/FindEventSeller";
 import { FindEventSellerByEmail } from "../../usecase/seller/FindEventSellerByEmail";
 import { ListEventSeller } from "../../usecase/seller/ListEventSeller";
 import { UpdateEventSeller } from "../../usecase/seller/UpdateEventSeller";
+import { UpdateSellerPhoto } from "../../usecase/seller/UpdateSellerPhoto";
 import { partnerRepository } from "../Container";
-import { Authorization } from "../http/middlewares/Authorization";
 import { SellerRepositoryPrisma } from "../repositories/seller/SellerRepositoryPrisma";
+import { CloudinaryUploadService } from "../services/CloudinaryUploadService";
 
 export function makeSellerUseCases(
   sellerRepository: SellerRepositoryPrisma,
-  authorization: Authorization
+  uploadPhotoService: CloudinaryUploadService
 ) {
   return {
     create: CreateEventSeller.create(sellerRepository, partnerRepository),
@@ -22,5 +23,10 @@ export function makeSellerUseCases(
     ),
     delete: DeleteEventSeller.create(sellerRepository, partnerRepository),
     update: UpdateEventSeller.create(sellerRepository, partnerRepository),
+    updatePhoto: UpdateSellerPhoto.create(
+      sellerRepository,
+      partnerRepository,
+      uploadPhotoService
+    ),
   };
 }

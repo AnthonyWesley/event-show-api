@@ -19,6 +19,9 @@ export type ListPartnerEventOutputDto = {
     endDate?: Date;
     sellerEvents: SellerEventProps[];
     sales: SaleProps[];
+    photo?: string;
+    photoPublicId?: string;
+    file?: any;
     goal: number;
     goalType: GoalType;
     isActive?: boolean;
@@ -80,6 +83,8 @@ export class ListPartnerEvent
         return {
           id: event.id,
           name: event.name,
+          photo: event.photo,
+          photoPublicId: event.photoPublicId,
           startDate: event.startDate,
           endDate: event.endDate ?? undefined,
           sales: event.sales,

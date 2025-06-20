@@ -61,9 +61,7 @@ export class SaleRepositoryPrisma implements ISaleGateway {
         },
         data: {
           quantity: input.quantity,
-          // total: input.total,
         },
-        // include: { sales: true },
       });
 
       return Sale.with({
