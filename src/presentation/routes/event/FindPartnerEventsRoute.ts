@@ -53,6 +53,8 @@ export class FindPartnerEventRoute implements IRoute {
       const result = {
         id: output.id,
         name: output.name,
+        photo: output.photo,
+        photoPublicId: output.photoPublicId,
         startDate: output.startDate,
         endDate: output.endDate,
         goal: output.goal,
