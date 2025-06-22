@@ -216,7 +216,7 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
         refreshToken: partner.refreshToken as string,
 
         events: [],
-        products: partner.products,
+        products: [],
         sellers: partner.sellers as SellerProps[],
         accessExpiresAt: partner.accessExpiresAt ?? new Date(),
         createdAt: partner.createdAt,

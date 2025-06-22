@@ -1,8 +1,6 @@
 import { Admin } from "../../domain/entities/admin/Admin";
 import { IAdminGateway } from "../../domain/entities/admin/IAdminGateway";
 
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
-import { PlanType, Partner } from "../../domain/entities/partner/Partner";
 import { UnauthorizedError } from "../../shared/errors/UnauthorizedError";
 import { ValidationError } from "../../shared/errors/ValidationError";
 import { IUseCases } from "../IUseCases";

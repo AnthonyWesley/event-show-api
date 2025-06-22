@@ -7,7 +7,7 @@ import {
 import {
   CreateAdmin,
   CreateAdminInputDto,
-} from "../../../usecase/adm/CreateAdmin";
+} from "../../../usecase/admin/CreateAdmin";
 
 export type CreateAdminResponseDto = {
   id: string;

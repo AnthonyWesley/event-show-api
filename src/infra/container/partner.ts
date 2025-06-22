@@ -21,9 +21,9 @@ export function makePartnerUseCases(
   return {
     login: LoginPartner.create(partnerRepository, authorization),
     logout: LogoutPartner.create(partnerRepository, authorization),
+    refresh: RefreshPartner.create(partnerRepository, authorization),
     active: ActivatePartner.create(partnerRepository),
     suspend: SuspendPartner.create(partnerRepository),
-    refresh: RefreshPartner.create(partnerRepository, authorization),
     create: CreatePartner.create(partnerRepository),
     findOne: FindPartner.create(partnerRepository),
     list: ListPartner.create(partnerRepository),

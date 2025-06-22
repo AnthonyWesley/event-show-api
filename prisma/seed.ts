@@ -3,49 +3,84 @@ import { ulid } from "ulid";
 
 const prisma = new PrismaClient();
 
-const partnerId = "01JXTGK92YQK6RQDDPH741RVDC";
+const partnerId = "01JYBX6KHWGKDJ2PMKBFR0Z9X5";
 
-const sellerNames = [
-  "Alice Silva",
-  "Bruno Costa",
-  "Carla Oliveira",
-  "Daniel Souza",
-  "Eduarda Lima",
-  "Felipe Rocha",
-  "Gabriela Mendes",
-  "Henrique Ribeiro",
-  "Isabela Martins",
-  "João Almeida",
-  "Karen Fernandes",
-  "Lucas Pereira",
-  "Mariana Azevedo",
-  "Nathan Torres",
-  "Olívia Castro",
-  "Pedro Santos",
-  "Queila Dias",
-  "Rafael Gomes",
-  "Sabrina Monteiro",
-  "Tiago Barros",
-  "Ursula Nunes",
-  "Vinicius Teixeira",
-  "Wesley Moura",
-  "Xuxa Amaral",
-  "Yasmin Duarte",
-  "Zeca Lins",
-  "Alan Viana",
-  "Bianca Freitas",
-  "Caio Ramos",
-  "Diana Prado",
-  "Eduardo Matos",
-  "Fernanda Luz",
-  "Gustavo Melo",
-  "Helena Barbosa",
-  "Igor Farias",
-  "Juliana Reis",
-  "Kevin Braga",
-  "Larissa Cunha",
-  "Murilo Andrade",
-  "Nathalia Paiva",
+const sellerData = [
+  {
+    name: "Leslie Alexander",
+    photo:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  },
+  {
+    name: "Michael Foster",
+    photo:
+      "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  },
+  {
+    name: "Dries Vincent",
+    photo:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  },
+  {
+    name: "Lindsay Walton",
+    photo:
+      "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  },
+  {
+    name: "Courtney Henry",
+    photo:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  },
+  {
+    name: "Tom Cook",
+    photo:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  },
+  {
+    name: "Beatriz Ramos",
+    photo:
+      "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  },
+  {
+    name: "Carlos Medeiros",
+    photo:
+      "https://images.unsplash.com/photo-1603415526960-f8f0b0cae198?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  },
+  {
+    name: "Diana Lopes",
+    photo:
+      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  },
+  {
+    name: "Eduardo Nunes",
+    photo:
+      "https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  },
+  {
+    name: "Fernanda Torres",
+    photo:
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  },
+  {
+    name: "Guilherme Rocha",
+    photo:
+      "https://images.unsplash.com/photo-1527980965255-d3b416303d12?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  },
+  {
+    name: "Helena Pires",
+    photo:
+      "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  },
+  {
+    name: "Igor Fernandes",
+    photo:
+      "https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  },
+  {
+    name: "Juliana Braga",
+    photo:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  },
 ];
 
 const productNames = [
@@ -59,26 +94,6 @@ const productNames = [
   "Vestido Floral",
   "Camisa Social",
   "Sandália Plataforma",
-  "Mochila Escolar",
-  "Blusa de Lã",
-  "Shorts Sarja",
-  "Boné Casual",
-  "Calça Legging",
-  "Tênis Casual",
-  "Saia Jeans",
-  "Chinelo Slide",
-  "Relógio Analógico",
-  "Cinto de Couro",
-  "Camisa Polo",
-  "Bermuda Masculina",
-  "Sapato Social",
-  "Blazer Slim",
-  "Meia Cano Alto",
-  "Top Fitness",
-  "Macacão Jeans",
-  "Regata Dry",
-  "Sapatênis",
-  "Tênis Skate",
 ];
 
 const eventNames = [
@@ -93,6 +108,29 @@ const eventNames = [
 
 const leadSources = ["Instagram", "Facebook", "LinkedIn", "Feira", "WhatsApp"];
 
+const realLeadNames = [
+  "Ana Paula",
+  "Bruno Henrique",
+  "Camila Souza",
+  "Diego Martins",
+  "Elisa Castro",
+  "Fabio Silva",
+  "Giovana Lima",
+  "Henrique Barros",
+  "Isabela Ribeiro",
+  "João Pedro",
+  "Karla Andrade",
+  "Leonardo Rocha",
+  "Mariana Dias",
+  "Natalia Pires",
+  "Otavio Ramos",
+  "Patricia Nunes",
+  "Rafael Cardoso",
+  "Sofia Teixeira",
+  "Thiago Almeida",
+  "Vanessa Moura",
+];
+
 function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -104,7 +142,6 @@ function generatePhotoUrl(index: number) {
 }
 
 async function main() {
-  // 🧹 Limpa o banco
   await prisma.lead.deleteMany();
   await prisma.sellerEvent.deleteMany();
   await prisma.sale.deleteMany();
@@ -112,32 +149,29 @@ async function main() {
   await prisma.product.deleteMany();
   await prisma.seller.deleteMany();
 
-  // 🛍️ Produtos
   await prisma.product.createMany({
     data: productNames.map((name, index) => ({
       id: ulid(),
       name,
       price: getRandomInt(20, 200),
       partnerId,
-      photo: generatePhotoUrl(index + 100), // +100 para evitar colisão com sellers/events
+      photo: generatePhotoUrl(index + 100),
     })),
   });
   const products = await prisma.product.findMany();
 
-  // 👨‍💼 Sellers
   await prisma.seller.createMany({
-    data: sellerNames.map((name, index) => ({
+    data: sellerData.map((seller, index) => ({
       id: ulid(),
-      name,
+      name: seller.name,
       email: `vendedor${index + 1}@mail.com`,
       phone: `1199999-00${index + 1}`,
       partnerId,
-      photo: generatePhotoUrl(index + 200), // sellers
+      photo: seller.photo,
     })),
   });
   const sellers = await prisma.seller.findMany();
 
-  // 📅 Eventos
   const baseDate = new Date("2025-07-01");
   const eventIds: string[] = [];
 
@@ -160,12 +194,11 @@ async function main() {
         endDate,
         isActive,
         partnerId,
-        photo: generatePhotoUrl(i + 300), // eventos
+        photo: generatePhotoUrl(i + 300),
       },
     });
   }
 
-  // 🧲 Leads por evento
   for (const eventId of eventIds) {
     const leadCount = getRandomInt(10, 20);
 
@@ -175,11 +208,12 @@ async function main() {
         Math.random() > 0.2
           ? sellers[getRandomInt(0, sellers.length - 1)]
           : null;
+      const name = realLeadNames[getRandomInt(0, realLeadNames.length - 1)];
 
       await prisma.lead.create({
         data: {
           id: ulid(),
-          name: `Lead ${Math.random().toString(36).substring(2, 7)}`,
+          name,
           email:
             Math.random() > 0.3 ? `lead${ulid().slice(0, 6)}@mail.com` : null,
           phone:
@@ -201,12 +235,6 @@ async function main() {
   console.log("✅ Seed finalizado com sucesso!");
 }
 
-main()
-  .catch((e) => {
-    console.error("❌ Erro ao executar seed:", e);
-    process.exit(1);
-  })
-  .finally(() => prisma.$disconnect());
 main()
   .catch((e) => {
     console.error("❌ Erro ao executar seed:", e);

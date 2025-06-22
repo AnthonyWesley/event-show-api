@@ -63,4 +63,23 @@ export class AdminRepositoryPrisma implements IAdminGateway {
       throw new Error("Error finding partner: " + error.message);
     }
   }
+
+  async findByRefreshToken(refreshToken: string): Promise<string | null> {
+    try {
+      const admin = await this.prismaClient.admin.findFirst({
+        where: { refreshToken },
+      });
+
+      if (admin) {
+        await this.prismaClient.admin.update({
+          where: { id: admin.id },
+          data: { refreshToken: null },
+        });
+      }
+
+      return admin ? admin.refreshToken : null;
+    } catch (error: any) {
+      throw new Error("Error finding admin: " + error.message);
+    }
+  }
 }

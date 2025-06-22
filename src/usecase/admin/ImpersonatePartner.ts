@@ -1,5 +1,3 @@
-// usecases/admin/ImpersonatePartner.ts
-
 import { IUseCases } from "../IUseCases";
 import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
 import { Authorization } from "../../infra/http/middlewares/Authorization";

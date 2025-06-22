@@ -4,7 +4,7 @@ import { HttpMethod, IRoute } from "../IRoute";
 import { Authorization } from "../../../infra/http/middlewares/Authorization";
 
 import { Goal } from "../../../domain/entities/event/Event";
-import { ImpersonatePartner } from "../../../usecase/adm/ImpersonatePartner";
+import { ImpersonatePartner } from "../../../usecase/admin/ImpersonatePartner";
 
 export type FindPartnerResponseDto = {
   id: string;

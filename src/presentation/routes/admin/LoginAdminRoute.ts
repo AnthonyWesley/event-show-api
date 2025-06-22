@@ -4,7 +4,7 @@ import {
   LoginInputDto,
   TokenType,
 } from "../../../usecase/partner/LoginPartner";
-import { LoginAdmin } from "../../../usecase/adm/LoginAdm";
+import { LoginAdmin } from "../../../usecase/admin/LoginAdmin";
 
 export type LoginAdminResponseDto = {
   token: TokenType;

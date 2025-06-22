@@ -1,5 +1,5 @@
 import { prisma } from "../package/prisma";
-import { AdminRepositoryPrisma } from "./repositories/adm/AdminRepositoryPrisma";
+import { AdminRepositoryPrisma } from "./repositories/admin/AdminRepositoryPrisma";
 import { PartnerRepositoryPrisma } from "./repositories/partner/PartnerRepositoryPrisma";
 import { EventRepositoryPrisma } from "./repositories/event/EventRepositoryPrisma";
 import { ProductRepositoryPrisma } from "./repositories/product/ProductRepositoryPrisma";

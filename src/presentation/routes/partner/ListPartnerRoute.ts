@@ -64,7 +64,6 @@ export class ListPartnerRoute implements IRoute {
           createdAt: partner.createdAt,
         })),
       };
-      console.log(result);
 
       response.status(200).json(result);
     };

@@ -3,6 +3,8 @@ import { upload } from "../../infra/http/middlewares/multer";
 import { CreateAdminRoute } from "./admin/CreateAdminRoute";
 import { ImpersonatePartnerRoute } from "./admin/ImpersonatePartnerRoute";
 import { LoginAdminRoute } from "./admin/LoginAdminRoute";
+import { LogoutAdminRoute } from "./admin/LogoutAdminRoute";
+import { RefreshAdminRoute } from "./admin/RefreshAdminRoute";
 import { CreatePartnerEventRoute } from "./event/CreatePartnerEventRoute";
 import { DeletePartnerEventRoute } from "./event/DeletePartnerEventRoute";
 import { FindPartnerEventRoute } from "./event/FindPartnerEventsRoute";
@@ -59,6 +61,8 @@ export const routes = [
   LoginAdminRoute.create(useCases.admin.login),
   CreateAdminRoute.create(useCases.admin.create),
   ImpersonatePartnerRoute.create(useCases.admin.impersonate, authorization),
+  LogoutAdminRoute.create(useCases.admin.logout),
+  RefreshAdminRoute.create(useCases.admin.refresh),
 
   LoginPartnerRoute.create(useCases.partner.login),
   RefreshPartnerRoute.create(useCases.partner.refresh),
