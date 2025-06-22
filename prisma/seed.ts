@@ -3,7 +3,7 @@ import { ulid } from "ulid";
 
 const prisma = new PrismaClient();
 
-const partnerId = "01JYBX6KHWGKDJ2PMKBFR0Z9X5";
+const partnerId = "01JYBXPJJG6QXW6K5DPHK4TEHT";
 
 const sellerData = [
   {

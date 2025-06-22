@@ -7,6 +7,7 @@ import {
   StatusType,
 } from "../../../domain/entities/partner/Partner";
 import { SellerProps } from "../../../domain/entities/seller/Seller";
+import { ProductProps } from "../../../domain/entities/product/Product";
 
 export class PartnerRepositoryPrisma implements IPartnerGateway {
   private constructor(private readonly prismaClient: PrismaClient) {}
@@ -216,7 +217,8 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
         refreshToken: partner.refreshToken as string,
 
         events: [],
-        products: [],
+        products: partner.products as ProductProps[],
+
         sellers: partner.sellers as SellerProps[],
         accessExpiresAt: partner.accessExpiresAt ?? new Date(),
         createdAt: partner.createdAt,
