@@ -34,7 +34,7 @@ export class RefreshAdmin
 
     const admin = await this.adminGateway.findById(decoded.id);
     if (!admin) {
-      throw new NotFoundError("Partner");
+      throw new NotFoundError("Admin");
     }
 
     const newAccessToken = this.authorization.generateToken({

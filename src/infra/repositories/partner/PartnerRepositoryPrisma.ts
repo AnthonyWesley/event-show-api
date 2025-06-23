@@ -96,6 +96,7 @@ export class PartnerRepositoryPrisma implements IPartnerGateway {
       },
       data: {
         isActive: false,
+        endDate: now,
       },
     });
 
