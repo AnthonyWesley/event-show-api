@@ -7,8 +7,8 @@ import { NotFoundError } from "../../shared/errors/NotFoundError";
 
 export type CreatePartnerEventInputDto = {
   name: string;
-  // startDate: Date;
   endDate?: Date;
+  photo?: string;
   goal: number;
   goalType: Goal;
   partnerId: string;
@@ -46,22 +46,12 @@ export class CreatePartnerEvent
       throw new NotFoundError("Partner");
     }
 
-    // const lastEvent = await this.eventGateway.findLastEventByPartner(
-    //   input.partnerId
-    // );
-
-    // if (lastEvent && !lastEvent.endDate) {
-    //   throw new ConflictError(
-    //     "Only one event can be active at a time. Wait until the current event ends."
-    //   );
-    // }
     const anEvent = Event.create(
       input.name,
-      // input.startDate,
-      // input.endDate,
       input.goal,
       input.goalType,
-      partnerExists.id
+      partnerExists.id,
+      input.photo ?? ""
     );
     await this.eventGateway.save(anEvent);
 

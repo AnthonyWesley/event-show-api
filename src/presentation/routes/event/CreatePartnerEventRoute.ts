@@ -34,14 +34,14 @@ export class CreatePartnerEventRoute implements IRoute {
     return async (request: Request, response: Response) => {
       const { partner } = request as any;
 
-      const { name, startDate, goal, goalType } = request.body;
+      const { name, goal, goalType, photo } = request.body;
 
       const input: CreatePartnerEventInputDto = {
         name,
-        // startDate,
         partnerId: partner.id,
         goal,
         goalType,
+        photo,
       };
 
       const output: CreatePartnerEventResponseDto =

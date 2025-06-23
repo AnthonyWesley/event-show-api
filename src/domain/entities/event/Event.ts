@@ -9,7 +9,7 @@ export const Goal = {
 };
 
 export type SellerEvent = {
-  id: string; // ou gere um novo id se necessário
+  id: string;
   sellerId: string;
   eventId: string;
 };
@@ -44,10 +44,6 @@ export class Event {
       throw new Error("Event name is required.");
     }
 
-    // if (startDate >= endDate) {
-    //   throw new Error("Start date must be before end date.");
-    // }
-
     if (!partnerId.trim()) {
       throw new Error("Partner ID is required.");
     }
@@ -57,7 +53,6 @@ export class Event {
       name,
       photo,
       startDate: new Date(),
-      // endDate,
       isActive: false,
       goal,
       goalType,
