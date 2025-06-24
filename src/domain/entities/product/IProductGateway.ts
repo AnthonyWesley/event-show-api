@@ -1,6 +1,6 @@
-import { DeletePartnerProductInputDto } from "../../../usecase/product/DeletePartnerProduct";
-import { FindPartnerProductInputDto } from "../../../usecase/product/FindPartnerProduct";
-import { UpdatePartnerProductInputDto } from "../../../usecase/product/UpdatePartnerProduct";
+import { DeletePartnerProductInputDto } from "../../../usecase/product/DeleteProduct";
+import { FindPartnerProductInputDto } from "../../../usecase/product/FindProduct";
+import { UpdatePartnerProductInputDto } from "../../../usecase/product/UpdateProduct";
 import { Product } from "./Product";
 
 export interface IProductGateway {

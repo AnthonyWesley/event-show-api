@@ -1,10 +1,10 @@
-import { CreatePartnerEvent } from "../../usecase/event/CreatePartnerEvent";
-import { DeletePartnerEvent } from "../../usecase/event/DeletePartnerEvent";
-import { FindPartnerEvent } from "../../usecase/event/FindPartnerEvent";
-import { ListPartnerEvent } from "../../usecase/event/ListPartnerEvent";
-import { SwitchPartnerEventState } from "../../usecase/event/SwitchPartnerEventState";
+import { CreateEvent } from "../../usecase/event/CreateEvent";
+import { DeleteEvent } from "../../usecase/event/DeleteEvent";
+import { FindEvent } from "../../usecase/event/FindEvent";
+import { ListEvent } from "../../usecase/event/ListEvent";
+import { SwitchEventState } from "../../usecase/event/SwitchEventState";
+import { UpdateEvent } from "../../usecase/event/UpdateEvent";
 import { UpdateEventPhoto } from "../../usecase/event/UpdateEventPhoto";
-import { UpdatePartnerEvent } from "../../usecase/event/UpdatePartnerEvent";
 import { partnerRepository } from "../Container";
 import { EventRepositoryPrisma } from "../repositories/event/EventRepositoryPrisma";
 import { CloudinaryUploadService } from "../services/CloudinaryUploadService";
@@ -14,15 +14,12 @@ export function makeEventUseCases(
   uploadPhotoService: CloudinaryUploadService
 ) {
   return {
-    create: CreatePartnerEvent.create(eventRepository, partnerRepository),
-    list: ListPartnerEvent.create(eventRepository, partnerRepository),
-    findOne: FindPartnerEvent.create(eventRepository, partnerRepository),
-    SwitchStatus: SwitchPartnerEventState.create(
-      eventRepository,
-      partnerRepository
-    ),
-    delete: DeletePartnerEvent.create(eventRepository, partnerRepository),
-    update: UpdatePartnerEvent.create(eventRepository, partnerRepository),
+    create: CreateEvent.create(eventRepository, partnerRepository),
+    list: ListEvent.create(eventRepository, partnerRepository),
+    findOne: FindEvent.create(eventRepository, partnerRepository),
+    SwitchStatus: SwitchEventState.create(eventRepository, partnerRepository),
+    delete: DeleteEvent.create(eventRepository, partnerRepository),
+    update: UpdateEvent.create(eventRepository, partnerRepository),
     updatePhoto: UpdateEventPhoto.create(
       eventRepository,
       partnerRepository,

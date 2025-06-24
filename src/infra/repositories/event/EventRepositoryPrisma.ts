@@ -1,9 +1,9 @@
 import { GoalType, PrismaClient } from "@prisma/client";
 import { Event } from "../../../domain/entities/event/Event";
 import { IEventGateway } from "../../../domain/entities/event/IEventGateway";
-import { DeletePartnerEventInputDto } from "../../../usecase/event/DeletePartnerEvent";
-import { FindPartnerEventInputDto } from "../../../usecase/event/FindPartnerEvent";
-import { UpdatePartnerEventInputDto } from "../../../usecase/event/UpdatePartnerEvent";
+import { DeletePartnerEventInputDto } from "../../../usecase/event/DeleteEvent";
+import { FindPartnerEventInputDto } from "../../../usecase/event/FindEvent";
+import { UpdatePartnerEventInputDto } from "../../../usecase/event/UpdateEvent";
 
 export class EventRepositoryPrisma implements IEventGateway {
   private constructor(private readonly prismaClient: PrismaClient) {}

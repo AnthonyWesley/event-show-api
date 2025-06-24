@@ -1,7 +1,7 @@
-import { DeleteEventSellerInputDto } from "../../../usecase/seller/DeleteEventSeller";
-import { FindEventSellerInputDto } from "../../../usecase/seller/FindEventSeller";
-import { FindEventSellerByEmailInputDto } from "../../../usecase/seller/FindEventSellerByEmail";
-import { UpdateEventSellerInputDto } from "../../../usecase/seller/UpdateEventSeller";
+import { DeleteEventSellerInputDto } from "../../../usecase/seller/DeleteSeller";
+import { FindEventSellerInputDto } from "../../../usecase/seller/FindSeller";
+import { FindEventSellerByEmailInputDto } from "../../../usecase/seller/FindSellerByEmail";
+import { UpdateEventSellerInputDto } from "../../../usecase/seller/UpdateSeller";
 import { Seller } from "./Seller";
 
 export interface ISellerGateway {

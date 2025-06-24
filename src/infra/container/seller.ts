@@ -1,9 +1,9 @@
-import { CreateEventSeller } from "../../usecase/seller/CreateEventSeller";
-import { DeleteEventSeller } from "../../usecase/seller/DeleteEventSeller";
-import { FindEventSeller } from "../../usecase/seller/FindEventSeller";
-import { FindEventSellerByEmail } from "../../usecase/seller/FindEventSellerByEmail";
-import { ListEventSeller } from "../../usecase/seller/ListEventSeller";
-import { UpdateEventSeller } from "../../usecase/seller/UpdateEventSeller";
+import { CreateSeller } from "../../usecase/seller/CreateSeller";
+import { DeleteSeller } from "../../usecase/seller/DeleteSeller";
+import { FindSeller } from "../../usecase/seller/FindSeller";
+import { FindSellerByEmail } from "../../usecase/seller/FindSellerByEmail";
+import { ListSeller } from "../../usecase/seller/ListSeller";
+import { UpdateSeller } from "../../usecase/seller/UpdateSeller";
 import { UpdateSellerPhoto } from "../../usecase/seller/UpdateSellerPhoto";
 import { partnerRepository } from "../Container";
 import { SellerRepositoryPrisma } from "../repositories/seller/SellerRepositoryPrisma";
@@ -14,15 +14,12 @@ export function makeSellerUseCases(
   uploadPhotoService: CloudinaryUploadService
 ) {
   return {
-    create: CreateEventSeller.create(sellerRepository, partnerRepository),
-    list: ListEventSeller.create(sellerRepository, partnerRepository),
-    findOne: FindEventSeller.create(sellerRepository, partnerRepository),
-    findByEmail: FindEventSellerByEmail.create(
-      sellerRepository,
-      partnerRepository
-    ),
-    delete: DeleteEventSeller.create(sellerRepository, partnerRepository),
-    update: UpdateEventSeller.create(sellerRepository, partnerRepository),
+    create: CreateSeller.create(sellerRepository, partnerRepository),
+    list: ListSeller.create(sellerRepository, partnerRepository),
+    findOne: FindSeller.create(sellerRepository, partnerRepository),
+    findByEmail: FindSellerByEmail.create(sellerRepository, partnerRepository),
+    delete: DeleteSeller.create(sellerRepository, partnerRepository),
+    update: UpdateSeller.create(sellerRepository, partnerRepository),
     updatePhoto: UpdateSellerPhoto.create(
       sellerRepository,
       partnerRepository,

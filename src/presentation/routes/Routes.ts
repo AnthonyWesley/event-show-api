@@ -5,13 +5,7 @@ import { ImpersonatePartnerRoute } from "./admin/ImpersonatePartnerRoute";
 import { LoginAdminRoute } from "./admin/LoginAdminRoute";
 import { LogoutAdminRoute } from "./admin/LogoutAdminRoute";
 import { RefreshAdminRoute } from "./admin/RefreshAdminRoute";
-import { CreatePartnerEventRoute } from "./event/CreatePartnerEventRoute";
-import { DeletePartnerEventRoute } from "./event/DeletePartnerEventRoute";
-import { FindPartnerEventRoute } from "./event/FindPartnerEventsRoute";
-import { ListPartnerEventRoute } from "./event/ListPartnerEventsRoute";
-import { SwitchPartnerEventStateRoute } from "./event/SwitchPartnerEventStateRoute";
 import { UpdateEventPhotoRoute } from "./event/UpdateEventPhotoRoute";
-import { UpdatePartnerEventRoute } from "./event/UpdatePartnerEventRoute";
 import { CreateLeadRoute } from "./lead/CreateLeadRoute";
 import { DeleteLeadRoute } from "./lead/DeleteLeadRoute";
 import { ExportLeadRoute } from "./lead/ExportLeadRoute";
@@ -33,29 +27,37 @@ import { UpdatePartnerRoute } from "./partner/UpdatePartnerRoute";
 import { ApproveOrRejectPendingActionRoute } from "./pendingAction/ApproveOrRejectPendingActionRoute";
 import { CreatePendingActionRoute } from "./pendingAction/CreatePendingActionRoute";
 import { ListPendingActionRoute } from "./pendingAction/ListPendingActionRoute";
-import { CreatePartnerProductRoute } from "./product/CreatePartnerProductRoute";
-import { DeletePartnerProductRoute } from "./product/DeletePartnerProductRoute";
-import { FindPartnerProductRoute } from "./product/FindPartnerProductRoute";
-import { ListPartnerProductRoute } from "./product/ListPartnerProductRoute";
-import { UpdatePartnerProductRoute } from "./product/UpdatePartnerProductRoute";
+
 import { UpdateProductPhotoRoute } from "./product/UpdateProductPhotoRoute";
 import { CreateSaleRoute } from "./sale/CreateSaleRoute";
 import { DeleteSaleRoute } from "./sale/DeleteSaleRoute";
 import { FindSaleRoute } from "./sale/FindSaleRoute";
 import { ListSaleRoute } from "./sale/ListSaleRoute";
 import { UpdateSaleRoute } from "./sale/UpdateSaleRoute";
-import { CreateEventSellerRoute } from "./seller/CreateEventSellerRoute";
-import { DeleteEventSellerRoute } from "./seller/DeleteEventSellerRoute";
-import { FindEventSellerByEmailRoute } from "./seller/FindEventSellerByEmailRoute";
-import { FindEventSellerRoute } from "./seller/FindEventSellerRoute";
-import { ListEventSellerRoute } from "./seller/ListEventSellerRoute";
-import { UpdateEventSellerRoute } from "./seller/UpdateEventSellerRoute";
+
 import { UpdateSellerPhotoRoute } from "./seller/UpdateSellerPhotoRoute";
 import { CreateSellerEventRoute } from "./sellerEvent/CreateSellerEventRoute";
 import { DeleteSellerEventRoute } from "./sellerEvent/DeleteSellerEventRoute";
 import { GuestAccessRoute } from "./sellerEvent/GuestAccessRoute";
 import { ListEventsBySellerRoute } from "./sellerEvent/ListEventsBySellerRoute";
 import { ListSellerByEventRoute } from "./sellerEvent/ListSellerByEventRoute";
+import { CreateEventRoute } from "./event/CreateEventRoute";
+import { DeleteEventRoute } from "./event/DeleteEventRoute";
+import { SwitchEventStateRoute } from "./event/SwitchEventStateRoute";
+import { UpdateEventRoute } from "./event/UpdateEventRoute";
+import { CreateProductRoute } from "./product/CreateProductRoute";
+import { DeleteProductRoute } from "./product/DeleteProductRoute";
+import { FindProductRoute } from "./product/FindProductRoute";
+import { ListProductRoute } from "./product/ListProductRoute";
+import { UpdateProductRoute } from "./product/UpdateProductRoute";
+import { CreateSellerRoute } from "./seller/CreateSellerRoute";
+import { DeleteSellerRoute } from "./seller/DeleteSellerRoute";
+import { FindSellerByEmailRoute } from "./seller/FindSellerByEmailRoute";
+import { FindSellerRoute } from "./seller/FindSellerRoute";
+import { ListSellerRoute } from "./seller/ListSellerRoute";
+import { UpdateSellerRoute } from "./seller/UpdateSellerRoute";
+import { FindEventRoute } from "./event/FindEventRoute";
+import { ListEventRoute } from "./event/ListEventRoute";
 
 export const routes = [
   LoginAdminRoute.create(useCases.admin.login),
@@ -80,26 +82,23 @@ export const routes = [
     upload
   ),
 
-  CreatePartnerEventRoute.create(useCases.event.create, authorization),
-  ListPartnerEventRoute.create(useCases.event.list, authorization),
-  FindPartnerEventRoute.create(useCases.event.findOne, authorization),
-  SwitchPartnerEventStateRoute.create(
-    useCases.event.SwitchStatus,
-    authorization
-  ),
-  DeletePartnerEventRoute.create(useCases.event.delete, authorization),
-  UpdatePartnerEventRoute.create(useCases.event.update, authorization),
+  CreateEventRoute.create(useCases.event.create, authorization),
+  ListEventRoute.create(useCases.event.list, authorization),
+  FindEventRoute.create(useCases.event.findOne, authorization),
+  SwitchEventStateRoute.create(useCases.event.SwitchStatus, authorization),
+  DeleteEventRoute.create(useCases.event.delete, authorization),
+  UpdateEventRoute.create(useCases.event.update, authorization),
   UpdateEventPhotoRoute.create(
     useCases.event.updatePhoto,
     authorization,
     upload
   ),
 
-  CreatePartnerProductRoute.create(useCases.product.create, authorization),
-  ListPartnerProductRoute.create(useCases.product.list, authorization),
-  FindPartnerProductRoute.create(useCases.product.findOne, authorization),
-  DeletePartnerProductRoute.create(useCases.product.delete, authorization),
-  UpdatePartnerProductRoute.create(useCases.product.update, authorization),
+  CreateProductRoute.create(useCases.product.create, authorization),
+  ListProductRoute.create(useCases.product.list, authorization),
+  FindProductRoute.create(useCases.product.findOne, authorization),
+  DeleteProductRoute.create(useCases.product.delete, authorization),
+  UpdateProductRoute.create(useCases.product.update, authorization),
   UpdateProductPhotoRoute.create(
     useCases.product.updatePhoto,
     authorization,
@@ -114,15 +113,12 @@ export const routes = [
   DeleteLeadRoute.create(useCases.lead.delete, authorization),
   UpdateLeadRoute.create(useCases.lead.update, authorization),
 
-  CreateEventSellerRoute.create(useCases.seller.create, authorization),
-  ListEventSellerRoute.create(useCases.seller.list, authorization),
-  FindEventSellerRoute.create(useCases.seller.findOne, authorization),
-  FindEventSellerByEmailRoute.create(
-    useCases.seller.findByEmail,
-    authorization
-  ),
-  DeleteEventSellerRoute.create(useCases.seller.delete, authorization),
-  UpdateEventSellerRoute.create(useCases.seller.update, authorization),
+  CreateSellerRoute.create(useCases.seller.create, authorization),
+  ListSellerRoute.create(useCases.seller.list, authorization),
+  FindSellerRoute.create(useCases.seller.findOne, authorization),
+  FindSellerByEmailRoute.create(useCases.seller.findByEmail, authorization),
+  DeleteSellerRoute.create(useCases.seller.delete, authorization),
+  UpdateSellerRoute.create(useCases.seller.update, authorization),
   UpdateSellerPhotoRoute.create(
     useCases.seller.updatePhoto,
     authorization,

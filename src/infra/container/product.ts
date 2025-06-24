@@ -1,8 +1,8 @@
-import { CreatePartnerProduct } from "../../usecase/product/CreatePartnerProduct";
-import { DeletePartnerProduct } from "../../usecase/product/DeletePartnerProduct";
-import { FindPartnerProduct } from "../../usecase/product/FindPartnerProduct";
-import { ListPartnerProduct } from "../../usecase/product/ListPartnerProduct";
-import { UpdatePartnerProduct } from "../../usecase/product/UpdatePartnerProduct";
+import { CreateProduct } from "../../usecase/product/CreateProduct";
+import { DeleteProduct } from "../../usecase/product/DeleteProduct";
+import { FindProduct } from "../../usecase/product/FindProduct";
+import { ListProduct } from "../../usecase/product/ListProduct";
+import { UpdateProduct } from "../../usecase/product/UpdateProduct";
 import { UpdateProductPhoto } from "../../usecase/product/UpdateProductPhoto";
 import { partnerRepository } from "../Container";
 import { ProductRepositoryPrisma } from "../repositories/product/ProductRepositoryPrisma";
@@ -13,11 +13,11 @@ export function makeProductUseCases(
   uploadPhotoService: CloudinaryUploadService
 ) {
   return {
-    create: CreatePartnerProduct.create(productRepository, partnerRepository),
-    list: ListPartnerProduct.create(productRepository, partnerRepository),
-    findOne: FindPartnerProduct.create(productRepository, partnerRepository),
-    delete: DeletePartnerProduct.create(productRepository, partnerRepository),
-    update: UpdatePartnerProduct.create(productRepository, partnerRepository),
+    create: CreateProduct.create(productRepository, partnerRepository),
+    list: ListProduct.create(productRepository, partnerRepository),
+    findOne: FindProduct.create(productRepository, partnerRepository),
+    delete: DeleteProduct.create(productRepository, partnerRepository),
+    update: UpdateProduct.create(productRepository, partnerRepository),
     updatePhoto: UpdateProductPhoto.create(
       productRepository,
       partnerRepository,

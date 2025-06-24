@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { ISellerGateway } from "../../../domain/entities/seller/ISellerGateway";
 import { Seller } from "../../../domain/entities/seller/Seller";
-import { FindEventSellerInputDto } from "../../../usecase/seller/FindEventSeller";
-import { DeleteEventSellerInputDto } from "../../../usecase/seller/DeleteEventSeller";
-import { UpdateEventSellerInputDto } from "../../../usecase/seller/UpdateEventSeller";
-import { FindEventSellerByEmailInputDto } from "../../../usecase/seller/FindEventSellerByEmail";
+import { FindEventSellerInputDto } from "../../../usecase/seller/FindSeller";
+import { DeleteEventSellerInputDto } from "../../../usecase/seller/DeleteSeller";
+import { UpdateEventSellerInputDto } from "../../../usecase/seller/UpdateSeller";
+import { FindEventSellerByEmailInputDto } from "../../../usecase/seller/FindSellerByEmail";
 
 export class SellerRepositoryPrisma implements ISellerGateway {
   private constructor(private readonly prismaClient: PrismaClient) {}

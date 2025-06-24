@@ -1,6 +1,6 @@
-import { DeletePartnerEventInputDto } from "../../../usecase/event/DeletePartnerEvent";
-import { FindPartnerEventInputDto } from "../../../usecase/event/FindPartnerEvent";
-import { UpdatePartnerEventInputDto } from "../../../usecase/event/UpdatePartnerEvent";
+import { DeletePartnerEventInputDto } from "../../../usecase/event/DeleteEvent";
+import { FindPartnerEventInputDto } from "../../../usecase/event/FindEvent";
+import { UpdatePartnerEventInputDto } from "../../../usecase/event/UpdateEvent";
 import { Event } from "./Event";
 
 export interface IEventGateway {

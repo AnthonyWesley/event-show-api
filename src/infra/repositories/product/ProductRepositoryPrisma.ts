@@ -2,8 +2,8 @@ import { PrismaClient } from "@prisma/client";
 
 import { Product } from "../../../domain/entities/product/Product";
 import { IProductGateway } from "../../../domain/entities/product/IProductGateway";
-import { DeletePartnerProductInputDto } from "../../../usecase/product/DeletePartnerProduct";
-import { UpdatePartnerProductInputDto } from "../../../usecase/product/UpdatePartnerProduct";
+import { DeletePartnerProductInputDto } from "../../../usecase/product/DeleteProduct";
+import { UpdatePartnerProductInputDto } from "../../../usecase/product/UpdateProduct";
 
 export class ProductRepositoryPrisma implements IProductGateway {
   private constructor(private readonly prismaClient: PrismaClient) {}
