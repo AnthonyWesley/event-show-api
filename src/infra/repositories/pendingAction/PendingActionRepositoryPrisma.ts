@@ -12,7 +12,7 @@ export class PendingActionRepositoryPrisma implements IPendingActionGateway {
   async save(pendingAction: PendingAction): Promise<void> {
     const data = {
       id: pendingAction.id,
-      partnerId: pendingAction.partnerId,
+      companyId: pendingAction.companyId,
       eventId: pendingAction.eventId,
       sellerId: pendingAction.sellerId,
       actionType: pendingAction.actionType,
@@ -27,11 +27,11 @@ export class PendingActionRepositoryPrisma implements IPendingActionGateway {
     }
   }
 
-  async findAllByPartnerId(partnerId: string): Promise<PendingAction[]> {
+  async findAllByCompanyId(companyId: string): Promise<PendingAction[]> {
     try {
       const actions = await this.prisma.pendingAction.findMany({
         where: {
-          partnerId: partnerId,
+          companyId: companyId,
           status: "PENDING",
         },
       });
@@ -39,7 +39,7 @@ export class PendingActionRepositoryPrisma implements IPendingActionGateway {
       return actions.map((action) => {
         return PendingAction.with({
           id: action.id,
-          partnerId: action.partnerId,
+          companyId: action.companyId,
           eventId: action.eventId,
           sellerId: action.sellerId,
           targetId: action.targetId,
@@ -65,7 +65,7 @@ export class PendingActionRepositoryPrisma implements IPendingActionGateway {
 
     return PendingAction.with({
       id: aPendingAction.id,
-      partnerId: aPendingAction.partnerId,
+      companyId: aPendingAction.companyId,
       eventId: aPendingAction.eventId,
       sellerId: aPendingAction.sellerId,
       targetId: aPendingAction.targetId,
@@ -96,7 +96,7 @@ export class PendingActionRepositoryPrisma implements IPendingActionGateway {
 
       return PendingAction.with({
         id: pendingAction.id,
-        partnerId: pendingAction.partnerId,
+        companyId: pendingAction.companyId,
         eventId: pendingAction.eventId,
         sellerId: pendingAction.sellerId,
         targetId: pendingAction.targetId,

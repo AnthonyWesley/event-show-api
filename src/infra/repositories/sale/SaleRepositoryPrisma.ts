@@ -84,7 +84,7 @@ export class SaleRepositoryPrisma implements ISaleGateway {
     });
 
     if (!product) {
-      throw new Error("Sale not found or does not belong to the partner.");
+      throw new Error("Sale not found or does not belong to the company.");
     }
 
     try {

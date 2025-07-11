@@ -26,13 +26,13 @@ export class UpdateEventRoute implements IRoute {
   getHandler() {
     return async (request: Request, response: Response) => {
       const { eventId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
       const { name, startDate, endDate, goal, goalType, isActive } =
         request.body;
 
       const input: UpdateEventInputDto = {
         eventId,
-        partnerId: partner.id,
+        companyId: user.companyId,
         goal,
         goalType,
         name,

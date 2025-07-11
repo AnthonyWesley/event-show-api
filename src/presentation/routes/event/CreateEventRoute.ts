@@ -32,13 +32,13 @@ export class CreateEventRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response) => {
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const { name, goal, goalType, photo } = request.body;
 
       const input: CreateEventInputDto = {
         name,
-        partnerId: partner.id,
+        companyId: user.companyId,
         goal,
         goalType,
         photo,

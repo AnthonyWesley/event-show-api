@@ -27,9 +27,9 @@ export class ApproveOrRejectPendingActionRoute implements IRoute {
   }
 
   getHandler() {
-    return async (req: Request, res: Response) => {
-      const { partner } = req as any;
-      const { pendingActionId, approve } = req.body;
+    return async (request: Request, response: Response) => {
+      const { user } = request as any;
+      const { pendingActionId, approve } = request.body;
 
       const input: ApproveOrRejectPendingActionInputDto = {
         pendingActionId,
@@ -39,7 +39,7 @@ export class ApproveOrRejectPendingActionRoute implements IRoute {
       const result = await this.approveOrRejectPendingActionService.execute(
         input
       );
-      res.status(201).json(result);
+      response.status(201).json(result);
     };
   }
 

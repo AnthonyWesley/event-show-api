@@ -9,7 +9,7 @@ export type ListLeadResponseDto = {
     name: string;
     startDate: Date;
     endDate: Date;
-    partnerId: string;
+    companyId: string;
     createdAt: Date;
   }[];
 };
@@ -36,12 +36,12 @@ export class ListLeadByEventRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
-      const { partner } = request as any;
+      const { user } = request as any;
       const { eventId } = request.params;
 
       const result = await this.listLeadServer.execute({
         eventId,
-        partnerId: partner.id,
+        companyId: user.companyId,
       });
 
       response.status(200).json(result);

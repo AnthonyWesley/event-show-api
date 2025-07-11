@@ -30,11 +30,11 @@ export class ExportLeadRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response) => {
-      const { partner } = request as any;
+      const { user } = request as any;
       const { eventId } = request.params;
 
       const result = await this.exportLeadRouteService.execute({
-        partnerId: partner.id,
+        companyId: user.companyId,
         eventId,
       });
 

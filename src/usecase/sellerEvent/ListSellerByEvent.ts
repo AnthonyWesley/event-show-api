@@ -1,6 +1,6 @@
 import { IUseCases } from "../IUseCases";
 import { ISellerEventGateway } from "../../domain/entities/sellerEvent/ISellerEventGateway";
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import {
   SellerStatsHelper,
@@ -12,7 +12,7 @@ import { SaleProps } from "../../domain/entities/sale/Sale";
 export type ListSellerByEventInputDto = {
   // sellerId: string;
   eventId: string;
-  partnerId: string;
+  companyId: string;
 };
 
 // export type ListSellerByEventOutputDto = {
@@ -38,18 +38,18 @@ export class ListSellerByEvent
 {
   private constructor(
     private readonly sellerEventGateway: ISellerEventGateway,
-    private readonly partnerGateway: IPartnerGateway,
+    private readonly companyGateway: ICompanyGateway,
     private readonly eventGateway: IEventGateway
   ) {}
 
   public static create(
     sellerEventGateway: ISellerEventGateway,
-    partnerGateway: IPartnerGateway,
+    companyGateway: ICompanyGateway,
     eventGateway: IEventGateway
   ) {
     return new ListSellerByEvent(
       sellerEventGateway,
-      partnerGateway,
+      companyGateway,
       eventGateway
     );
   }
@@ -57,22 +57,22 @@ export class ListSellerByEvent
   public async execute(
     input: ListSellerByEventInputDto
   ): Promise<ListSellerByEventOutputDto> {
-    const [sellerEvents, partner, event] = await Promise.all([
+    const [sellerEvents, company, event] = await Promise.all([
       this.sellerEventGateway.listSellersByEvent(input.eventId),
-      this.partnerGateway.findById(input.partnerId),
+      this.companyGateway.findById(input.companyId),
       this.eventGateway.findById({
         eventId: input.eventId,
-        partnerId: input.partnerId,
+        companyId: input.companyId,
       }),
     ]);
 
     if (!sellerEvents || sellerEvents.length === 0)
       throw new NotFoundError("SellerEvent");
-    if (!partner) throw new NotFoundError("Partner");
+    if (!company) throw new NotFoundError("Company");
     if (!event) throw new NotFoundError("Event");
 
     const sales = event.sales ?? [];
-    const products = partner.products ?? [];
+    const products = company.products ?? [];
 
     const sellers = sellerEvents.map((se) => se.seller); // já populado
 

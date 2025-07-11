@@ -33,12 +33,12 @@ export class CreateSaleRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response) => {
       const { eventId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const { sellerId, productId, quantity } = request.body;
 
       const input: CreateSaleInputDto = {
-        partnerId: partner.id,
+        companyId: user.companyId,
         eventId,
         sellerId,
         productId,

@@ -12,31 +12,67 @@ model Admin {
   id       String   @id @default(uuid())
   email    String   @unique
   password String
+  photo           String?
+  photoPublicId   String?
   refreshToken String?
   createdAt DateTime @default(now())
 }
 
-model Partner {
-  id           String          @id @default(uuid())
-  name         String
-  email        String          @unique
-  password     String
-  phone        String?
-  photo        String?
-  photoPublicId String?
-  plan         Plan            @default(FREE)
-  status       Status          @default(ACTIVE)
-  refreshToken String?
-  accessExpiresAt  DateTime?
-  createdAt    DateTime        @default(now())
-  events       Event[]
-  products     Product[]
-  sellers      Seller[]
-  pendingAction PendingAction[]
-  leads        Lead[]    
+model User {
+  id         String    @id @default(uuid())
+  email      String    @unique
+  password   String
+  name       String
+  phone           String?
+  photo           String?
+  photoPublicId   String?
+  role       UserRole  @default(ADMIN) 
+  createdAt  DateTime  @default(now())
+  refreshToken    String?
+  companyId  String?
+  company    Company?   @relation(fields: [companyId], references: [id])
+
+  @@map("users")
+}
+
+
+model Company {
+  id              String    @id @default(uuid())
+  name            String
+  cnpj            String?   @unique
+  ie              String?
+  phone           String?
+  email           String?   @unique
+  responsibleName String?
+  address         String?
+  city            String?
+  state           String?
+  zipCode         String?
+  website         String?
+  segment         String?
+  notes           String?
+
+  photo           String?
+  photoPublicId   String?
+
+  plan            Plan      @default(TEST)
+  status          Status    @default(ACTIVE)
+  accessExpiresAt DateTime?
+  createdAt       DateTime  @default(now())
+  invoice         Invoice[]
+  subscription    Subscription[]
+  users           User[]
+  events          Event[]
+  products        Product[]
+  sellers         Seller[]
+  pendingAction   PendingAction[]
+  leads           Lead[]
 
   @@index([plan])
+  @@map("companies")
 }
+
+
 
 model Product {
   id         String   @id @default(uuid())
@@ -44,12 +80,12 @@ model Product {
   price      Float
   photo      String?
   photoPublicId String?
-  partnerId  String
+  companyId  String
   createdAt  DateTime @default(now())
-  partner    Partner  @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   sales      Sale[]
   leads      Lead[]    @relation("LeadProducts") 
-  @@index([partnerId])
+  @@index([companyId])
 }
 
 model Event {
@@ -60,18 +96,18 @@ model Event {
   startDate    DateTime
   endDate      DateTime?
   isActive     Boolean       @default(true) 
-  partnerId    String
+  companyId    String
   goal         Float         @default(0.0)
   goalType     GoalType      @default(QUANTITY)
   createdAt    DateTime      @default(now())
-  partner      Partner       @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
   sellerEvents SellerEvent[] 
   sales        Sale[]
   leads        Lead[]    
 
-  @@index([partnerId])
+  @@index([companyId])
   @@index([isActive])
-  @@index([partnerId, isActive])
+  @@index([companyId, isActive])
 }
 
 
@@ -85,16 +121,16 @@ model Lead {
   source          String     
   sellerId        String?    
   eventId         String
-  partnerId       String
+  companyId       String
   createdAt       DateTime   @default(now())
 
   event           Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  partner         Partner    @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  company         Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
   seller          Seller?    @relation(fields: [sellerId], references: [id], onDelete: SetNull)
   products        Product[]  @relation("LeadProducts")
 
   @@index([eventId])
-  @@index([partnerId])
+  @@index([companyId])
   @@index([sellerId])
 }
 
@@ -106,14 +142,14 @@ model Seller {
   phone     String?
   photo     String?
   photoPublicId String?
-  partnerId String
+  companyId String
   createdAt DateTime      @default(now())
-  partner   Partner       @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  company   Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
   sales     Sale[]
   events    SellerEvent[] 
   leads        Lead[]    
-  @@unique([partnerId, email]) 
-  @@index([partnerId])
+  @@unique([companyId, email]) 
+  @@index([companyId])
 }
 
 model SellerEvent {
@@ -142,7 +178,7 @@ model Sale {
 
 model PendingAction {
   id         String        @id @default(uuid())
-  partnerId  String
+  companyId  String
   eventId    String
   actionType ActionType
   targetId   String?
@@ -150,8 +186,54 @@ model PendingAction {
   payload    Json
   status     ActionStatus  @default(PENDING)
   createdAt  DateTime      @default(now())
-  partner    Partner       @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  company    Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
 }
+
+model Subscription {
+  id           String   @id @default(uuid())
+  companyId    String
+  externalId   String   
+  plan         Plan
+  status       SubscriptionStatus
+  startedAt    DateTime
+  expiresAt    DateTime?
+  canceledAt   DateTime?
+  createdAt    DateTime @default(now())
+  company      Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invoices     Invoice[]   @relation("SubscriptionInvoices")
+}
+
+
+model Invoice {
+  id              String   @id @default(uuid())
+  companyId       String
+  subscriptionId  String?
+  externalId      String
+  amount          Float
+  dueDate         DateTime
+  paidAt          DateTime?
+  status          InvoiceStatus
+  createdAt       DateTime @default(now())
+
+  company         Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  subscription    Subscription? @relation(fields: [subscriptionId], references: [id], name: "SubscriptionInvoices")
+}
+
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  CANCELED
+  PAST_DUE
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  CANCELED
+  FAILED
+}
+
 
 enum ActionType {
   CREATE_SALE
@@ -170,7 +252,7 @@ enum ActionStatus {
 }
 
 enum Plan {
-  FREE
+  TEST
   BASIC
   PREMIUM
 }
@@ -183,4 +265,10 @@ enum Status {
 enum GoalType {
   QUANTITY
   VALUE
+}
+
+enum UserRole {
+  ADMIN     
+  MANAGER   
+  GUEST   
 }

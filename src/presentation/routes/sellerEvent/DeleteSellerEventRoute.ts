@@ -32,7 +32,7 @@ export class DeleteSellerEventRoute implements IRoute {
   getHandler() {
     return async (request: Request, response: Response) => {
       const { eventId, sellerId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const input: DeleteSellerEventInputDto = {
         sellerId,

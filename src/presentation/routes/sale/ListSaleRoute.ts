@@ -9,7 +9,7 @@ export type ListSaleResponseDto = {
     name: string;
     startDate: Date;
     endDate: Date;
-    partnerId: string;
+    companyId: string;
     createdAt: Date;
   }[];
 };
@@ -34,10 +34,10 @@ export class ListSaleRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
       const { eventId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const output: ListSaleOutputDto = await this.listSaleServer.execute({
-        partnerId: partner.id,
+        companyId: user.companyId,
         eventId,
       });
 

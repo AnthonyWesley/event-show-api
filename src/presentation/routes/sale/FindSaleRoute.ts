@@ -42,10 +42,10 @@ export class FindSaleRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
       const { eventId, saleId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const input: FindSaleInputDto = {
-        partnerId: partner.id,
+        companyId: user.companyId,
         eventId,
 
         saleId,

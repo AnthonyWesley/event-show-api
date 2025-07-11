@@ -32,14 +32,14 @@ export class CreateProductRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response) => {
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const { name, price } = request.body;
 
       const input: CreateProductInputDto = {
         name,
         price,
-        partnerId: partner.id,
+        companyId: user.companyId,
       };
 
       const output: CreateProductResponseDto =

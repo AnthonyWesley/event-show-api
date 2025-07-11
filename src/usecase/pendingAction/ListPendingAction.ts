@@ -3,7 +3,7 @@ import { IPendingActionGateway } from "../../domain/entities/pendingAction/IPend
 import { IUseCases } from "../IUseCases";
 
 export type ListPendingActionInputDto = {
-  partnerId: string;
+  companyId: string;
 };
 
 export type ListPendingActionOutputDto = {
@@ -33,8 +33,8 @@ export class ListPendingAction
   async execute(
     input: ListPendingActionInputDto
   ): Promise<ListPendingActionOutputDto> {
-    const pendingActions = await this.pendingActionGateway.findAllByPartnerId(
-      input.partnerId
+    const pendingActions = await this.pendingActionGateway.findAllByCompanyId(
+      input.companyId
     );
 
     const listPendingActions = pendingActions.map((action) => ({

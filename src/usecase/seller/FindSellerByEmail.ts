@@ -1,10 +1,10 @@
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 
 export type FindSellerByEmailInputDto = {
-  partnerId?: string;
+  companyId?: string;
   email: string;
 };
 
@@ -15,7 +15,7 @@ export type FindSellerByEmailOutputDto = {
   phone?: string;
   photo?: string;
   photoPublicId?: string;
-  partnerId: string;
+  companyId: string;
   // sales     Sale[]
   createdAt: Date;
 };
@@ -25,24 +25,24 @@ export class FindSellerByEmail
 {
   private constructor(
     private readonly sellerGateway: ISellerGateway,
-    private readonly partnerGateway: IPartnerGateway
+    private readonly companyGateway: ICompanyGateway
   ) {}
 
   public static create(
     sellerGateway: ISellerGateway,
-    partnerGateway: IPartnerGateway
+    companyGateway: ICompanyGateway
   ) {
-    return new FindSellerByEmail(sellerGateway, partnerGateway);
+    return new FindSellerByEmail(sellerGateway, companyGateway);
   }
 
   public async execute(
     input: FindSellerByEmailInputDto
   ): Promise<FindSellerByEmailOutputDto> {
-    const partnerExists = await this.partnerGateway.findById(
-      input.partnerId ?? ""
+    const companyExists = await this.companyGateway.findById(
+      input.companyId ?? ""
     );
-    if (!partnerExists) {
-      throw new Error("Partner not found.");
+    if (!companyExists) {
+      throw new Error("Company not found.");
     }
     const seller = await this.sellerGateway.findByEmail(input);
     if (!seller) {
@@ -55,7 +55,7 @@ export class FindSellerByEmail
       email: seller.email,
       phone: seller.phone,
       photo: seller.photo,
-      partnerId: seller.partnerId,
+      companyId: seller.companyId,
       createdAt: seller.createdAt,
     };
   }

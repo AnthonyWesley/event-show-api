@@ -1,9 +1,9 @@
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { IProductGateway } from "../../domain/entities/product/IProductGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 
 export type UpdateProductInputDto = {
-  partnerId: string;
+  companyId: string;
   productId: string;
   name?: string;
   price?: number;
@@ -15,7 +15,7 @@ export type UpdateProductResponseDto = {
   id: string;
   name: string;
   price: number;
-  partnerId: string;
+  companyId: string;
   photo?: string;
   photoPublicId?: string;
 };
@@ -23,23 +23,23 @@ export type UpdateProductResponseDto = {
 export class UpdateProduct {
   private constructor(
     private readonly productGateway: IProductGateway,
-    private readonly partnerGateway: IPartnerGateway
+    private readonly companyGateway: ICompanyGateway
   ) {}
 
   static create(
     productGateway: IProductGateway,
-    partnerGateway: IPartnerGateway
+    companyGateway: ICompanyGateway
   ) {
-    return new UpdateProduct(productGateway, partnerGateway);
+    return new UpdateProduct(productGateway, companyGateway);
   }
 
   async execute(
     input: UpdateProductInputDto
   ): Promise<UpdateProductResponseDto> {
     try {
-      const partnerExists = await this.partnerGateway.findById(input.partnerId);
-      if (!partnerExists) {
-        throw new NotFoundError("Partner");
+      const companyExists = await this.companyGateway.findById(input.companyId);
+      if (!companyExists) {
+        throw new NotFoundError("Company");
       }
 
       const existingProduct = await this.productGateway.findById(input);
@@ -56,7 +56,7 @@ export class UpdateProduct {
         id: updatedProduct.id,
         name: updatedProduct.name,
         price: updatedProduct.price,
-        partnerId: updatedProduct.partnerId,
+        companyId: updatedProduct.companyId,
       };
     } catch (error: any) {
       console.error("Error updating product:", error.message);

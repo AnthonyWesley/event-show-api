@@ -1,9 +1,9 @@
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 
 export type UpdateSellerInputDto = {
-  partnerId: string;
+  companyId: string;
   sellerId: string;
   name?: string;
   email?: string;
@@ -26,20 +26,20 @@ export type UpdateSellerResponseDto = {
 export class UpdateSeller {
   private constructor(
     private readonly sellerGateway: ISellerGateway,
-    private readonly partnerGateway: IPartnerGateway
+    private readonly companyGateway: ICompanyGateway
   ) {}
 
   static create(
     sellerGateway: ISellerGateway,
-    partnerGateway: IPartnerGateway
+    companyGateway: ICompanyGateway
   ) {
-    return new UpdateSeller(sellerGateway, partnerGateway);
+    return new UpdateSeller(sellerGateway, companyGateway);
   }
 
   async execute(input: UpdateSellerInputDto): Promise<UpdateSellerResponseDto> {
-    const partnerExists = await this.partnerGateway.findById(input.partnerId);
-    if (!partnerExists) {
-      throw new NotFoundError("Partner");
+    const companyExists = await this.companyGateway.findById(input.companyId);
+    if (!companyExists) {
+      throw new NotFoundError("Company");
     }
 
     const existingSeller = await this.sellerGateway.findById(input);

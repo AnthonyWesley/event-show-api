@@ -7,7 +7,7 @@ import { IUseCases } from "../IUseCases";
 
 export type FindSaleInputDto = {
   saleId: string;
-  partnerId: string;
+  companyId: string;
   eventId: string;
 };
 
@@ -57,7 +57,7 @@ export class FindSale
     try {
       const eventExists = await this.eventGateway.findById({
         eventId: input.eventId,
-        partnerId: input.partnerId,
+        companyId: input.companyId,
       });
 
       if (!eventExists) throw new NotFoundError("Event");

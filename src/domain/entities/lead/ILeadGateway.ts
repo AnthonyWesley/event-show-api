@@ -5,7 +5,7 @@ import { Lead } from "./Lead";
 
 export interface ILeadGateway {
   save(lead: Lead): Promise<void>;
-  listByPartner(partnerId: string): Promise<Lead[]>;
+  listByCompany(companyId: string): Promise<Lead[]>;
   listByEvent(eventId: string): Promise<Lead[]>;
   findById(input: FindLeadInputDto): Promise<Lead | null>;
   update(input: UpdateLeadInputDto): Promise<Lead>;

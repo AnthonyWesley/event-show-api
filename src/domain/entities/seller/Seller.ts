@@ -8,7 +8,7 @@ export type SellerProps = {
   phone?: string;
   photo?: string;
   photoPublicId?: string;
-  partnerId: string;
+  companyId: string;
   sales?: SaleProps[];
   createdAt: Date;
 };
@@ -19,7 +19,7 @@ export class Seller {
   public static create(
     name: string,
     email: string,
-    partnerId: string,
+    companyId: string,
     phone?: string,
     photo?: string
   ) {
@@ -31,7 +31,7 @@ export class Seller {
       throw new Error("Invalid email format.");
     }
 
-    if (!partnerId.trim()) {
+    if (!companyId.trim()) {
       throw new Error("Event ID is required.");
     }
 
@@ -41,7 +41,7 @@ export class Seller {
       id: generateId(),
       name,
       email: email.trim().toLowerCase(),
-      partnerId,
+      companyId,
       phone: normalizedPhone,
       photo,
       sales: [],
@@ -95,8 +95,8 @@ export class Seller {
     return this.props.photoPublicId;
   }
 
-  public get partnerId() {
-    return this.props.partnerId;
+  public get companyId() {
+    return this.props.companyId;
   }
   public get sales() {
     return this.props.sales;

@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { ISellerGateway } from "../../../domain/entities/seller/ISellerGateway";
 import { Seller } from "../../../domain/entities/seller/Seller";
-import { FindEventSellerInputDto } from "../../../usecase/seller/FindSeller";
-import { DeleteEventSellerInputDto } from "../../../usecase/seller/DeleteSeller";
-import { UpdateEventSellerInputDto } from "../../../usecase/seller/UpdateSeller";
-import { FindEventSellerByEmailInputDto } from "../../../usecase/seller/FindSellerByEmail";
+import { FindSellerInputDto } from "../../../usecase/seller/FindSeller";
+import { DeleteSellerInputDto } from "../../../usecase/seller/DeleteSeller";
+import { UpdateSellerInputDto } from "../../../usecase/seller/UpdateSeller";
+import { FindSellerByEmailInputDto } from "../../../usecase/seller/FindSellerByEmail";
 
 export class SellerRepositoryPrisma implements ISellerGateway {
   private constructor(private readonly prismaClient: PrismaClient) {}
@@ -20,7 +20,7 @@ export class SellerRepositoryPrisma implements ISellerGateway {
       email: seller.email,
       phone: seller.phone,
       photo: seller.photo,
-      partnerId: seller.partnerId,
+      companyId: seller.companyId,
       createdAt: seller.createdAt,
     };
 
@@ -31,10 +31,10 @@ export class SellerRepositoryPrisma implements ISellerGateway {
     }
   }
 
-  async list(partnerId: string, search?: string): Promise<Seller[]> {
+  async list(companyId: string, search?: string): Promise<Seller[]> {
     try {
       const filters: any = {
-        partnerId,
+        companyId,
       };
 
       if (search) {
@@ -58,7 +58,7 @@ export class SellerRepositoryPrisma implements ISellerGateway {
           phone: s.phone ?? "",
           photo: s.photo ?? "",
           photoPublicId: s.photoPublicId ?? "",
-          partnerId: s.partnerId,
+          companyId: s.companyId,
           createdAt: s.createdAt,
         })
       );
@@ -67,7 +67,7 @@ export class SellerRepositoryPrisma implements ISellerGateway {
     }
   }
 
-  async update(input: UpdateEventSellerInputDto): Promise<Seller> {
+  async update(input: UpdateSellerInputDto): Promise<Seller> {
     try {
       const dataToUpdate: any = {};
 
@@ -87,7 +87,7 @@ export class SellerRepositoryPrisma implements ISellerGateway {
         dataToUpdate.photoPublicId = input.photoPublicId;
 
       const updatedSeller = await this.prismaClient.seller.update({
-        where: { id: input.sellerId, partnerId: input.partnerId },
+        where: { id: input.sellerId, companyId: input.companyId },
         data: dataToUpdate,
       });
 
@@ -98,7 +98,7 @@ export class SellerRepositoryPrisma implements ISellerGateway {
         phone: updatedSeller.phone ?? "",
         photo: updatedSeller.photo ?? "",
         photoPublicId: updatedSeller.photoPublicId ?? "",
-        partnerId: updatedSeller.partnerId,
+        companyId: updatedSeller.companyId,
         createdAt: updatedSeller.createdAt,
       });
     } catch (error: any) {
@@ -106,9 +106,9 @@ export class SellerRepositoryPrisma implements ISellerGateway {
     }
   }
 
-  async delete(input: DeleteEventSellerInputDto): Promise<void> {
+  async delete(input: DeleteSellerInputDto): Promise<void> {
     const aSeller = await this.prismaClient.seller.findUnique({
-      where: { id: input.sellerId, partnerId: input.partnerId },
+      where: { id: input.sellerId, companyId: input.companyId },
     });
 
     if (!aSeller) {
@@ -117,17 +117,17 @@ export class SellerRepositoryPrisma implements ISellerGateway {
 
     try {
       await this.prismaClient.seller.delete({
-        where: { id: input.sellerId, partnerId: input.partnerId },
+        where: { id: input.sellerId, companyId: input.companyId },
       });
     } catch (error: any) {
       throw new Error("Error deleting seller: " + error.message);
     }
   }
 
-  async findById(input: FindEventSellerInputDto): Promise<Seller | null> {
+  async findById(input: FindSellerInputDto): Promise<Seller | null> {
     try {
       const sellers = await this.prismaClient.seller.findUnique({
-        where: { id: input.sellerId, partnerId: input.partnerId },
+        where: { id: input.sellerId, companyId: input.companyId },
         include: { sales: true },
       });
 
@@ -141,7 +141,7 @@ export class SellerRepositoryPrisma implements ISellerGateway {
         photo: sellers.photo ?? "",
         photoPublicId: sellers.photoPublicId ?? "",
         sales: sellers.sales,
-        partnerId: sellers.partnerId,
+        companyId: sellers.companyId,
         createdAt: sellers.createdAt,
       });
     } catch (error: any) {
@@ -149,15 +149,13 @@ export class SellerRepositoryPrisma implements ISellerGateway {
     }
   }
 
-  async findByEmail(
-    input: FindEventSellerByEmailInputDto
-  ): Promise<Seller | null> {
+  async findByEmail(input: FindSellerByEmailInputDto): Promise<Seller | null> {
     try {
       const seller = await this.prismaClient.seller.findUnique({
         where: {
-          partnerId_email: {
+          companyId_email: {
             email: input.email,
-            partnerId: input.partnerId ?? "",
+            companyId: input.companyId ?? "",
           },
         },
         // include: { events: true },
@@ -172,11 +170,11 @@ export class SellerRepositoryPrisma implements ISellerGateway {
         phone: seller.phone ?? "",
         photo: seller.photo ?? "",
         photoPublicId: seller.photoPublicId ?? "",
-        partnerId: seller.partnerId,
+        companyId: seller.companyId,
         createdAt: seller.createdAt,
       });
     } catch (error: any) {
-      throw new Error("Error finding partner: " + error.message);
+      throw new Error("Error finding company: " + error.message);
     }
   }
 }

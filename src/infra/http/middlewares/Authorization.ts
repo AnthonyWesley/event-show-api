@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { UnauthorizedError } from "../../../shared/errors/UnauthorizedError";
 
 interface AuthRequest extends Request {
-  partner?: JwtPayload;
+  user?: JwtPayload;
   admin?: JwtPayload;
 }
 
@@ -46,7 +46,7 @@ export class Authorization {
       }
 
       const decoded = this.verifyToken(rawToken);
-      request.partner = decoded;
+      request.user = decoded;
       next();
     } catch (error) {
       return response.status(401).json({ message: "Invalid token." });

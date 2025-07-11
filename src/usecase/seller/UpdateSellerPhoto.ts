@@ -1,4 +1,4 @@
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { CloudinaryUploadService } from "../../infra/services/CloudinaryUploadService";
 import fs from "fs";
@@ -6,7 +6,7 @@ import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
 
 export type UpdateSellerPhotoInputDto = {
   sellerId: string;
-  partnerId: string;
+  companyId: string;
   photo?: string;
   photoPublicId?: string;
   file?: any;
@@ -20,18 +20,18 @@ export type UpdateSellerPhotoOutputDto = {
 export class UpdateSellerPhoto {
   constructor(
     private readonly sellerGateway: ISellerGateway,
-    private readonly partnerGateway: IPartnerGateway,
+    private readonly companyGateway: ICompanyGateway,
     private readonly uploadPhotoService: CloudinaryUploadService
   ) {}
 
   static create(
     sellerGateway: ISellerGateway,
-    partnerGateway: IPartnerGateway,
+    companyGateway: ICompanyGateway,
     uploadPhotoService: CloudinaryUploadService
   ) {
     return new UpdateSellerPhoto(
       sellerGateway,
-      partnerGateway,
+      companyGateway,
       uploadPhotoService
     );
   }
@@ -41,9 +41,9 @@ export class UpdateSellerPhoto {
   ): Promise<UpdateSellerPhotoOutputDto> {
     if (!input.file) throw new NotFoundError("File");
 
-    const partnerExists = await this.partnerGateway.findById(input.partnerId);
-    if (!partnerExists) {
-      throw new NotFoundError("Partner");
+    const companyExists = await this.companyGateway.findById(input.companyId);
+    if (!companyExists) {
+      throw new NotFoundError("Company");
     }
 
     const existingSeller = await this.sellerGateway.findById(input);
@@ -72,7 +72,7 @@ export class UpdateSellerPhoto {
     fs.unlinkSync(input.file.path);
 
     const updated = await this.sellerGateway.update({
-      partnerId: existingSeller.partnerId,
+      companyId: existingSeller.companyId,
       sellerId: existingSeller.id,
       name: existingSeller.name,
       email: existingSeller.email,

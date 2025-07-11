@@ -13,7 +13,7 @@ export type FindSellerResponseDto = {
   name: string;
   startDate: Date;
   endDate: Date;
-  partnerId: string;
+  companyId: string;
   createdAt: Date;
 };
 
@@ -40,9 +40,9 @@ export class FindSellerByEmailRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
       const { email } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
 
-      const input = { partnerId: partner.id, email };
+      const input = { companyId: user.companyId, email };
 
       const output: FindSellerByEmailOutputDto =
         await this.findSellerByEmail.execute(input);
@@ -53,7 +53,7 @@ export class FindSellerByEmailRoute implements IRoute {
         email: output.email,
         phone: output.phone,
         photo: output.photo,
-        partnerId: output.partnerId,
+        companyId: output.companyId,
         createdAt: output.createdAt,
       };
       response.status(200).json(result);

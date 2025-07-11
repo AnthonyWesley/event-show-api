@@ -43,12 +43,12 @@ export class UpdateProductPhotoRoute implements IRoute {
     return async (request: Request, response: Response): Promise<void> => {
       const { productId } = request.params;
 
-      const { partner } = request as any;
+      const { user } = request as any;
       const file = request.file;
 
       const input: UpdateProductPhotoInputDto = {
         productId,
-        partnerId: partner.id,
+        companyId: user.companyId,
         file,
       };
 

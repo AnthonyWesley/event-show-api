@@ -63,7 +63,7 @@ export class ApproveOrRejectPendingAction
           this.saleGateway.update({
             saleId: action.targetId,
             quantity: action.payload.quantity,
-            partnerId: action.partnerId,
+            companyId: action.companyId,
             eventId: action.eventId,
           });
         }
@@ -76,7 +76,7 @@ export class ApproveOrRejectPendingAction
           }
           this.saleGateway.delete({
             saleId: action.targetId,
-            partnerId: action.partnerId,
+            companyId: action.companyId,
             eventId: action.eventId,
           });
         }

@@ -1,16 +1,13 @@
 import { IUseCases } from "../IUseCases";
 import { ISellerEventGateway } from "../../domain/entities/sellerEvent/ISellerEventGateway";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
-import { SellerStatsHelper } from "../../helpers/SellerStatsHelper";
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
-import { EventProps } from "../../domain/entities/event/Event";
 import { GoalType } from "@prisma/client";
-import { SellerEventProps } from "../../domain/entities/sellerEvent/SellerEvent";
 export type ListEventsBySellerInputDto = {
   sellerId: string;
   // eventId: string;
-  partnerId: string;
+  companyId: string;
 };
 
 export type ListEventsBySellerOutputDto = {
@@ -23,7 +20,7 @@ export type ListEventsBySellerOutputDto = {
     // sales: SaleProps[];
     goal: number;
     goalType: GoalType;
-    // partnerId: string;
+    // companyId: string;
     createdAt: Date;
   }[];
 };
@@ -33,18 +30,18 @@ export class ListEventsBySeller
 {
   private constructor(
     private readonly sellerEventGateway: ISellerEventGateway,
-    private readonly partnerGateway: IPartnerGateway,
+    private readonly companyGateway: ICompanyGateway,
     private readonly eventGateway: IEventGateway
   ) {}
 
   public static create(
     sellerEventGateway: ISellerEventGateway,
-    partnerGateway: IPartnerGateway,
+    companyGateway: ICompanyGateway,
     eventGateway: IEventGateway
   ) {
     return new ListEventsBySeller(
       sellerEventGateway,
-      partnerGateway,
+      companyGateway,
       eventGateway
     );
   }
@@ -52,13 +49,13 @@ export class ListEventsBySeller
   public async execute(
     input: ListEventsBySellerInputDto
   ): Promise<ListEventsBySellerOutputDto> {
-    const [events, partner] = await Promise.all([
+    const [events, company] = await Promise.all([
       this.sellerEventGateway.listEventsBySeller(input.sellerId),
-      this.partnerGateway.findById(input.partnerId),
+      this.companyGateway.findById(input.companyId),
     ]);
 
     if (!events) throw new NotFoundError("Events");
-    if (!partner) throw new NotFoundError("Partner");
+    if (!company) throw new NotFoundError("Company");
 
     return {
       events: events.map((event) => ({

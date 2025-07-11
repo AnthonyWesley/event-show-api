@@ -41,12 +41,12 @@ export class UpdateEventPhotoRoute implements IRoute {
   getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
       const { eventId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
       const file = request.file;
 
       const input: UpdateEventPhotoInputDto = {
         eventId,
-        partnerId: partner.id,
+        companyId: user.companyId,
         file,
       };
 

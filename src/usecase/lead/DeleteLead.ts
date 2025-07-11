@@ -1,33 +1,31 @@
 import { ILeadGateway } from "../../domain/entities/lead/ILeadGateway";
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 
 export type DeleteLeadInputDto = {
-  eventId: string;
-  partnerId: string;
+  companyId: string;
   leadId: string;
 };
 
 export class DeleteLead {
   constructor(
     private readonly leadGateway: ILeadGateway,
-    private readonly partnerGateway: IPartnerGateway
+    private readonly companyGateway: ICompanyGateway
   ) {}
 
-  static create(leadGateway: ILeadGateway, partnerGateway: IPartnerGateway) {
-    return new DeleteLead(leadGateway, partnerGateway);
+  static create(leadGateway: ILeadGateway, companyGateway: ICompanyGateway) {
+    return new DeleteLead(leadGateway, companyGateway);
   }
 
   async execute(input: DeleteLeadInputDto): Promise<void> {
-    const partner = await this.partnerGateway.findById(input.partnerId);
-    if (!partner) {
-      throw new NotFoundError("Partner");
+    const company = await this.companyGateway.findById(input.companyId);
+    if (!company) {
+      throw new NotFoundError("Company");
     }
 
     const lead = await this.leadGateway.findById({
       leadId: input.leadId,
-      partnerId: input.partnerId,
-      eventId: input.eventId,
+      companyId: input.companyId,
     });
     if (!lead) {
       throw new NotFoundError("Lead");

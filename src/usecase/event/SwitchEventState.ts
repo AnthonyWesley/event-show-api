@@ -1,11 +1,11 @@
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { Goal } from "../../domain/entities/event/Event";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
 import { ConflictError } from "../../shared/errors/ConflictError";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 
 export type SwitchEventStateInputDto = {
-  partnerId: string;
+  companyId: string;
   eventId: string;
   name?: string;
   startDate?: Date;
@@ -17,25 +17,25 @@ export type SwitchEventStateInputDto = {
 export type SwitchEventStateResponseDto = {
   id: string;
   isActive?: boolean;
-  partnerId: string;
+  companyId: string;
 };
 
 export class SwitchEventState {
   constructor(
     private readonly eventGateway: IEventGateway,
-    private readonly partnerGateway: IPartnerGateway
+    private readonly companyGateway: ICompanyGateway
   ) {}
 
-  static create(eventGateway: IEventGateway, partnerGateway: IPartnerGateway) {
-    return new SwitchEventState(eventGateway, partnerGateway);
+  static create(eventGateway: IEventGateway, companyGateway: ICompanyGateway) {
+    return new SwitchEventState(eventGateway, companyGateway);
   }
 
   async execute(
     input: SwitchEventStateInputDto
   ): Promise<SwitchEventStateResponseDto> {
-    const partnerExists = await this.partnerGateway.findById(input.partnerId);
-    if (!partnerExists) {
-      throw new NotFoundError("Partner");
+    const companyExists = await this.companyGateway.findById(input.companyId);
+    if (!companyExists) {
+      throw new NotFoundError("Company");
     }
 
     const existingEvent = await this.eventGateway.findById(input);
@@ -45,14 +45,14 @@ export class SwitchEventState {
     const toggledIsActive = !existingEvent.isActive;
 
     if (toggledIsActive) {
-      const activeEvents = await this.eventGateway.findActiveByPartnerId({
+      const activeEvents = await this.eventGateway.findActiveByCompanyId({
         eventId: input.eventId,
-        partnerId: input.partnerId,
+        companyId: input.companyId,
       });
 
-      if (activeEvents.length >= partnerExists.maxConcurrentEvents) {
+      if (activeEvents.length >= companyExists.maxConcurrentEvents) {
         throw new ConflictError(
-          "Maximum number of active events reached for this partner."
+          "Maximum number of active events reached for this company."
         );
       }
     }
@@ -66,7 +66,7 @@ export class SwitchEventState {
     return {
       id: updatedEvent.id,
       isActive: updatedEvent.isActive,
-      partnerId: updatedEvent.partnerId,
+      companyId: updatedEvent.companyId,
     };
   }
 }

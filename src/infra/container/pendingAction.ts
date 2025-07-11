@@ -1,14 +1,18 @@
 import { ApproveOrRejectPendingAction } from "../../usecase/pendingAction/ApproveOrRejectPendingAction ";
 import { CreatePendingAction } from "../../usecase/pendingAction/CreatePendingAction";
 import { ListPendingAction } from "../../usecase/pendingAction/ListPendingAction";
-import { saleRepository } from "../Container";
+import { makeUseCases } from "../Container";
 import { PendingActionRepositoryPrisma } from "../repositories/pendingAction/PendingActionRepositoryPrisma";
+import { SaleRepositoryPrisma } from "../repositories/sale/SaleRepositoryPrisma";
+import { SocketServer } from "../socket/SocketServer";
 
 export function makePendingActionUseCases(
-  pendingActionRepository: PendingActionRepositoryPrisma
+  pendingActionRepository: PendingActionRepositoryPrisma,
+  saleRepository: SaleRepositoryPrisma,
+  socketServer?: SocketServer
 ) {
   return {
-    create: CreatePendingAction.create(pendingActionRepository),
+    create: CreatePendingAction.create(pendingActionRepository, socketServer),
     list: ListPendingAction.create(pendingActionRepository),
     approveOrReject: ApproveOrRejectPendingAction.create(
       pendingActionRepository,

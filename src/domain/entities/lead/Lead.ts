@@ -11,7 +11,7 @@ export type LeadProps = {
   notes?: string;
   source: string;
   eventId: string;
-  partnerId: string;
+  companyId: string;
   createdAt: Date;
 };
 
@@ -23,7 +23,7 @@ export class Lead {
     products: { id: string }[],
     source: string,
     eventId: string,
-    partnerId: string,
+    companyId: string,
     email?: string,
     phone?: string,
     customInterest?: string,
@@ -49,7 +49,7 @@ export class Lead {
       notes,
       source,
       eventId,
-      partnerId,
+      companyId,
       createdAt,
     });
   }
@@ -101,8 +101,8 @@ export class Lead {
     return this.props.eventId;
   }
 
-  public get partnerId() {
-    return this.props.partnerId;
+  public get companyId() {
+    return this.props.companyId;
   }
 
   public get createdAt() {

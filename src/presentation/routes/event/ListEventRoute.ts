@@ -16,7 +16,7 @@ export type ListEventResponseDto = {
     isActive: boolean;
     goal: number;
     goalType: Goal;
-    partnerId: string;
+    companyId: string;
     createdAt: Date;
   }[];
 };
@@ -43,10 +43,10 @@ export class ListEventRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
-      const { partner } = request as any;
+      const { user } = request as any;
       const search = request.query.search as string | undefined;
       const output = await this.listEventServer.execute({
-        partnerId: partner.id,
+        companyId: user.companyId,
         search: typeof search === "string" ? search.trim() : undefined,
       });
 
@@ -60,7 +60,7 @@ export class ListEventRoute implements IRoute {
           endDate: event.endDate,
           goal: event.goal,
           goalType: event.goalType,
-          partnerId: event.partnerId,
+          companyId: event.companyId,
           allSellers: event.allSellers,
           isActive: event.isActive,
           sales: event.sales,

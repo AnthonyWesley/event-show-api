@@ -1,10 +1,10 @@
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { IProductGateway } from "../../domain/entities/product/IProductGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 
 export type FindProductInputDto = {
-  partnerId: string;
+  companyId: string;
   productId: string;
 };
 
@@ -14,7 +14,7 @@ export type FindProductOutputDto = {
   price: number;
   photo: string;
   photoPublicId: string;
-  partnerId: string;
+  companyId: string;
   createdAt: Date;
 };
 
@@ -23,22 +23,22 @@ export class FindProduct
 {
   private constructor(
     private readonly productGateway: IProductGateway,
-    private readonly partnerGateway: IPartnerGateway
+    private readonly companyGateway: ICompanyGateway
   ) {}
 
   public static create(
     productGateway: IProductGateway,
-    partnerGateway: IPartnerGateway
+    companyGateway: ICompanyGateway
   ) {
-    return new FindProduct(productGateway, partnerGateway);
+    return new FindProduct(productGateway, companyGateway);
   }
 
   public async execute(
     input: FindProductInputDto
   ): Promise<FindProductOutputDto> {
-    const partnerExists = await this.partnerGateway.findById(input.partnerId);
-    if (!partnerExists) {
-      throw new Error("Partner not found.");
+    const companyExists = await this.companyGateway.findById(input.companyId);
+    if (!companyExists) {
+      throw new Error("Company not found.");
     }
 
     const product = await this.productGateway.findById(input);
@@ -52,7 +52,7 @@ export class FindProduct
       price: product.price,
       photo: product.photo ?? "",
       photoPublicId: product.photoPublicId ?? "",
-      partnerId: product.partnerId,
+      companyId: product.companyId,
       createdAt: product.createdAt,
     };
   }

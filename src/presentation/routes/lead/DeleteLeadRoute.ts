@@ -10,7 +10,7 @@ import {
 export type DeleteLeadRouteResponseDto = {
   id: string;
   eventId: string;
-  partnerId: string;
+  companyId: string;
 };
 export class DeleteLeadRoute implements IRoute {
   private constructor(
@@ -22,7 +22,7 @@ export class DeleteLeadRoute implements IRoute {
 
   static create(deleteLeadService: DeleteLead, authorization: Authorization) {
     return new DeleteLeadRoute(
-      "/events/:eventId/leads/:leadId",
+      "/leads/:leadId",
       HttpMethod.DELETE,
       deleteLeadService,
       authorization
@@ -31,12 +31,11 @@ export class DeleteLeadRoute implements IRoute {
   getHandler() {
     return async (request: Request, response: Response) => {
       const { eventId, leadId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const input: DeleteLeadInputDto = {
-        partnerId: partner.id,
-        id: leadId,
-        eventId,
+        companyId: user.companyId,
+        leadId,
       };
 
       await this.deleteLeadService.execute(input);

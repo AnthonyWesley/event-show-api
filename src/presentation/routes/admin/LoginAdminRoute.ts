@@ -1,10 +1,7 @@
 import { Response, Request } from "express";
 import { IRoute, HttpMethod } from "../IRoute";
-import {
-  LoginInputDto,
-  TokenType,
-} from "../../../usecase/partner/LoginPartner";
-import { LoginAdmin } from "../../../usecase/admin/LoginAdmin";
+
+import { LoginAdmin, TokenType } from "../../../usecase/admin/LoginAdmin";
 
 export type LoginAdminResponseDto = {
   token: TokenType;
@@ -27,7 +24,7 @@ export class LoginAdminRoute implements IRoute {
 
   getHandler() {
     return async (req: Request, res: Response) => {
-      const input: LoginInputDto = {
+      const input = {
         email: req.body.email,
         password: req.body.password,
       };

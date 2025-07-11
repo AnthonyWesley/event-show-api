@@ -16,7 +16,7 @@ export type CreateLeadInputDto = {
   notes?: string;
   source: string;
   eventId: string;
-  partnerId: string;
+  companyId: string;
 };
 
 export type CreateLeadOutputDto = {
@@ -38,13 +38,13 @@ export class CreateLead
   public async execute(
     input: CreateLeadInputDto
   ): Promise<CreateLeadOutputDto> {
-    if (!input.name || !input.source || !input.eventId || !input.partnerId) {
+    if (!input.name || !input.source || !input.eventId || !input.companyId) {
       throw new ValidationError("Missing required fields.");
     }
 
     const event = await this.eventGateway.findById({
       eventId: input.eventId,
-      partnerId: input.partnerId,
+      companyId: input.companyId,
     });
     if (!event) {
       throw new NotFoundError("Event");
@@ -55,7 +55,7 @@ export class CreateLead
       input.products,
       input.source,
       input.eventId,
-      input.partnerId,
+      input.companyId,
       input.email,
       input.phone,
       input.notes,

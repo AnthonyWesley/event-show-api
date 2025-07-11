@@ -3,26 +3,26 @@ import { DeleteLead } from "../../usecase/lead/DeleteLead";
 import { ExportLead } from "../../usecase/lead/ExportLead";
 import { FindLead } from "../../usecase/lead/FindLead";
 import { ListLeadsByEvent } from "../../usecase/lead/ListLeadsByEvent";
-import { ListLeadsByPartner } from "../../usecase/lead/ListLeadsByPartner";
+import { ListLeadsByCompany } from "../../usecase/lead/ListLeadsByCompany";
 import { UpdateLead } from "../../usecase/lead/UpdateLead";
 import { ILeadExporter } from "../exporters/ILeadExporter";
 import { EventRepositoryPrisma } from "../repositories/event/EventRepositoryPrisma";
 import { LeadRepositoryPrisma } from "../repositories/lead/LeadRepositoryPrisma";
-import { PartnerRepositoryPrisma } from "../repositories/partner/PartnerRepositoryPrisma";
+import { CompanyRepositoryPrisma } from "../repositories/company/CompanyRepositoryPrisma";
 
 export function makeLeadUseCases(
   leadRepository: LeadRepositoryPrisma,
   eventRepository: EventRepositoryPrisma,
-  partnerRepository: PartnerRepositoryPrisma,
+  companyRepository: CompanyRepositoryPrisma,
   exporter: ILeadExporter
 ) {
   return {
     create: CreateLead.create(leadRepository, eventRepository),
-    findOne: FindLead.create(leadRepository, partnerRepository),
+    findOne: FindLead.create(leadRepository, companyRepository),
     exportLead: ExportLead.create(leadRepository, eventRepository, exporter),
-    listByPartner: ListLeadsByPartner.create(leadRepository, partnerRepository),
+    listByCompany: ListLeadsByCompany.create(leadRepository, companyRepository),
     listByEvent: ListLeadsByEvent.create(leadRepository, eventRepository),
-    delete: DeleteLead.create(leadRepository, partnerRepository),
-    update: UpdateLead.create(leadRepository, partnerRepository),
+    delete: DeleteLead.create(leadRepository, companyRepository),
+    update: UpdateLead.create(leadRepository, companyRepository),
   };
 }

@@ -1,9 +1,9 @@
 import { GoalType, PrismaClient } from "@prisma/client";
 import { Event } from "../../../domain/entities/event/Event";
 import { IEventGateway } from "../../../domain/entities/event/IEventGateway";
-import { DeletePartnerEventInputDto } from "../../../usecase/event/DeleteEvent";
-import { FindPartnerEventInputDto } from "../../../usecase/event/FindEvent";
-import { UpdatePartnerEventInputDto } from "../../../usecase/event/UpdateEvent";
+import { DeleteEventInputDto } from "../../../usecase/event/DeleteEvent";
+import { FindEventInputDto } from "../../../usecase/event/FindEvent";
+import { UpdateEventInputDto } from "../../../usecase/event/UpdateEvent";
 
 export class EventRepositoryPrisma implements IEventGateway {
   private constructor(private readonly prismaClient: PrismaClient) {}
@@ -21,7 +21,7 @@ export class EventRepositoryPrisma implements IEventGateway {
           photo: event.photo,
           startDate: event.startDate,
           endDate: event.endDate,
-          partnerId: event.partnerId,
+          companyId: event.companyId,
           isActive: event.isActive,
           goal: event.goal,
           goalType: event.goalType as GoalType,
@@ -33,9 +33,9 @@ export class EventRepositoryPrisma implements IEventGateway {
     }
   }
 
-  async list(partnerId: string, search: string): Promise<Event[]> {
+  async list(companyId: string, search: string): Promise<Event[]> {
     const filters: any = {
-      partnerId,
+      companyId,
     };
 
     if (search) {
@@ -58,7 +58,7 @@ export class EventRepositoryPrisma implements IEventGateway {
         photoPublicId: event.photoPublicId ?? "",
         startDate: event.startDate,
         endDate: event.endDate ?? undefined,
-        partnerId: event.partnerId,
+        companyId: event.companyId,
         isActive: event.isActive,
         goal: event.goal,
         goalType: event.goalType,
@@ -69,7 +69,7 @@ export class EventRepositoryPrisma implements IEventGateway {
     );
   }
 
-  async update(input: UpdatePartnerEventInputDto): Promise<Event> {
+  async update(input: UpdateEventInputDto): Promise<Event> {
     try {
       const dataToUpdate: any = {};
 
@@ -87,7 +87,7 @@ export class EventRepositoryPrisma implements IEventGateway {
       const updated = await this.prismaClient.event.update({
         where: {
           id: input.eventId,
-          partnerId: input.partnerId,
+          companyId: input.companyId,
         },
         data: dataToUpdate,
         include: {
@@ -103,7 +103,7 @@ export class EventRepositoryPrisma implements IEventGateway {
         photoPublicId: updated.photoPublicId ?? undefined,
         startDate: updated.startDate,
         endDate: updated.endDate ?? undefined,
-        partnerId: updated.partnerId,
+        companyId: updated.companyId,
         isActive: updated.isActive,
         goal: updated.goal,
         goalType: updated.goalType,
@@ -116,7 +116,7 @@ export class EventRepositoryPrisma implements IEventGateway {
     }
   }
 
-  async delete(input: DeletePartnerEventInputDto): Promise<void> {
+  async delete(input: DeleteEventInputDto): Promise<void> {
     const event = await this.findById(input);
 
     if (!event) {
@@ -132,12 +132,12 @@ export class EventRepositoryPrisma implements IEventGateway {
     }
   }
 
-  async findById(input: FindPartnerEventInputDto): Promise<Event | null> {
+  async findById(input: FindEventInputDto): Promise<Event | null> {
     try {
       const event = await this.prismaClient.event.findUnique({
         where: {
           id: input.eventId,
-          partnerId: input.partnerId,
+          companyId: input.companyId,
         },
         include: {
           sales: true,
@@ -154,7 +154,7 @@ export class EventRepositoryPrisma implements IEventGateway {
         photoPublicId: event.photoPublicId ?? "",
         startDate: event.startDate,
         endDate: event.endDate ?? undefined,
-        partnerId: event.partnerId,
+        companyId: event.companyId,
         goal: event.goal,
         isActive: event.isActive,
         goalType: event.goalType,
@@ -167,14 +167,12 @@ export class EventRepositoryPrisma implements IEventGateway {
     }
   }
 
-  async findActiveByPartnerId(
-    input: FindPartnerEventInputDto
-  ): Promise<Event[]> {
+  async findActiveByCompanyId(input: FindEventInputDto): Promise<Event[]> {
     try {
       const events = await this.prismaClient.event.findMany({
         where: {
           // id: input.eventId,
-          partnerId: input.partnerId,
+          companyId: input.companyId,
           isActive: true,
         },
         include: {
@@ -193,7 +191,7 @@ export class EventRepositoryPrisma implements IEventGateway {
           photoPublicId: event.photoPublicId ?? "",
           startDate: event.startDate,
           endDate: event.endDate ?? undefined,
-          partnerId: event.partnerId,
+          companyId: event.companyId,
           isActive: event.isActive,
           goal: event.goal,
           goalType: event.goalType,
@@ -207,10 +205,10 @@ export class EventRepositoryPrisma implements IEventGateway {
     }
   }
 
-  async findLastEventByPartner(partnerId: string): Promise<Event | null> {
+  async findLastEventByCompany(companyId: string): Promise<Event | null> {
     try {
       const event = await this.prismaClient.event.findFirst({
-        where: { partnerId },
+        where: { companyId },
         orderBy: { endDate: "desc" },
         include: {
           sales: true,
@@ -227,7 +225,7 @@ export class EventRepositoryPrisma implements IEventGateway {
         photoPublicId: event.photoPublicId ?? "",
         startDate: event.startDate,
         endDate: event.endDate ?? undefined,
-        partnerId: event.partnerId,
+        companyId: event.companyId,
         goal: event.goal,
         isActive: event.isActive,
         goalType: event.goalType,

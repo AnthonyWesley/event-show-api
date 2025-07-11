@@ -15,7 +15,7 @@ export type FindProductResponseDto = {
   photoPublicId: string;
   startDate: Date;
   endDate: Date;
-  partnerId: string;
+  companyId: string;
   createdAt: Date;
 };
 
@@ -42,10 +42,10 @@ export class FindProductRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
       const { productId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const input: FindProductInputDto = {
-        partnerId: partner.id,
+        companyId: user.companyId,
         productId,
       };
       const output: FindProductOutputDto = await this.FindProductServer.execute(
@@ -58,7 +58,7 @@ export class FindProductRoute implements IRoute {
         price: output.price,
         photo: output.photo ?? "",
         photoPublicId: output.photoPublicId ?? "",
-        partnerId: output.partnerId,
+        companyId: output.companyId,
         createdAt: output.createdAt,
       };
       response.status(200).json(result);

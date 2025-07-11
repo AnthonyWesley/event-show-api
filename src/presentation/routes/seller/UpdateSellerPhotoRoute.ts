@@ -42,12 +42,12 @@ export class UpdateSellerPhotoRoute implements IRoute {
   getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
       const { sellerId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
       const file = request.file;
 
       const input: UpdateSellerPhotoInputDto = {
         sellerId,
-        partnerId: partner.id,
+        companyId: user.companyId,
         file,
       };
 

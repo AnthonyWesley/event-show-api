@@ -8,7 +8,7 @@ import { ValidationError } from "../../shared/errors/ValidationError";
 import { IUseCases } from "../IUseCases";
 
 export type CreateSaleInputDto = {
-  partnerId: string;
+  companyId: string;
   eventId: string;
   productId: string;
   sellerId: string;
@@ -56,14 +56,14 @@ export class CreateSale
     const [eventExists, productExists, sellerExists] = await Promise.all([
       this.eventGateway.findById({
         eventId: input.eventId,
-        partnerId: input.partnerId,
+        companyId: input.companyId,
       }),
       this.productGateway.findById({
         productId: input.productId,
-        partnerId: input.partnerId,
+        companyId: input.companyId,
       }),
       this.sellerGateway.findById({
-        partnerId: input.partnerId,
+        companyId: input.companyId,
         sellerId: input.sellerId,
       }),
     ]);

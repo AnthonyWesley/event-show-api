@@ -1,5 +1,3 @@
-// Adicione isso na ISellerEventGateway
-
 import { Event, SellerEvent } from "@prisma/client";
 
 export interface ISellerEventGateway {

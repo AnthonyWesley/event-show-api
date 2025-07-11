@@ -1,6 +1,6 @@
 import { GoalType } from "@prisma/client";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { SaleProps } from "../../domain/entities/sale/Sale";
 import {
   SellerStatsHelper,
@@ -11,7 +11,7 @@ import { IUseCases } from "../IUseCases";
 import { SellerEventProps } from "../../domain/entities/sellerEvent/SellerEvent";
 
 export type FindEventInputDto = {
-  partnerId: string;
+  companyId: string;
   eventId: string;
 };
 
@@ -29,7 +29,7 @@ export type FindEventOutputDto = {
   isActive?: boolean;
 
   goalType: GoalType;
-  partnerId: string;
+  companyId: string;
   createdAt: Date;
   allSellers: SellerWithStats[];
 };
@@ -39,31 +39,31 @@ export class FindEvent
 {
   private constructor(
     private readonly eventGateway: IEventGateway,
-    private readonly partnerGateway: IPartnerGateway
+    private readonly companyGateway: ICompanyGateway
   ) {}
 
   public static create(
     eventGateway: IEventGateway,
-    partnerGateway: IPartnerGateway
+    companyGateway: ICompanyGateway
   ) {
-    return new FindEvent(eventGateway, partnerGateway);
+    return new FindEvent(eventGateway, companyGateway);
   }
 
   public async execute(input: FindEventInputDto): Promise<FindEventOutputDto> {
     const event = await this.eventGateway.findById(input);
     if (!event) throw new NotFoundError("Event");
 
-    const partner = await this.partnerGateway.findById(event.partnerId);
-    if (!partner) throw new NotFoundError("Partner");
+    const company = await this.companyGateway.findById(event.companyId);
+    if (!company) throw new NotFoundError("Company");
 
     const sellerIds = event.sellerEvents.map((se: any) => se.sellerId);
-    const sellers = (partner.sellers ?? []).filter((s) =>
+    const sellers = (company.sellers ?? []).filter((s) =>
       sellerIds.includes(s.id)
     );
 
     const stats = SellerStatsHelper.computeStats(
       event.sales,
-      partner.products ?? []
+      company.products ?? []
     );
     const sellersWithStats = SellerStatsHelper.applyStatsToSellers(
       sellers,
@@ -87,7 +87,7 @@ export class FindEvent
       isActive: event.isActive,
       goal: event.goal,
       goalType: event.goalType as GoalType,
-      partnerId: event.partnerId,
+      companyId: event.companyId,
       createdAt: event.createdAt,
       allSellers,
     };

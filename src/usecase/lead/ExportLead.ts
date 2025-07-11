@@ -6,7 +6,7 @@ import { IUseCases } from "../IUseCases";
 
 export type ExportLeadInputDto = {
   eventId: string;
-  partnerId: string;
+  companyId: string;
 };
 
 export type ExportLeadOutputDto = {
@@ -34,7 +34,7 @@ export class ExportLead implements IUseCases<ExportLeadInputDto, any> {
     if (input.eventId) {
       const event = await this.eventGateway.findById({
         eventId: input.eventId,
-        partnerId: input.partnerId,
+        companyId: input.companyId,
       });
       if (!event) {
         throw new NotFoundError("Event");
@@ -42,7 +42,7 @@ export class ExportLead implements IUseCases<ExportLeadInputDto, any> {
 
       leadsToExport = await this.leadGateway.listByEvent(input.eventId);
     } else {
-      leadsToExport = await this.leadGateway.listByPartner(input.partnerId);
+      leadsToExport = await this.leadGateway.listByCompany(input.companyId);
     }
 
     const maxProducts = 3;

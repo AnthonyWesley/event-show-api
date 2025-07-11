@@ -32,7 +32,7 @@ export class CreateSellerRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response) => {
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const { name, email, phone, photo } = request.body;
 
@@ -41,7 +41,7 @@ export class CreateSellerRoute implements IRoute {
         email,
         phone,
         photo,
-        partnerId: partner.id,
+        companyId: user.companyId,
       };
 
       const output: CreateSellerResponseDto =

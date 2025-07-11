@@ -1,9 +1,9 @@
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import { Event, Goal } from "../../domain/entities/event/Event";
 import { IUseCases } from "../IUseCases";
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
 import { ValidationError } from "../../shared/errors/ValidationError";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 
 export type CreateEventInputDto = {
   name: string;
@@ -11,7 +11,7 @@ export type CreateEventInputDto = {
   photo?: string;
   goal: number;
   goalType: Goal;
-  partnerId: string;
+  companyId: string;
 };
 
 export type CreateEventOutputDto = {
@@ -23,34 +23,34 @@ export class CreateEvent
 {
   private constructor(
     private readonly eventGateway: IEventGateway,
-    private readonly partnerGateway: IPartnerGateway
+    private readonly companyGateway: ICompanyGateway
   ) {}
 
   public static create(
     eventGateway: IEventGateway,
-    partnerGateway: IPartnerGateway
+    companyGateway: ICompanyGateway
   ) {
-    return new CreateEvent(eventGateway, partnerGateway);
+    return new CreateEvent(eventGateway, companyGateway);
   }
 
   public async execute(
     input: CreateEventInputDto
   ): Promise<CreateEventOutputDto> {
-    if (!input.name || !input.partnerId) {
+    if (!input.name || !input.companyId) {
       throw new ValidationError(
-        "All fields are required: name, startDate, partnerId."
+        "All fields are required: name, startDate, companyId."
       );
     }
-    const partnerExists = await this.partnerGateway.findById(input.partnerId);
-    if (!partnerExists) {
-      throw new NotFoundError("Partner");
+    const companyExists = await this.companyGateway.findById(input.companyId);
+    if (!companyExists) {
+      throw new NotFoundError("Company");
     }
 
     const anEvent = Event.create(
       input.name,
       input.goal,
       input.goalType,
-      partnerExists.id,
+      companyExists.id,
       input.photo ?? ""
     );
     await this.eventGateway.save(anEvent);

@@ -28,10 +28,10 @@ export class DeleteEventRoute implements IRoute {
   getHandler() {
     return async (request: Request, response: Response) => {
       const { eventId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const input: DeleteEventInputDto = {
-        partnerId: partner.id,
+        companyId: user.companyId,
         eventId,
       };
 

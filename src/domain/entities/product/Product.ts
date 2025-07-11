@@ -6,7 +6,7 @@ export type ProductProps = {
   price: number;
   photo?: string;
   photoPublicId?: string;
-  partnerId: string;
+  companyId: string;
   createdAt: Date;
 };
 
@@ -16,7 +16,7 @@ export class Product {
   public static create(
     name: string,
     price: number,
-    partnerId: string,
+    companyId: string,
     photo?: string
   ) {
     if (!name.trim()) {
@@ -29,8 +29,8 @@ export class Product {
       );
     }
 
-    if (!partnerId.trim()) {
-      throw new Error("Partner ID is required.");
+    if (!companyId.trim()) {
+      throw new Error("Company ID is required.");
     }
 
     return new Product({
@@ -38,7 +38,7 @@ export class Product {
       name,
       price,
       photo,
-      partnerId,
+      companyId,
       createdAt: new Date(),
     });
   }
@@ -67,8 +67,8 @@ export class Product {
     return this.props.photoPublicId;
   }
 
-  public get partnerId() {
-    return this.props.partnerId;
+  public get companyId() {
+    return this.props.companyId;
   }
 
   public get createdAt() {

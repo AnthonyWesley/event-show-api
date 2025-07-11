@@ -1,11 +1,11 @@
 import { GoalType } from "@prisma/client";
 import { Goal } from "../../domain/entities/event/Event";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 
 export type UpdateEventInputDto = {
-  partnerId: string;
+  companyId: string;
   eventId: string;
   name?: string;
   isActive: boolean;
@@ -26,23 +26,23 @@ export type UpdateEventResponseDto = {
   endDate: Date | null;
   goal: number;
   goalType: Goal;
-  partnerId: string;
+  companyId: string;
 };
 
 export class UpdateEvent {
   constructor(
     private readonly eventGateway: IEventGateway,
-    private readonly partnerGateway: IPartnerGateway
+    private readonly companyGateway: ICompanyGateway
   ) {}
 
-  static create(eventGateway: IEventGateway, partnerGateway: IPartnerGateway) {
-    return new UpdateEvent(eventGateway, partnerGateway);
+  static create(eventGateway: IEventGateway, companyGateway: ICompanyGateway) {
+    return new UpdateEvent(eventGateway, companyGateway);
   }
 
   async execute(input: UpdateEventInputDto): Promise<UpdateEventResponseDto> {
-    const partnerExists = await this.partnerGateway.findById(input.partnerId);
-    if (!partnerExists) {
-      throw new NotFoundError("Partner");
+    const companyExists = await this.companyGateway.findById(input.companyId);
+    if (!companyExists) {
+      throw new NotFoundError("Company");
     }
 
     const existingEvent = await this.eventGateway.findById(input);
@@ -63,7 +63,7 @@ export class UpdateEvent {
       isActive: updatedEvent.isActive,
       goal: updatedEvent.goal,
       goalType: updatedEvent.goalType as GoalType,
-      partnerId: updatedEvent.partnerId,
+      companyId: updatedEvent.companyId,
     };
   }
 }

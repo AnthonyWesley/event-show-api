@@ -1,4 +1,3 @@
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
 import { IUseCases } from "../IUseCases";
 import { Authorization } from "../../infra/http/middlewares/Authorization";
 import { UnauthorizedError } from "../../shared/errors/UnauthorizedError";

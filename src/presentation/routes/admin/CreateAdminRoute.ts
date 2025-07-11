@@ -1,9 +1,6 @@
 import { Response, Request } from "express";
 import { IRoute, HttpMethod } from "../IRoute";
-import {
-  CreatePartner,
-  CreatePartnerInputDto,
-} from "../../../usecase/partner/CreatePartner";
+
 import {
   CreateAdmin,
   CreateAdminInputDto,

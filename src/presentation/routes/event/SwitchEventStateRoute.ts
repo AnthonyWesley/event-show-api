@@ -27,11 +27,11 @@ export class SwitchEventStateRoute implements IRoute {
   getHandler() {
     return async (request: Request, response: Response) => {
       const { eventId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const result = await this.switchEventStateService.execute({
         eventId,
-        partnerId: partner.id,
+        companyId: user.companyId,
       });
       response.status(200).json(result);
     };

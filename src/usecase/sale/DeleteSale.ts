@@ -7,7 +7,7 @@ import { IUseCases } from "../IUseCases";
 
 export type DeleteSaleInputDto = {
   saleId: string;
-  partnerId: string;
+  companyId: string;
   eventId: string;
 };
 
@@ -37,7 +37,7 @@ export class DeleteSale implements IUseCases<DeleteSaleInputDto, void> {
     try {
       const eventExists = await this.eventGateway.findById({
         eventId: input.eventId,
-        partnerId: input.partnerId,
+        companyId: input.companyId,
       });
 
       if (!eventExists) throw new NotFoundError("Event");

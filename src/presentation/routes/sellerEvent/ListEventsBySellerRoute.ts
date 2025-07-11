@@ -34,10 +34,10 @@ export class ListEventsBySellerRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
       const { sellerId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const result = await this.listEventsBySellerServer.execute({
-        partnerId: partner.id,
+        companyId: user.companyId,
         // eventId,
         sellerId,
       });

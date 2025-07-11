@@ -21,7 +21,7 @@ export class AdminRepositoryPrisma implements IAdminGateway {
     try {
       await this.prismaClient.admin.create({ data });
     } catch (error: any) {
-      throw new Error("Error saving partner: " + error.message);
+      throw new Error("Error saving company: " + error.message);
     }
   }
 
@@ -41,7 +41,7 @@ export class AdminRepositoryPrisma implements IAdminGateway {
         createdAt: admin.createdAt,
       });
     } catch (error: any) {
-      throw new Error("Error finding partner: " + error.message);
+      throw new Error("Error finding company: " + error.message);
     }
   }
 
@@ -60,7 +60,7 @@ export class AdminRepositoryPrisma implements IAdminGateway {
         createdAt: admin.createdAt,
       });
     } catch (error: any) {
-      throw new Error("Error finding partner: " + error.message);
+      throw new Error("Error finding company: " + error.message);
     }
   }
 

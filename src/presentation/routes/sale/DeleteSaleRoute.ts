@@ -29,10 +29,10 @@ export class DeleteSaleRoute implements IRoute {
   getHandler() {
     return async (request: Request, response: Response) => {
       const { eventId, saleId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const input: DeleteSaleInputDto = {
-        partnerId: partner.id,
+        companyId: user.companyId,
         eventId,
         saleId,
       };

@@ -11,7 +11,7 @@ export type ListProductResponseDto = {
     photoPublicId: string;
     startDate: Date;
     endDate: Date;
-    partnerId: string;
+    companyId: string;
     createdAt: Date;
   }[];
 };
@@ -38,10 +38,10 @@ export class ListProductRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
-      const { partner } = request as any;
+      const { user } = request as any;
       const search = request.query.search as string | undefined;
       const output = await this.listProductServer.execute({
-        partnerId: partner.id,
+        companyId: user.companyId,
         search: typeof search === "string" ? search.trim() : undefined,
       });
 
@@ -52,7 +52,7 @@ export class ListProductRoute implements IRoute {
           price: product.price,
           photo: product.photo,
           photoPublicId: product.photoPublicId,
-          partnerId: product.partnerId,
+          companyId: product.companyId,
           createdAt: product.createdAt,
         })),
       };

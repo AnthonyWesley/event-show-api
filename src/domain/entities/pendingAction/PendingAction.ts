@@ -17,7 +17,7 @@ export const ActionStatus = {
 
 export type PendingActionProps = {
   id: string;
-  partnerId: string;
+  companyId: string;
   eventId: string;
   sellerId: string;
   targetId: string | null;
@@ -31,14 +31,14 @@ export class PendingAction {
   private constructor(private readonly props: PendingActionProps) {}
 
   public static create(
-    partnerId: string,
+    companyId: string,
     eventId: string,
     sellerId: string,
     actionType: ActionType,
     payload: any,
     targetId: string | null
   ) {
-    if (!partnerId.trim()) throw new Error("Partner ID is required.");
+    if (!companyId.trim()) throw new Error("Company ID is required.");
     if (!sellerId.trim()) throw new Error("Seller ID is required.");
 
     if (
@@ -50,7 +50,7 @@ export class PendingAction {
 
     return new PendingAction({
       id: generateId(),
-      partnerId,
+      companyId,
       eventId,
       sellerId,
       payload,
@@ -69,8 +69,8 @@ export class PendingAction {
     return this.props.id;
   }
 
-  get partnerId() {
-    return this.props.partnerId;
+  get companyId() {
+    return this.props.companyId;
   }
 
   get eventId() {

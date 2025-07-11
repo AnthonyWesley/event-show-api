@@ -1,14 +1,14 @@
-import { DeletePartnerEventInputDto } from "../../../usecase/event/DeleteEvent";
-import { FindPartnerEventInputDto } from "../../../usecase/event/FindEvent";
-import { UpdatePartnerEventInputDto } from "../../../usecase/event/UpdateEvent";
+import { DeleteEventInputDto } from "../../../usecase/event/DeleteEvent";
+import { FindEventInputDto } from "../../../usecase/event/FindEvent";
+import { UpdateEventInputDto } from "../../../usecase/event/UpdateEvent";
 import { Event } from "./Event";
 
 export interface IEventGateway {
   save(event: Event): Promise<void>;
   list(eventId: string, search?: string): Promise<Event[]>;
-  findById(input: FindPartnerEventInputDto): Promise<Event | null>;
-  findActiveByPartnerId(input: FindPartnerEventInputDto): Promise<Event[]>;
-  findLastEventByPartner(partnerId: string): Promise<Event | null>;
-  update(input: UpdatePartnerEventInputDto): Promise<Event>;
-  delete(input: DeletePartnerEventInputDto): Promise<void>;
+  findById(input: FindEventInputDto): Promise<Event | null>;
+  findActiveByCompanyId(input: FindEventInputDto): Promise<Event[]>;
+  findLastEventByCompany(companyId: string): Promise<Event | null>;
+  update(input: UpdateEventInputDto): Promise<Event>;
+  delete(input: DeleteEventInputDto): Promise<void>;
 }

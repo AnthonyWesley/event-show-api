@@ -3,14 +3,18 @@ import { DeleteSale } from "../../usecase/sale/DeleteSale";
 import { FindSale } from "../../usecase/sale/FindSale";
 import { ListSale } from "../../usecase/sale/ListSale";
 import { UpdateSale } from "../../usecase/sale/UpdateSale";
-import {
-  eventRepository,
-  productRepository,
-  sellerRepository,
-} from "../Container";
-import { SaleRepositoryPrisma } from "../repositories/sale/SaleRepositoryPrisma";
+import { EventRepositoryPrisma } from "../repositories/event/EventRepositoryPrisma";
+import { ProductRepositoryPrisma } from "../repositories/product/ProductRepositoryPrisma";
 
-export function makeSaleUseCases(saleRepository: SaleRepositoryPrisma) {
+import { SaleRepositoryPrisma } from "../repositories/sale/SaleRepositoryPrisma";
+import { SellerRepositoryPrisma } from "../repositories/seller/SellerRepositoryPrisma";
+
+export function makeSaleUseCases(
+  saleRepository: SaleRepositoryPrisma,
+  eventRepository: EventRepositoryPrisma,
+  productRepository: ProductRepositoryPrisma,
+  sellerRepository: SellerRepositoryPrisma
+) {
   return {
     create: CreateSale.create(
       saleRepository,

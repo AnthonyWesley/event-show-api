@@ -27,13 +27,13 @@ export class CreatePendingActionRoute implements IRoute {
   }
 
   getHandler() {
-    return async (req: Request, res: Response) => {
+    return async (request: Request, response: Response) => {
       // const { eventId } = req.params;
-      const { partner } = req as any;
-      const { sellerId, actionType, payload, targetId, eventId } = req.body;
+      const { user } = request as any;
+      const { sellerId, actionType, payload, targetId, eventId } = request.body;
 
       const input: CreatePendingActionInputDto = {
-        partnerId: partner.id,
+        companyId: user.companyId,
         eventId,
         targetId,
         sellerId,
@@ -42,7 +42,7 @@ export class CreatePendingActionRoute implements IRoute {
       };
 
       const result = await this.createPendingActionService.execute(input);
-      res.status(201).json({ id: result.id });
+      response.status(201).json({ id: result.id });
     };
   }
 

@@ -4,7 +4,7 @@ import { ILeadGateway } from "../../domain/entities/lead/ILeadGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 
 export type ListLeadsInputDto = {
-  partnerId: string;
+  companyId: string;
   eventId: string;
 };
 
@@ -19,7 +19,7 @@ export type ListLeadsOutputDto = {
   notes?: string;
   source: string;
   eventId: string;
-  partnerId: string;
+  companyId: string;
   createdAt: Date;
 }[];
 
@@ -36,7 +36,7 @@ export class ListLeadsByEvent {
   async execute(input: ListLeadsInputDto): Promise<ListLeadsOutputDto> {
     const event = await this.eventGateway.findById({
       eventId: input.eventId,
-      partnerId: input.partnerId,
+      companyId: input.companyId,
     });
     if (!event) {
       throw new NotFoundError("");
@@ -53,7 +53,7 @@ export class ListLeadsByEvent {
       source: lead.source,
       customInterest: lead.customInterest ?? "",
       eventId: lead.eventId,
-      partnerId: lead.partnerId,
+      companyId: lead.companyId,
       createdAt: lead.createdAt,
       products: lead.products ?? [],
     }));

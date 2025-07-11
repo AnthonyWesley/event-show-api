@@ -1,13 +1,13 @@
 import { GoalType } from "@prisma/client";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { CloudinaryUploadService } from "../../infra/services/CloudinaryUploadService";
 import fs from "fs";
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 
 export type UpdateEventPhotoInputDto = {
   eventId: string;
-  partnerId: string;
+  companyId: string;
   photo?: string;
   photoPublicId?: string;
   file?: any;
@@ -21,18 +21,18 @@ export type UpdateEventPhotoOutputDto = {
 export class UpdateEventPhoto {
   constructor(
     private readonly eventGateway: IEventGateway,
-    private readonly partnerGateway: IPartnerGateway,
+    private readonly companyGateway: ICompanyGateway,
     private readonly uploadPhotoService: CloudinaryUploadService
   ) {}
 
   static create(
     eventGateway: IEventGateway,
-    partnerGateway: IPartnerGateway,
+    companyGateway: ICompanyGateway,
     uploadPhotoService: CloudinaryUploadService
   ) {
     return new UpdateEventPhoto(
       eventGateway,
-      partnerGateway,
+      companyGateway,
       uploadPhotoService
     );
   }
@@ -42,14 +42,14 @@ export class UpdateEventPhoto {
   ): Promise<UpdateEventPhotoOutputDto> {
     if (!input.file) throw new NotFoundError("File");
 
-    const existingPartner = await this.partnerGateway.findById(input.partnerId);
-    if (!existingPartner) {
-      throw new NotFoundError("Partner");
+    const existingCompany = await this.companyGateway.findById(input.companyId);
+    if (!existingCompany) {
+      throw new NotFoundError("Company");
     }
 
     const existingEvent = await this.eventGateway.findById({
       eventId: input.eventId,
-      partnerId: input.partnerId,
+      companyId: input.companyId,
     });
 
     if (!existingEvent) {
@@ -86,7 +86,7 @@ export class UpdateEventPhoto {
       isActive: existingEvent.isActive,
       goal: existingEvent.goal,
       goalType: existingEvent.goalType as GoalType,
-      partnerId: existingEvent.partnerId,
+      companyId: existingEvent.companyId,
     });
 
     return {

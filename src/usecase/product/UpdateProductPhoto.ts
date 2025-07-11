@@ -1,4 +1,4 @@
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { CloudinaryUploadService } from "../../infra/services/CloudinaryUploadService";
 import fs from "fs";
@@ -6,7 +6,7 @@ import { IProductGateway } from "../../domain/entities/product/IProductGateway";
 
 export type UpdateProductPhotoInputDto = {
   productId: string;
-  partnerId: string;
+  companyId: string;
   photo?: string;
   photoPublicId?: string;
   file?: any;
@@ -20,18 +20,18 @@ export type UpdateProductPhotoOutputDto = {
 export class UpdateProductPhoto {
   constructor(
     private readonly productGateway: IProductGateway,
-    private readonly partnerGateway: IPartnerGateway,
+    private readonly companyGateway: ICompanyGateway,
     private readonly uploadPhotoService: CloudinaryUploadService
   ) {}
 
   static create(
     productGateway: IProductGateway,
-    partnerGateway: IPartnerGateway,
+    companyGateway: ICompanyGateway,
     uploadPhotoService: CloudinaryUploadService
   ) {
     return new UpdateProductPhoto(
       productGateway,
-      partnerGateway,
+      companyGateway,
       uploadPhotoService
     );
   }
@@ -41,9 +41,9 @@ export class UpdateProductPhoto {
   ): Promise<UpdateProductPhotoOutputDto> {
     if (!input.file) throw new NotFoundError("File");
 
-    const partnerExists = await this.partnerGateway.findById(input.partnerId);
-    if (!partnerExists) {
-      throw new NotFoundError("Partner");
+    const companyExists = await this.companyGateway.findById(input.companyId);
+    if (!companyExists) {
+      throw new NotFoundError("Company");
     }
 
     const existingProduct = await this.productGateway.findById(input);
@@ -75,7 +75,7 @@ export class UpdateProductPhoto {
       productId: existingProduct.id,
       name: existingProduct.name,
       price: existingProduct.price,
-      partnerId: existingProduct.partnerId,
+      companyId: existingProduct.companyId,
       photo: upload.secure_url,
       photoPublicId: upload.public_id,
     });

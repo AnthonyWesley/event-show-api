@@ -8,7 +8,7 @@ import { ValidationError } from "../../shared/errors/ValidationError";
 import { IUseCases } from "../IUseCases";
 
 export type SendGuestAccessInviteInputDto = {
-  partnerId: string;
+  companyId: string;
   eventId: string;
   sellerId: string;
 };
@@ -51,7 +51,7 @@ export class SendGuestAccessInvite
     }
 
     const seller = await this.sellerGateway.findById({
-      partnerId: input.partnerId,
+      companyId: input.companyId,
       sellerId: input.sellerId,
     });
 
@@ -63,13 +63,13 @@ export class SendGuestAccessInvite
     //   "1m"
     // );
 
-    const partnerToken = this.authorization.generateToken(
-      { id: input.partnerId },
+    const companyToken = this.authorization.generateToken(
+      { id: input.companyId },
       "1d"
     );
 
-    // const link = `http://localhost:5173/guest/${seller.id}?partnerToken=${partnerToken}&guestToken=${guestToken}`;
-    const link = `http://localhost:5173/guest/${seller.id}?partnerToken=${partnerToken}`;
+    // const link = `http://localhost:5173/guest/${seller.id}?companyToken=${companyToken}&guestToken=${guestToken}`;
+    const link = `http://localhost:5173/guest/${seller.id}?companyToken=${companyToken}`;
 
     // await this.mailerService.sendMail(
     //   seller.email,

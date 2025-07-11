@@ -1,73 +1,102 @@
-import { prisma } from "../package/prisma";
+import { CsvLeadExporter } from "./exporters/CsvLeadExporter";
+import { CloudinaryUploadService } from "./services/CloudinaryUploadService";
+
 import { AdminRepositoryPrisma } from "./repositories/admin/AdminRepositoryPrisma";
-import { PartnerRepositoryPrisma } from "./repositories/partner/PartnerRepositoryPrisma";
+import { UserRepositoryPrisma } from "./repositories/user/UserRepositoryPrisma";
+import { CompanyRepositoryPrisma } from "./repositories/company/CompanyRepositoryPrisma";
 import { EventRepositoryPrisma } from "./repositories/event/EventRepositoryPrisma";
+import { LeadRepositoryPrisma } from "./repositories/lead/LeadRepositoryPrisma";
 import { ProductRepositoryPrisma } from "./repositories/product/ProductRepositoryPrisma";
 import { SellerRepositoryPrisma } from "./repositories/seller/SellerRepositoryPrisma";
 import { SaleRepositoryPrisma } from "./repositories/sale/SaleRepositoryPrisma";
 import { SellerEventRepositoryPrisma } from "./repositories/sellerEvent/SellerEventRepositoryPrisma";
 import { PendingActionRepositoryPrisma } from "./repositories/pendingAction/PendingActionRepositoryPrisma";
-import { Authorization } from "./http/middlewares/Authorization";
+import { InvoiceRepositoryPrisma } from "./repositories/invoice/InvoiceRepositoryPrisma";
+import { SubscriptionRepositoryPrisma } from "./repositories/subscription/SubscriptionRepositoryPrisma";
+
 import { makeAdminUseCases } from "./container/admin";
-import { makePartnerUseCases } from "./container/partner";
+import { makeUserUseCases } from "./container/user";
+import { makeCompanyUseCases } from "./container/company";
 import { makeEventUseCases } from "./container/event";
+import { makeLeadUseCases } from "./container/lead";
 import { makeProductUseCases } from "./container/product";
 import { makeSellerUseCases } from "./container/seller";
-import { makeSellerEventUseCases } from "./container/sellerEvent";
 import { makeSaleUseCases } from "./container/sale";
+import { makeSellerEventUseCases } from "./container/sellerEvent";
 import { makePendingActionUseCases } from "./container/pendingAction";
-import { LeadRepositoryPrisma } from "./repositories/lead/LeadRepositoryPrisma";
-import { makeLeadUseCases } from "./container/lead";
-import { CsvLeadExporter } from "./exporters/CsvLeadExporter";
-import { CloudinaryUploadService } from "./services/CloudinaryUploadService";
+import { makeInvoiceUseCases } from "./container/invoice";
+import { makeSubscriptionUseCases } from "./container/subscription";
 
-export const adminRepository = AdminRepositoryPrisma.create(prisma);
-export const partnerRepository = PartnerRepositoryPrisma.create(prisma);
-export const eventRepository = EventRepositoryPrisma.create(prisma);
-export const leadRepository = LeadRepositoryPrisma.create(prisma);
-export const productRepository = ProductRepositoryPrisma.create(prisma);
-export const sellerRepository = SellerRepositoryPrisma.create(prisma);
-export const saleRepository = SaleRepositoryPrisma.create(prisma);
-export const sellerEventRepository = SellerEventRepositoryPrisma.create(prisma);
-export const pendingActionRepository =
-  PendingActionRepositoryPrisma.create(prisma);
+import { SocketServer } from "./socket/SocketServer";
+import { Authorization } from "./http/middlewares/Authorization";
+import { prisma } from "../package/prisma";
 
-const secretKey = process.env.SECRET_KEY as string;
-export const authorization = Authorization.create(secretKey);
-const exporter = new CsvLeadExporter();
-const uploader = new CloudinaryUploadService();
+export function makeUseCases(
+  socketServer: SocketServer,
+  authorization: Authorization
+) {
+  const uploader = new CloudinaryUploadService();
+  const exporter = new CsvLeadExporter();
 
-export const admin = makeAdminUseCases(
-  adminRepository,
-  authorization,
-  partnerRepository
-);
-export const partner = makePartnerUseCases(
-  partnerRepository,
-  uploader,
-  authorization
-);
-export const event = makeEventUseCases(eventRepository, uploader);
-export const product = makeProductUseCases(productRepository, uploader);
-export const lead = makeLeadUseCases(
-  leadRepository,
-  eventRepository,
-  partnerRepository,
-  exporter
-);
-export const seller = makeSellerUseCases(sellerRepository, uploader);
-export const sellerEvent = makeSellerEventUseCases(sellerEventRepository);
-export const sale = makeSaleUseCases(saleRepository);
-export const pendingAction = makePendingActionUseCases(pendingActionRepository);
+  const adminRepository = AdminRepositoryPrisma.create(prisma);
+  const userRepository = UserRepositoryPrisma.create(prisma);
+  const companyRepository = CompanyRepositoryPrisma.create(prisma);
+  const eventRepository = EventRepositoryPrisma.create(prisma);
+  const leadRepository = LeadRepositoryPrisma.create(prisma);
+  const productRepository = ProductRepositoryPrisma.create(prisma);
+  const sellerRepository = SellerRepositoryPrisma.create(prisma);
+  const saleRepository = SaleRepositoryPrisma.create(prisma);
+  const sellerEventRepository = SellerEventRepositoryPrisma.create(prisma);
+  const pendingActionRepository = PendingActionRepositoryPrisma.create(prisma);
+  const invoiceRepository = InvoiceRepositoryPrisma.create(prisma);
+  const subscriptionRepository = SubscriptionRepositoryPrisma.create(prisma);
 
-export const useCases = {
-  admin,
-  partner,
-  event,
-  lead,
-  product,
-  seller,
-  sellerEvent,
-  sale,
-  pendingAction,
-};
+  return {
+    admin: makeAdminUseCases(
+      adminRepository,
+      userRepository,
+      authorization,
+      companyRepository
+    ),
+    user: makeUserUseCases(userRepository, uploader, authorization),
+    company: makeCompanyUseCases(
+      companyRepository,
+      userRepository,
+      uploader,
+      authorization
+    ),
+    event: makeEventUseCases(eventRepository, companyRepository, uploader),
+    product: makeProductUseCases(
+      productRepository,
+      companyRepository,
+      uploader
+    ),
+    lead: makeLeadUseCases(
+      leadRepository,
+      eventRepository,
+      companyRepository,
+      exporter
+    ),
+    seller: makeSellerUseCases(sellerRepository, companyRepository, uploader),
+    sellerEvent: makeSellerEventUseCases(
+      sellerEventRepository,
+      companyRepository,
+      eventRepository,
+      sellerRepository,
+      authorization
+    ),
+    sale: makeSaleUseCases(
+      saleRepository,
+      eventRepository,
+      productRepository,
+      sellerRepository
+    ),
+    pendingAction: makePendingActionUseCases(
+      pendingActionRepository,
+      saleRepository,
+      socketServer
+    ),
+    invoice: makeInvoiceUseCases(invoiceRepository),
+    subscription: makeSubscriptionUseCases(subscriptionRepository),
+  };
+}

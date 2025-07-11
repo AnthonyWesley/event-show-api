@@ -3,7 +3,7 @@ import { ulid } from "ulid";
 
 const prisma = new PrismaClient();
 
-const partnerId = "01JYDXSRNA52QGB9T0ZEQA2ESX";
+const companyId = "01JYDXSRNA52QGB9T0ZEQA2ESX";
 
 const sellerData = [
   {
@@ -154,7 +154,7 @@ async function main() {
       id: ulid(),
       name,
       price: getRandomInt(20, 200),
-      partnerId,
+      companyId,
       photo: generatePhotoUrl(index + 100),
     })),
   });
@@ -166,7 +166,7 @@ async function main() {
       name: seller.name,
       email: `vendedor${index + 1}@mail.com`,
       phone: `1199999-00${index + 1}`,
-      partnerId,
+      companyId,
       photo: seller.photo,
     })),
   });
@@ -193,7 +193,7 @@ async function main() {
         startDate,
         endDate,
         isActive,
-        partnerId,
+        companyId,
         photo: generatePhotoUrl(i + 300),
       },
     });
@@ -222,7 +222,7 @@ async function main() {
           customInterest: Math.random() > 0.8 ? product.name : null,
           notes: Math.random() > 0.5 ? "Interessado com urgência" : null,
           eventId,
-          partnerId,
+          companyId,
           sellerId: seller?.id ?? null,
           products: {
             connect: [{ id: product.id }],

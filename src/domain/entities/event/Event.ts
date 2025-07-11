@@ -1,3 +1,4 @@
+import { GoalType } from "@prisma/client";
 import { generateId } from "../../../shared/utils/IdGenerator";
 import { SaleProps } from "../sale/Sale";
 
@@ -22,9 +23,9 @@ export type EventProps = {
   startDate: Date;
   endDate?: Date;
   isActive: boolean;
-  partnerId: string;
+  companyId: string;
   goal: number;
-  goalType: string;
+  goalType: GoalType;
   createdAt: Date;
   sales: SaleProps[];
   sellerEvents: SellerEvent[];
@@ -37,15 +38,15 @@ export class Event {
     name: string,
     goal: number,
     goalType: Goal,
-    partnerId: string,
+    companyId: string,
     photo?: string
   ) {
     if (!name.trim()) {
       throw new Error("Event name is required.");
     }
 
-    if (!partnerId.trim()) {
-      throw new Error("Partner ID is required.");
+    if (!companyId.trim()) {
+      throw new Error("Company ID is required.");
     }
 
     return new Event({
@@ -56,7 +57,7 @@ export class Event {
       isActive: false,
       goal,
       goalType,
-      partnerId,
+      companyId,
       sellerEvents: [],
       sales: [],
       createdAt: new Date(),
@@ -99,8 +100,8 @@ export class Event {
     return this.props.goalType;
   }
 
-  public get partnerId() {
-    return this.props.partnerId;
+  public get companyId() {
+    return this.props.companyId;
   }
 
   public get sellerEvents() {

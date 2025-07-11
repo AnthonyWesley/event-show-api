@@ -8,12 +8,12 @@ import {
   FindLeadOutputDto,
 } from "../../../usecase/lead/FindLead";
 
-export type FindPartnerProductResponseDto = {
+export type FindProductResponseDto = {
   id: string;
   name: string;
   startDate: Date;
   endDate: Date;
-  partnerId: string;
+  companyId: string;
   createdAt: Date;
 };
 
@@ -40,10 +40,10 @@ export class FindLeadRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
       const { eventId, leadId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const input: FindLeadInputDto = {
-        partnerId: partner.id,
+        companyId: user.companyId,
         eventId,
         leadId,
       };

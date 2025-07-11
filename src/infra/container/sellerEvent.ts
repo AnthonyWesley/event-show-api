@@ -3,16 +3,19 @@ import { DeleteSellerEvent } from "../../usecase/sellerEvent/DeleteSellerEvent";
 import { GuestAccess } from "../../usecase/sellerEvent/GuestAccess";
 import { ListEventsBySeller } from "../../usecase/sellerEvent/ListEventsBySeller";
 import { ListSellerByEvent } from "../../usecase/sellerEvent/ListSellerByEvent";
-import {
-  partnerRepository,
-  eventRepository,
-  sellerRepository,
-  authorization,
-} from "../Container";
+
+import { Authorization } from "../http/middlewares/Authorization";
+import { CompanyRepositoryPrisma } from "../repositories/company/CompanyRepositoryPrisma";
+import { EventRepositoryPrisma } from "../repositories/event/EventRepositoryPrisma";
+import { SellerRepositoryPrisma } from "../repositories/seller/SellerRepositoryPrisma";
 import { SellerEventRepositoryPrisma } from "../repositories/sellerEvent/SellerEventRepositoryPrisma";
 
 export function makeSellerEventUseCases(
-  sellerEventRepository: SellerEventRepositoryPrisma
+  sellerEventRepository: SellerEventRepositoryPrisma,
+  companyRepository: CompanyRepositoryPrisma,
+  eventRepository: EventRepositoryPrisma,
+  sellerRepository: SellerRepositoryPrisma,
+  authorization: Authorization
 ) {
   return {
     create: CreateSellerEvent.create(sellerEventRepository),
@@ -23,22 +26,22 @@ export function makeSellerEventUseCases(
     //   whatsappService
     // ),
     guestAccess: GuestAccess.create(
-      partnerRepository,
+      companyRepository,
       eventRepository,
       sellerRepository,
       authorization
     ),
     listSeller: ListSellerByEvent.create(
       sellerEventRepository,
-      partnerRepository,
+      companyRepository,
       eventRepository
     ),
     listEvent: ListEventsBySeller.create(
       sellerEventRepository,
-      partnerRepository,
+      companyRepository,
       eventRepository
     ),
     delete: DeleteSellerEvent.create(sellerEventRepository),
-    // update: UpdateEventSeller.create(sellerRepository, partnerRepository),
+    // update: UpdateSeller.create(sellerRepository, companyRepository),
   };
 }

@@ -27,15 +27,15 @@ export class ListPendingActionRoute implements IRoute {
   }
 
   getHandler() {
-    return async (req: Request, res: Response) => {
-      const { partner } = req as any;
+    return async (request: Request, response: Response) => {
+      const { user } = request as any;
 
       const input: ListPendingActionInputDto = {
-        partnerId: partner.id,
+        companyId: user.companyId,
       };
 
       const result = await this.ListPendingActionService.execute(input);
-      res.status(200).json(result);
+      response.status(200).json(result);
     };
   }
 

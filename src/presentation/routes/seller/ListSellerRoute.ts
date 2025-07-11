@@ -35,10 +35,10 @@ export class ListSellerRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
-      const { partner } = request as any;
+      const { user } = request as any;
       const search = request.query.search as string | undefined;
       const output = await this.listSellerService.execute({
-        partnerId: partner.id,
+        companyId: user.companyId,
         search: typeof search === "string" ? search.trim() : undefined,
       });
 
@@ -49,7 +49,7 @@ export class ListSellerRoute implements IRoute {
           email: seller.email,
           phone: seller.phone,
           photo: seller.photo,
-          partnerId: seller.partnerId,
+          companyId: seller.companyId,
           createdAt: seller.createdAt,
         })),
       };

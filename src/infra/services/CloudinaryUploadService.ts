@@ -1,4 +1,3 @@
-// src/infra/services/CloudinaryUploadService.ts
 import { v2 as cloudinary } from "cloudinary";
 import { IUploadService } from "./IUploadService";
 

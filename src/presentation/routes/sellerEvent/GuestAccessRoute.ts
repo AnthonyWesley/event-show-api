@@ -25,12 +25,12 @@ export class GuestAccessRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response) => {
-      const { partner } = request as any;
+      const { user } = request as any;
       const { eventId, sellerId } = request.params;
 
       const result = await this.guestAccessService.execute({
-        partnerId: partner.id,
-        email: partner.email,
+        companyId: user.companyId,
+        email: user.email,
         eventId,
         sellerId,
       });

@@ -6,7 +6,7 @@ import { NotFoundError } from "../../shared/errors/NotFoundError";
 
 export type UpdateSaleInputDto = {
   saleId: string;
-  partnerId: string;
+  companyId: string;
   eventId: string;
 
   quantity?: number;
@@ -15,7 +15,7 @@ export type UpdateSaleInputDto = {
 
 export type UpdateSaleResponseDto = {
   id: string;
-  partnerId: string;
+  companyId: string;
   eventId: string;
   productId: string;
   sellerId: string;
@@ -49,7 +49,7 @@ export class UpdateSale {
     const [eventExists, saleExists] = await Promise.all([
       this.eventGateway.findById({
         eventId: input.eventId,
-        partnerId: input.partnerId,
+        companyId: input.companyId,
       }),
 
       this.saleGateway.findById(input),
@@ -64,7 +64,7 @@ export class UpdateSale {
 
     return {
       id: updatedSale.id,
-      partnerId: eventExists.partnerId,
+      companyId: eventExists.companyId,
       eventId: updatedSale.eventId,
       productId: updatedSale.productId,
       sellerId: updatedSale.sellerId,

@@ -14,7 +14,7 @@ export type FindSellerResponseDto = {
   name: string;
   startDate: Date;
   endDate: Date;
-  partnerId: string;
+  companyId: string;
   sales: SaleProps[];
   createdAt: Date;
 };
@@ -42,9 +42,9 @@ export class FindSellerRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
       const { sellerId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
 
-      const input = { partnerId: partner.id, sellerId };
+      const input = { companyId: user.companyId, sellerId };
 
       const output: FindSellerOutputDto = await this.findSellerServer.execute(
         input
@@ -56,7 +56,7 @@ export class FindSellerRoute implements IRoute {
         email: output.email,
         phone: output.phone,
         photo: output.photo,
-        partnerId: output.partnerId,
+        companyId: output.companyId,
         sales: output.sales,
         createdAt: output.createdAt,
       };

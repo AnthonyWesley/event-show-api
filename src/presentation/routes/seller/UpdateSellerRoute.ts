@@ -29,7 +29,7 @@ export class UpdateSellerRoute implements IRoute {
   getHandler() {
     return async (request: Request, response: Response) => {
       const { sellerId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const { name, email, phone } = request.body;
 
@@ -39,7 +39,7 @@ export class UpdateSellerRoute implements IRoute {
 
       const input: UpdateSellerInputDto = {
         sellerId,
-        partnerId: partner.id,
+        companyId: user.companyId,
         name,
         email,
         phone,

@@ -1,32 +1,31 @@
-import { IEventGateway } from "../../domain/entities/event/IEventGateway";
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 
 export type DeleteSellerInputDto = {
-  partnerId: string;
+  companyId: string;
   sellerId: string;
 };
 
 export class DeleteSeller implements IUseCases<DeleteSellerInputDto, void> {
   private constructor(
     private readonly sellerGateway: ISellerGateway,
-    private readonly partnerGateway: IPartnerGateway
+    private readonly companyGateway: ICompanyGateway
   ) {}
 
   static create(
     sellerGateway: ISellerGateway,
-    partnerGateway: IPartnerGateway
+    companyGateway: ICompanyGateway
   ) {
-    return new DeleteSeller(sellerGateway, partnerGateway);
+    return new DeleteSeller(sellerGateway, companyGateway);
   }
 
   async execute(input: DeleteSellerInputDto): Promise<void> {
-    const partnerExists = await this.partnerGateway.findById(input.partnerId);
+    const companyExists = await this.companyGateway.findById(input.companyId);
 
-    if (!partnerExists) {
-      throw new NotFoundError("Partner not found.");
+    if (!companyExists) {
+      throw new NotFoundError("Company not found.");
     }
 
     await this.sellerGateway.delete(input);

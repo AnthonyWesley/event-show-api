@@ -1,9 +1,6 @@
 import { Response, Request } from "express";
 import { IRoute, HttpMethod } from "../IRoute";
-import {
-  RefreshInputDto,
-  RefreshPartner,
-} from "../../../usecase/partner/RefreshPartner";
+import { RefreshInputDto } from "../../../usecase/company/RefreshCompany";
 import { RefreshAdmin } from "../../../usecase/admin/RefreshAdmin";
 
 export type RefreshAdminResponseDto = {

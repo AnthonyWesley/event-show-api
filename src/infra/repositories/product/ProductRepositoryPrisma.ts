@@ -2,8 +2,8 @@ import { PrismaClient } from "@prisma/client";
 
 import { Product } from "../../../domain/entities/product/Product";
 import { IProductGateway } from "../../../domain/entities/product/IProductGateway";
-import { DeletePartnerProductInputDto } from "../../../usecase/product/DeleteProduct";
-import { UpdatePartnerProductInputDto } from "../../../usecase/product/UpdateProduct";
+import { DeleteProductInputDto } from "../../../usecase/product/DeleteProduct";
+import { UpdateProductInputDto } from "../../../usecase/product/UpdateProduct";
 
 export class ProductRepositoryPrisma implements IProductGateway {
   private constructor(private readonly prismaClient: PrismaClient) {}
@@ -18,7 +18,7 @@ export class ProductRepositoryPrisma implements IProductGateway {
       name: product.name,
       price: product.price,
       photo: product.photo,
-      partnerId: product.partnerId,
+      companyId: product.companyId,
       createdAt: product.createdAt,
     };
 
@@ -29,9 +29,9 @@ export class ProductRepositoryPrisma implements IProductGateway {
     }
   }
 
-  async list(partnerId: string, search: string): Promise<Product[]> {
+  async list(companyId: string, search: string): Promise<Product[]> {
     const filters: any = {
-      partnerId,
+      companyId,
     };
 
     if (search) {
@@ -51,13 +51,13 @@ export class ProductRepositoryPrisma implements IProductGateway {
         price: e.price,
         photo: e.photo ?? "",
         photoPublicId: e.photoPublicId ?? "",
-        partnerId: e.partnerId,
+        companyId: e.companyId,
         createdAt: e.createdAt,
       })
     );
   }
 
-  async update(input: UpdatePartnerProductInputDto): Promise<Product> {
+  async update(input: UpdateProductInputDto): Promise<Product> {
     try {
       const dataToUpdate: any = {};
 
@@ -70,7 +70,7 @@ export class ProductRepositoryPrisma implements IProductGateway {
       const updatedProduct = await this.prismaClient.product.update({
         where: {
           id: input.productId,
-          partnerId: input.partnerId,
+          companyId: input.companyId,
         },
         data: dataToUpdate,
         include: { sales: true },
@@ -82,7 +82,7 @@ export class ProductRepositoryPrisma implements IProductGateway {
         price: updatedProduct.price,
         photo: updatedProduct.photo ?? "",
         photoPublicId: updatedProduct.photoPublicId ?? "",
-        partnerId: updatedProduct.partnerId,
+        companyId: updatedProduct.companyId,
         createdAt: updatedProduct.createdAt,
       });
     } catch (error: any) {
@@ -90,28 +90,28 @@ export class ProductRepositoryPrisma implements IProductGateway {
     }
   }
 
-  async delete(input: DeletePartnerProductInputDto): Promise<void> {
+  async delete(input: DeleteProductInputDto): Promise<void> {
     const product = await this.prismaClient.product.findUnique({
-      where: { id: input.productId, partnerId: input.partnerId },
+      where: { id: input.productId, companyId: input.companyId },
     });
 
     if (!product) {
-      throw new Error("Product not found or does not belong to the partner.");
+      throw new Error("Product not found or does not belong to the company.");
     }
 
     try {
       await this.prismaClient.product.delete({
-        where: { id: input.productId, partnerId: input.partnerId },
+        where: { id: input.productId, companyId: input.companyId },
       });
     } catch (error: any) {
       throw new Error("Error deleting product: " + error.message);
     }
   }
 
-  async findById(input: DeletePartnerProductInputDto): Promise<Product | null> {
+  async findById(input: DeleteProductInputDto): Promise<Product | null> {
     try {
       const product = await this.prismaClient.product.findUnique({
-        where: { id: input.productId, partnerId: input.partnerId },
+        where: { id: input.productId, companyId: input.companyId },
         include: { sales: true },
       });
 
@@ -123,7 +123,7 @@ export class ProductRepositoryPrisma implements IProductGateway {
         price: product.price,
         photo: product.photo ?? "",
         photoPublicId: product.photoPublicId ?? "",
-        partnerId: product.partnerId,
+        companyId: product.companyId,
         createdAt: product.createdAt,
       });
     } catch (error: any) {

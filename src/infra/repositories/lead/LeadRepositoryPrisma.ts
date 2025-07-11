@@ -4,7 +4,6 @@ import { ILeadGateway } from "../../../domain/entities/lead/ILeadGateway";
 import { UpdateLeadInputDto } from "../../../usecase/lead/UpdateLead";
 import { DeleteLeadInputDto } from "../../../usecase/lead/DeleteLead";
 import { FindLeadInputDto } from "../../../usecase/lead/FindLead";
-import { product } from "../../Container";
 
 export class LeadRepositoryPrisma implements ILeadGateway {
   private constructor(private readonly prismaClient: PrismaClient) {}
@@ -23,7 +22,7 @@ export class LeadRepositoryPrisma implements ILeadGateway {
       source: lead.source,
       customInterest: lead.customInterest,
       eventId: lead.eventId,
-      partnerId: lead.partnerId,
+      companyId: lead.companyId,
       createdAt: lead.createdAt,
       products: {
         connect: lead.products?.map((p) => ({ id: p.id })) ?? [],
@@ -37,9 +36,9 @@ export class LeadRepositoryPrisma implements ILeadGateway {
     }
   }
 
-  async listByPartner(partnerId: string): Promise<Lead[]> {
+  async listByCompany(companyId: string): Promise<Lead[]> {
     const leads = await this.prismaClient.lead.findMany({
-      where: { partnerId },
+      where: { companyId },
       include: { products: true },
     });
 
@@ -53,7 +52,7 @@ export class LeadRepositoryPrisma implements ILeadGateway {
         source: l.source,
         customInterest: l.customInterest ?? undefined,
         eventId: l.eventId,
-        partnerId: l.partnerId,
+        companyId: l.companyId,
         createdAt: l.createdAt,
         products: l.products,
       })
@@ -76,7 +75,7 @@ export class LeadRepositoryPrisma implements ILeadGateway {
         source: l.source,
         customInterest: l.customInterest ?? undefined,
         eventId: l.eventId,
-        partnerId: l.partnerId,
+        companyId: l.companyId,
         createdAt: l.createdAt,
         products: l.products,
       })
@@ -86,7 +85,7 @@ export class LeadRepositoryPrisma implements ILeadGateway {
   async findById(input: FindLeadInputDto): Promise<Lead | null> {
     try {
       const lead = await this.prismaClient.lead.findUnique({
-        where: { id: input.leadId, partnerId: input.partnerId },
+        where: { id: input.leadId, companyId: input.companyId },
         include: { products: true },
       });
 
@@ -101,7 +100,7 @@ export class LeadRepositoryPrisma implements ILeadGateway {
         source: lead.source,
         customInterest: lead.customInterest ?? undefined,
         eventId: lead.eventId,
-        partnerId: lead.partnerId,
+        companyId: lead.companyId,
         createdAt: lead.createdAt,
         products: lead.products,
       });
@@ -124,7 +123,7 @@ export class LeadRepositoryPrisma implements ILeadGateway {
 
       if (input.products !== undefined) {
         dataToUpdate.products = {
-          set: [], // Remove todos os anteriores
+          set: [],
           connect: input.products.map((p) => ({ id: p.id })),
         };
       }
@@ -132,7 +131,7 @@ export class LeadRepositoryPrisma implements ILeadGateway {
       const updated = await this.prismaClient.lead.update({
         where: {
           id: input.leadId,
-          partnerId: input.partnerId,
+          companyId: input.companyId,
         },
         data: dataToUpdate,
         include: {
@@ -149,7 +148,7 @@ export class LeadRepositoryPrisma implements ILeadGateway {
         source: updated.source,
         customInterest: updated.customInterest ?? undefined,
         eventId: updated.eventId,
-        partnerId: updated.partnerId,
+        companyId: updated.companyId,
         createdAt: updated.createdAt,
         products: updated.products,
       });
@@ -160,9 +159,8 @@ export class LeadRepositoryPrisma implements ILeadGateway {
 
   async delete(input: DeleteLeadInputDto): Promise<void> {
     const lead = await this.findById({
-      leadId: input.id,
-      partnerId: input.partnerId,
-      eventId: input.eventId,
+      leadId: input.leadId,
+      companyId: input.companyId,
     });
     if (!lead) throw new Error("Lead not found.");
 
@@ -170,7 +168,7 @@ export class LeadRepositoryPrisma implements ILeadGateway {
       await this.prismaClient.lead.delete({
         where: {
           id: lead.id,
-          partnerId: lead.partnerId,
+          companyId: lead.companyId,
           eventId: lead.eventId,
         },
       });

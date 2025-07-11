@@ -28,10 +28,10 @@ export class SendGuestAccessInviteRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response) => {
       const { eventId, sellerId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
 
       const output = await this.sendGuestAccessInvite.execute({
-        partnerId: partner.id,
+        companyId: user.companyId,
         eventId,
         sellerId,
       });

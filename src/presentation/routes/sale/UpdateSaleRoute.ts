@@ -26,13 +26,13 @@ export class UpdateSaleRoute implements IRoute {
   getHandler() {
     return async (request: Request, response: Response) => {
       const { eventId, saleId } = request.params;
-      const { partner } = request as any;
+      const { user } = request as any;
       const { quantity } = request.body;
 
       const input: UpdateSaleInputDto = {
         saleId,
         eventId,
-        partnerId: partner.id,
+        companyId: user.companyId,
         quantity,
         // total,
       };

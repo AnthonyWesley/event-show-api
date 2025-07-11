@@ -1,4 +1,4 @@
-import { IPartnerGateway } from "../../domain/entities/partner/IPartnerGateway";
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { IUseCases } from "../IUseCases";
 import { Authorization } from "../../infra/http/middlewares/Authorization";
 import { UnauthorizedError } from "../../shared/errors/UnauthorizedError";
@@ -31,7 +31,7 @@ export type SellerDto = {
 };
 
 export type GuestAccessInputDto = {
-  partnerId: string;
+  companyId: string;
   email: string;
   eventId: string;
   sellerId: string;
@@ -41,20 +41,20 @@ export class GuestAccess
   implements IUseCases<GuestAccessInputDto, GuestAccessOutputDto>
 {
   private constructor(
-    private readonly partnerGateway: IPartnerGateway,
+    private readonly companyGateway: ICompanyGateway,
     private readonly eventGateway: IEventGateway,
     private readonly sellerGateway: ISellerGateway,
     private readonly authorization: Authorization
   ) {}
 
   static create(
-    partnerGateway: IPartnerGateway,
+    companyGateway: ICompanyGateway,
     eventGateway: IEventGateway,
     sellerGateway: ISellerGateway,
     authorization: Authorization
   ) {
     return new GuestAccess(
-      partnerGateway,
+      companyGateway,
       eventGateway,
       sellerGateway,
       authorization
@@ -62,13 +62,13 @@ export class GuestAccess
   }
 
   async execute(input: GuestAccessInputDto): Promise<GuestAccessOutputDto> {
-    const partner = await this.partnerGateway.findById(input.partnerId);
-    if (!partner) {
+    const company = await this.companyGateway.findById(input.companyId);
+    if (!company) {
       throw new UnauthorizedError("Invalid email.");
     }
 
     const event = await this.eventGateway.findById({
-      partnerId: input.partnerId,
+      companyId: input.companyId,
       eventId: input.eventId,
     });
     if (!event) {
@@ -77,7 +77,7 @@ export class GuestAccess
 
     const seller = await this.sellerGateway.findById({
       sellerId: input.sellerId,
-      partnerId: input.partnerId,
+      companyId: input.companyId,
     });
     if (!seller) {
       throw new NotFoundError("Seller");
@@ -89,7 +89,7 @@ export class GuestAccess
 
     const stats = SellerStatsHelper.computeStats(
       filteredSales,
-      partner.products ?? []
+      company.products ?? []
     );
 
     const { count: totalSalesCount, total: totalSalesValue } = stats[
@@ -97,7 +97,11 @@ export class GuestAccess
     ] ?? { count: 0, total: 0 };
 
     const accessToken = this.authorization.generateToken(
-      { id: partner.id, email: partner.email },
+      {
+        id: company.users && company?.users[0].id,
+        email: company.users && company?.users[0].email,
+        companyId: company.id,
+      },
       "1d"
     );
 

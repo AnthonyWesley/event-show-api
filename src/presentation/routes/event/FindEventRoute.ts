@@ -19,7 +19,7 @@ export type FindEventResponseDto = {
   goal: number;
   isActive: boolean;
   goalType: Goal;
-  partnerId: string;
+  companyId: string;
   createdAt: Date;
 };
 
@@ -45,9 +45,9 @@ export class FindEventRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
-      const { partner } = request as any;
+      const { user } = request as any;
       const { eventId } = request.params;
-      const input = { partnerId: partner.id, eventId };
+      const input = { companyId: user.companyId, eventId };
       const output: FindEventOutputDto = await this.findEventServer.execute(
         input
       );
@@ -60,7 +60,7 @@ export class FindEventRoute implements IRoute {
         endDate: output.endDate,
         goal: output.goal,
         goalType: output.goalType,
-        partnerId: output.partnerId,
+        companyId: output.companyId,
         sales: output.sales,
         isActive: output.isActive,
         allSellers: output.allSellers,

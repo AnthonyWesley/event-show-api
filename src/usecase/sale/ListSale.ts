@@ -6,7 +6,7 @@ import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 
 export type ListSaleInputDto = {
-  partnerId: string;
+  companyId: string;
   eventId: string;
 };
 
@@ -49,7 +49,7 @@ export class ListSale
     try {
       const eventExists = await this.eventGateway.findById({
         eventId: input.eventId,
-        partnerId: input.partnerId,
+        companyId: input.companyId,
       });
       if (!eventExists) throw new NotFoundError("Event");
 
