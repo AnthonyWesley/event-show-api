@@ -26,9 +26,8 @@ export class UpdateSellerPhoto {
     private readonly sellerGateway: ISellerGateway,
     private readonly companyGateway: ICompanyGateway,
     private readonly uploadPhotoService: CloudinaryUploadService,
-    // private readonly minIoUploadService: S3Client,
 
-    private readonly socketServer: SocketServer
+    private readonly socketServer: SocketServer // private readonly minIoUploadService: S3Client,
   ) {}
 
   static create(
@@ -66,12 +65,12 @@ export class UpdateSellerPhoto {
       await this.uploadPhotoService.deleteImage(existingSeller.photoPublicId);
     }
 
-    const minUpload = await new MinIoUploadService().uploadImage(
-      input.file.path,
-      {
-        objectName: `sellers/${input.file.filename}`,
-      }
-    );
+    // const minUpload = await new MinIoUploadService().uploadImage(
+    //   input.file.path,
+    //   {
+    //     objectName: `sellers/${input.file.filename}`,
+    //   }
+    // );
 
     const upload = await this.uploadPhotoService.uploadImage(input.file.path, {
       folder: `seller/${existingSeller.id}`,

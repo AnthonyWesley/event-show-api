@@ -28,9 +28,24 @@ export class SellerRepositoryPrisma implements ISellerGateway {
 
       if (search) {
         filters.OR = [
-          { name: { contains: search, mode: "insensitive" } },
-          { email: { contains: search, mode: "insensitive" } },
-          { phone: { contains: search, mode: "insensitive" } },
+          {
+            name: {
+              contains: search,
+              // mode: "insensitive"
+            },
+          },
+          {
+            email: {
+              contains: search,
+              //  mode: "insensitive"
+            },
+          },
+          {
+            phone: {
+              contains: search,
+              //  mode: "insensitive"
+            },
+          },
         ];
       }
 

@@ -33,7 +33,14 @@ export class ProductRepositoryPrisma implements IProductGateway {
     const filters: any = { companyId };
 
     if (search) {
-      filters.OR = [{ name: { contains: search, mode: "insensitive" } }];
+      filters.OR = [
+        {
+          name: {
+            contains: search,
+            // mode: "insensitive"
+          },
+        },
+      ];
     }
 
     const products = await this.prisma.product.findMany({
