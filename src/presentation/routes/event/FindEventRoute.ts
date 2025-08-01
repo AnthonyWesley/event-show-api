@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import {
   FindEvent,
   FindEventOutputDto,
@@ -28,12 +28,12 @@ export class FindEventRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly findEventServer: FindEvent,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     findEventServer: FindEvent,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new FindEventRoute(
       "/events/:eventId",
@@ -63,6 +63,8 @@ export class FindEventRoute implements IRoute {
         companyId: output.companyId,
         sales: output.sales,
         isActive: output.isActive,
+        totalSalesValue: output.totalSalesValue,
+        totalUnitsSold: output.totalUnitsSold,
         allSellers: output.allSellers,
 
         createdAt: output.createdAt,
@@ -81,6 +83,6 @@ export class FindEventRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

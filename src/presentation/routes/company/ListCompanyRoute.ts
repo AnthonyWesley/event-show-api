@@ -2,7 +2,7 @@ import { Response, Request } from "express";
 import { ListCompany } from "../../../usecase/company/ListCompany";
 import { HttpMethod, IRoute } from "../IRoute";
 import { PlanType, StatusType } from "../../../domain/entities/company/Company";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import { UserProps } from "../../../domain/entities/user/User";
 export type ListCompanyResponseDto = {
   companies: {
@@ -38,12 +38,12 @@ export class ListCompanyRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly listCompanyServer: ListCompany,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     listCompanyServer: ListCompany,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new ListCompanyRoute(
       "/companies",
@@ -99,6 +99,6 @@ export class ListCompanyRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.adminAuthorizationRoute];
+    return [this.authorization.adminRoute];
   }
 }

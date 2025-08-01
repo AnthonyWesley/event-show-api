@@ -1,5 +1,6 @@
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
+import { SocketServer } from "../../infra/socket/SocketServer";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 
 export type UpdateSellerInputDto = {
@@ -26,14 +27,16 @@ export type UpdateSellerResponseDto = {
 export class UpdateSeller {
   private constructor(
     private readonly sellerGateway: ISellerGateway,
-    private readonly companyGateway: ICompanyGateway
+    private readonly companyGateway: ICompanyGateway,
+    private readonly socketServer: SocketServer
   ) {}
 
   static create(
     sellerGateway: ISellerGateway,
-    companyGateway: ICompanyGateway
+    companyGateway: ICompanyGateway,
+    socketServer: SocketServer
   ) {
-    return new UpdateSeller(sellerGateway, companyGateway);
+    return new UpdateSeller(sellerGateway, companyGateway, socketServer);
   }
 
   async execute(input: UpdateSellerInputDto): Promise<UpdateSellerResponseDto> {
@@ -51,6 +54,8 @@ export class UpdateSeller {
     if (!updatedSeller) {
       throw new Error("Failed to update seller");
     }
+    this.socketServer?.emit("seller:updated", { id: input.companyId });
+
     return {
       id: updatedSeller.id,
       name: updatedSeller.name,

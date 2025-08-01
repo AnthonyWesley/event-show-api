@@ -1,35 +1,28 @@
-import { Event, PrismaClient } from "@prisma/client";
+import { PrismaClient, Event } from "@prisma/client";
 import { ISellerEventGateway } from "../../../domain/entities/sellerEvent/ISellerEventGateway";
 import { SellerEvent } from "../../../domain/entities/sellerEvent/SellerEvent";
 import { SellerProps } from "../../../domain/entities/seller/Seller";
 
 export class SellerEventRepositoryPrisma implements ISellerEventGateway {
-  private constructor(private readonly prismaClient: PrismaClient) {}
+  private constructor(private readonly prisma: PrismaClient) {}
 
-  public static create(prismaClient: PrismaClient) {
-    return new SellerEventRepositoryPrisma(prismaClient);
+  public static create(prisma: PrismaClient) {
+    return new SellerEventRepositoryPrisma(prisma);
   }
 
   async save(sellerEvent: SellerEvent): Promise<void> {
     try {
-      await this.prismaClient.sellerEvent.create({
-        data: {
-          id: sellerEvent.id,
-          sellerId: sellerEvent.sellerId,
-          eventId: sellerEvent.eventId,
-        },
+      await this.prisma.sellerEvent.create({
+        data: this.toRaw(sellerEvent),
       });
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error("Error saving seller-event relation: " + error.message);
-      }
-      throw error;
+    } catch (error: any) {
+      throw new Error("Error saving seller-event relation: " + error.message);
     }
   }
 
   async delete(sellerId: string, eventId: string): Promise<void> {
     try {
-      await this.prismaClient.sellerEvent.delete({
+      await this.prisma.sellerEvent.delete({
         where: {
           sellerId_eventId: {
             sellerId,
@@ -37,63 +30,89 @@ export class SellerEventRepositoryPrisma implements ISellerEventGateway {
           },
         },
       });
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error("Error deleting seller from event: " + error.message);
-      }
-      throw error;
+    } catch (error: any) {
+      throw new Error("Error deleting seller from event: " + error.message);
     }
   }
 
   async listSellersByEvent(eventId: string): Promise<SellerEvent[]> {
-    const relations = await this.prismaClient.sellerEvent.findMany({
-      where: { eventId },
-      include: {
-        seller: {
-          include: {
-            sales: {
-              where: { eventId },
-              include: { product: true },
+    try {
+      const relations = await this.prisma.sellerEvent.findMany({
+        where: { eventId },
+        include: {
+          seller: {
+            include: {
+              sales: {
+                orderBy: { createdAt: "desc" },
+                where: { eventId },
+                include: { product: true },
+              },
             },
           },
         },
-      },
-    });
+      });
 
-    return relations.map((relation) =>
-      SellerEvent.with({
-        id: relation.id,
-        sellerId: relation.sellerId,
-        eventId: relation.eventId,
-        seller: relation.seller as SellerProps,
-      })
-    );
+      return relations.map((relation) => this.toEntity(relation));
+    } catch (error: any) {
+      throw new Error("Error listing sellers by event: " + error.message);
+    }
   }
 
   async listEventsBySeller(sellerId: string): Promise<Event[]> {
-    const relations = await this.prismaClient.sellerEvent.findMany({
-      where: { sellerId },
-      include: {
-        event: true,
-      },
-    });
+    try {
+      const relations = await this.prisma.sellerEvent.findMany({
+        where: { sellerId },
+        include: {
+          event: true,
+        },
+      });
 
-    return relations.map((relation) => relation.event);
+      return relations.map((relation) => relation.event);
+    } catch (error: any) {
+      throw new Error("Error listing events by seller: " + error.message);
+    }
   }
 
   async findByEventAndSeller(
     sellerId: string,
     eventId: string
   ): Promise<SellerEvent | null> {
-    const record = await this.prismaClient.sellerEvent.findUnique({
-      where: {
-        sellerId_eventId: {
-          sellerId,
-          eventId,
+    try {
+      const record = await this.prisma.sellerEvent.findUnique({
+        where: {
+          sellerId_eventId: {
+            sellerId,
+            eventId,
+          },
         },
-      },
-    });
+        include: {
+          seller: true,
+          event: true,
+        },
+      });
 
-    return record ? SellerEvent.with(record) : null;
+      if (!record) return null;
+
+      return this.toEntity(record);
+    } catch (error: any) {
+      throw new Error("Error finding seller-event relation: " + error.message);
+    }
+  }
+
+  private toEntity(raw: any): SellerEvent {
+    return SellerEvent.with({
+      id: raw.id,
+      sellerId: raw.sellerId,
+      eventId: raw.eventId,
+      seller: raw.seller as SellerProps,
+    });
+  }
+
+  private toRaw(entity: SellerEvent) {
+    return {
+      id: entity.id,
+      sellerId: entity.sellerId,
+      eventId: entity.eventId,
+    };
   }
 }

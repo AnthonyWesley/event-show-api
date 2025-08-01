@@ -58,6 +58,10 @@ export class ListSale
         throw new Error("Failed to list sales");
       }
 
+      // const existSeller = await this.sellerGateway.findById({companyId:input.companyId,sellerId:} )
+
+      // const seller = eventExists..find(sl=>sl.id)
+
       return {
         sales: sales.map((s) => ({
           id: s.id,
@@ -65,6 +69,10 @@ export class ListSale
           productId: s.productId,
           sellerId: s.sellerId,
           quantity: s.quantity,
+          seller: s.seller,
+          product: s.product,
+          lead: s.lead,
+          leadId: s.leadId,
           // total: s.total,
           createdAt: s.createdAt,
         })),

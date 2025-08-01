@@ -4,17 +4,20 @@ import {
   UpdateEvent,
   UpdateEventInputDto,
 } from "../../../usecase/event/UpdateEvent";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export class UpdateEventRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly updateEventService: UpdateEvent,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
-  static create(updateEventService: UpdateEvent, authorization: Authorization) {
+  static create(
+    updateEventService: UpdateEvent,
+    authorization: AuthorizationRoute
+  ) {
     return new UpdateEventRoute(
       "/events/:eventId",
       HttpMethod.PATCH,
@@ -40,6 +43,7 @@ export class UpdateEventRoute implements IRoute {
         endDate,
         isActive,
       };
+
       const result = await this.updateEventService.execute(input);
 
       response.status(200).json(result);
@@ -55,6 +59,6 @@ export class UpdateEventRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

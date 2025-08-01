@@ -8,6 +8,7 @@ export interface ISellerGateway {
   save(seller: Seller): Promise<void>;
   list(eventId: string, search?: string): Promise<Seller[]>;
   findById(input: FindSellerInputDto): Promise<Seller | null>;
+  countByCompany(companyId: string): Promise<number>;
   findByEmail(input: FindSellerByEmailInputDto): Promise<Seller | null>;
   update(input: UpdateSellerInputDto): Promise<Seller>;
   delete(input: DeleteSellerInputDto): Promise<void>;

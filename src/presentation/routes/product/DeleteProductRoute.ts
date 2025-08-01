@@ -4,7 +4,7 @@ import {
   DeleteProductInputDto,
 } from "../../../usecase/product/DeleteProduct";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export type DeleteProductResponseDto = {
   id: string;
@@ -14,12 +14,12 @@ export class DeleteProductRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly deleteProductService: DeleteProduct,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   static create(
     deleteProductService: DeleteProduct,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new DeleteProductRoute(
       "/products/:productId",
@@ -53,6 +53,6 @@ export class DeleteProductRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

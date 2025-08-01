@@ -7,113 +7,138 @@ import {
   FindSaleInputDto,
   FindSaleOutputDto,
 } from "../../../usecase/sale/FindSale";
+import { Lead } from "../../../domain/entities/lead/Lead";
+import { generateId } from "../../../shared/utils/IdGenerator";
+import { ObjectHelper } from "../../../shared/utils/ObjectHelper";
 
 export class SaleRepositoryPrisma implements ISaleGateway {
-  private constructor(private readonly prismaClient: PrismaClient) {}
+  private constructor(private readonly prisma: PrismaClient) {}
 
-  public static create(prismaClient: PrismaClient) {
-    return new SaleRepositoryPrisma(prismaClient);
+  public static create(prisma: PrismaClient) {
+    return new SaleRepositoryPrisma(prisma);
   }
 
-  async save(sale: Sale): Promise<void> {
-    const data = {
-      id: sale.id,
-      productId: sale.productId,
-      eventId: sale.eventId,
-      sellerId: sale.sellerId,
-      quantity: sale.quantity,
-      // total: sale.total,
-
-      createdAt: sale.createdAt,
-    };
-
+  async save(sale: Sale, lead?: Lead): Promise<void> {
     try {
-      await this.prismaClient.sale.create({ data });
+      await this.prisma.$transaction(async (tx) => {
+        let aLead = null;
+
+        if (sale.leadId) {
+          aLead = await tx.lead.findFirst({ where: { id: sale.leadId } });
+        }
+
+        if (!aLead && lead) {
+          if (!lead.name || !lead.eventId || !lead.companyId) {
+            throw new Error("Dados obrigatórios do lead ausentes.");
+          }
+
+          aLead = await tx.lead.create({
+            data: {
+              id: lead.id ?? generateId(),
+              name: lead.name,
+              email: lead.email,
+              phone: lead.phone,
+              notes: lead.notes,
+              customInterest: lead.customInterest,
+              leadSourceId: lead.leadSourceId ?? undefined,
+              sellerId: lead.sellerId ?? undefined,
+              eventId: lead.eventId,
+              companyId: lead.companyId,
+              createdAt: new Date(),
+              products: lead.products?.length
+                ? {
+                    connect: lead.products.map((p) => ({ id: p.id })),
+                  }
+                : undefined,
+            },
+          });
+        }
+
+        const data = {
+          id: sale.id,
+          productId: sale.productId,
+          eventId: sale.eventId,
+          sellerId: sale.sellerId,
+          quantity: sale.quantity,
+          leadId: aLead?.id ?? sale.leadId,
+          createdAt: sale.createdAt,
+        };
+
+        await tx.sale.create({ data });
+
+        if (aLead && !aLead.convertedAt) {
+          await tx.lead.update({
+            where: { id: aLead.id },
+            data: { convertedAt: new Date() },
+          });
+        }
+      });
     } catch (error: any) {
-      throw new Error("Error saving product: " + error.message);
+      throw new Error("Error saving sale: " + error.message);
     }
   }
 
   async list(eventId: string): Promise<Sale[]> {
-    const sales = await this.prismaClient.sale.findMany({
+    const sales = await this.prisma.sale.findMany({
+      orderBy: { createdAt: "desc" },
       where: { eventId },
-      // include: { sales: true },
+      include: { product: true, lead: true, seller: true },
     });
 
-    return sales.map((s) =>
-      Sale.with({
-        id: s.id,
-        eventId: s.eventId,
-        sellerId: s.sellerId,
-        productId: s.productId,
-        quantity: s.quantity,
-        createdAt: s.createdAt,
-        // total: s.total,
-      })
-    );
+    return sales.map(this.toEntity);
   }
 
   async update(input: UpdateSaleInputDto): Promise<Sale> {
     try {
-      const updatedSale = await this.prismaClient.sale.update({
+      const dataToUpdate = ObjectHelper.removeUndefinedFields({
+        quantity: input.quantity,
+      });
+
+      const updatedSale = await this.prisma.sale.update({
         where: {
           id: input.saleId,
         },
-        data: {
-          quantity: input.quantity,
-        },
+        data: dataToUpdate,
       });
 
-      return Sale.with({
-        id: updatedSale.id,
-        quantity: updatedSale.quantity,
-        // total: updatedSale.total,
-        eventId: updatedSale.eventId,
-        productId: updatedSale.productId,
-        sellerId: updatedSale.sellerId,
-        createdAt: updatedSale.createdAt,
-      });
+      return this.toEntity(updatedSale);
     } catch (error: any) {
       throw new Error("Error updating sale: " + error.message);
     }
   }
 
   async delete(input: DeleteSaleInputDto): Promise<void> {
-    const product = await this.prismaClient.sale.findUnique({
+    const sale = await this.prisma.sale.findUnique({
       where: { id: input.saleId },
     });
 
-    if (!product) {
+    if (!sale) {
       throw new Error("Sale not found or does not belong to the company.");
     }
 
     try {
-      await this.prismaClient.sale.delete({
+      await this.prisma.sale.delete({
         where: { id: input.saleId, eventId: input.eventId },
       });
     } catch (error: any) {
-      throw new Error("Error deleting product: " + error.message);
+      throw new Error("Error deleting sale: " + error.message);
     }
   }
 
   async findById(input: FindSaleInputDto): Promise<FindSaleOutputDto | null> {
     try {
-      const sale = await this.prismaClient.sale.findUnique({
+      const sale = await this.prisma.sale.findUnique({
         where: {
           id: input.saleId,
           eventId: input.eventId,
         },
-        include: { seller: true, product: true },
+        include: { seller: true, product: true, lead: true },
       });
 
       if (!sale) return null;
 
-      return Sale.with({
-        id: sale.id,
-        eventId: sale.eventId,
-        sellerId: sale.sellerId,
-        productId: sale.productId,
-        quantity: sale.quantity,
+      return {
+        ...this.toEntity(sale),
         product: {
           id: sale.product.id,
           name: sale.product.name,
@@ -123,10 +148,24 @@ export class SaleRepositoryPrisma implements ISaleGateway {
           id: sale.seller.id,
           name: sale.seller.name,
         },
-        createdAt: sale.createdAt,
-      });
+      } as FindSaleOutputDto;
     } catch (error: any) {
-      throw new Error("Error finding product: " + error.message);
+      throw new Error("Error finding sale: " + error.message);
     }
+  }
+
+  private toEntity(raw: any): Sale {
+    return Sale.with({
+      id: raw.id,
+      eventId: raw.eventId,
+      sellerId: raw.sellerId,
+      productId: raw.productId,
+      seller: raw.seller,
+      product: raw.product,
+      lead: raw.lead,
+      quantity: raw.quantity,
+      createdAt: raw.createdAt,
+      leadId: raw.leadId,
+    });
   }
 }

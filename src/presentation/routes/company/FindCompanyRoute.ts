@@ -1,33 +1,20 @@
 import { Response, Request } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import { Goal } from "../../../domain/entities/event/Event";
 import { FindCompany } from "../../../usecase/company/FindCompany";
-
-export type FindCompanyResponseDto = {
-  id: string;
-  name: string;
-  startDate: Date;
-  endDate: Date;
-  goal: number;
-  photo: string;
-  photoPublicId: string;
-  goalType: Goal;
-  companyId: string;
-  createdAt: Date;
-};
 
 export class FindCompanyRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly findCompanyServer: FindCompany,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     findCompanyServer: FindCompany,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new FindCompanyRoute(
       "/company",
@@ -64,11 +51,10 @@ export class FindCompanyRoute implements IRoute {
         photo: output.photo,
         photoPublicId: output.photoPublicId,
 
-        plan: output.plan,
+        planId: output.planId,
         status: output.status,
         accessExpiresAt: output.accessExpiresAt,
         createdAt: output.createdAt,
-        maxConcurrentEvents: output.maxConcurrentEvents,
       };
       response.status(200).json(result);
     };
@@ -83,6 +69,6 @@ export class FindCompanyRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

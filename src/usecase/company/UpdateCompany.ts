@@ -47,7 +47,6 @@ export class UpdateCompany
       name: input.name,
       email: input.email,
       phone: input.phone,
-      plan: existingCompany.plan,
       products: existingCompany.products,
       status: existingCompany.status,
       events: existingCompany.events,
@@ -67,11 +66,23 @@ export class UpdateCompany
       photoPublicId: input.photoPublicId,
     });
 
-    if (input.plan !== existingCompany.plan) {
-      updatedCompany.updatePlan(input.plan);
-    }
-
-    await this.companyGateway.update(updatedCompany.id, updatedCompany);
+    await this.companyGateway.update(updatedCompany.id, {
+      name: input.name,
+      email: input.email,
+      phone: input.phone,
+      cnpj: input.cnpj,
+      ie: input.ie,
+      responsibleName: input.responsibleName,
+      address: input.address,
+      city: input.city,
+      state: input.state,
+      zipCode: input.zipCode,
+      website: input.website,
+      segment: input.segment,
+      notes: input.notes,
+      photo: input.photo,
+      photoPublicId: input.photoPublicId,
+    });
 
     return { id: updatedCompany.id };
   }

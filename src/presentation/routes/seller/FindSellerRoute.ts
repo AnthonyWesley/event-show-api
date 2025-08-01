@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 import { SaleProps } from "../../../domain/entities/sale/Sale";
 import {
@@ -24,12 +24,12 @@ export class FindSellerRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly findSellerServer: FindSeller,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     findSellerServer: FindSeller,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new FindSellerRoute(
       "/sellers/:sellerId",
@@ -73,6 +73,6 @@ export class FindSellerRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

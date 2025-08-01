@@ -4,6 +4,7 @@ import { IEventGateway } from "../../../domain/entities/event/IEventGateway";
 import { DeleteEventInputDto } from "../../../usecase/event/DeleteEvent";
 import { FindEventInputDto } from "../../../usecase/event/FindEvent";
 import { UpdateEventInputDto } from "../../../usecase/event/UpdateEvent";
+import { ObjectHelper } from "../../../shared/utils/ObjectHelper";
 
 export class EventRepositoryPrisma implements IEventGateway {
   private constructor(private readonly prismaClient: PrismaClient) {}
@@ -45,44 +46,26 @@ export class EventRepositoryPrisma implements IEventGateway {
     const events = await this.prismaClient.event.findMany({
       where: filters,
       include: {
-        sales: true,
+        sales: { orderBy: { createdAt: "desc" }, include: { seller: true } },
         sellerEvents: true,
       },
     });
 
-    return events.map((event) =>
-      Event.with({
-        id: event.id,
-        name: event.name,
-        photo: event.photo ?? "",
-        photoPublicId: event.photoPublicId ?? "",
-        startDate: event.startDate,
-        endDate: event.endDate ?? undefined,
-        companyId: event.companyId,
-        isActive: event.isActive,
-        goal: event.goal,
-        goalType: event.goalType,
-        createdAt: event.createdAt,
-        sales: event.sales,
-        sellerEvents: event.sellerEvents,
-      })
-    );
+    return events.map((event) => this.toEntity(event));
   }
 
   async update(input: UpdateEventInputDto): Promise<Event> {
     try {
-      const dataToUpdate: any = {};
-
-      if (input.name !== undefined) dataToUpdate.name = input.name;
-      if (input.photo !== undefined) dataToUpdate.photo = input.photo;
-      if (input.photoPublicId !== undefined)
-        dataToUpdate.photoPublicId = input.photoPublicId;
-      if (input.startDate !== undefined)
-        dataToUpdate.startDate = input.startDate;
-      if (input.endDate !== undefined) dataToUpdate.endDate = input.endDate;
-      if (input.isActive !== undefined) dataToUpdate.isActive = input.isActive;
-      if (input.goal !== undefined) dataToUpdate.goal = input.goal;
-      if (input.goalType !== undefined) dataToUpdate.goalType = input.goalType;
+      const dataToUpdate = ObjectHelper.removeUndefinedFields({
+        name: input.name,
+        photo: input.photo,
+        photoPublicId: input.photoPublicId,
+        startDate: input.startDate,
+        endDate: input.endDate,
+        isActive: input.isActive,
+        goal: input.goal,
+        goalType: input.goalType,
+      });
 
       const updated = await this.prismaClient.event.update({
         where: {
@@ -96,21 +79,7 @@ export class EventRepositoryPrisma implements IEventGateway {
         },
       });
 
-      return Event.with({
-        id: updated.id,
-        name: updated.name,
-        photo: updated.photo ?? undefined,
-        photoPublicId: updated.photoPublicId ?? undefined,
-        startDate: updated.startDate,
-        endDate: updated.endDate ?? undefined,
-        companyId: updated.companyId,
-        isActive: updated.isActive,
-        goal: updated.goal,
-        goalType: updated.goalType,
-        createdAt: updated.createdAt,
-        sales: updated.sales,
-        sellerEvents: updated.sellerEvents,
-      });
+      return this.toEntity(updated);
     } catch (error: any) {
       throw new Error(`Error updating event: ${error.message}`);
     }
@@ -132,6 +101,15 @@ export class EventRepositoryPrisma implements IEventGateway {
     }
   }
 
+  async countActiveByCompany(companyId: string): Promise<number> {
+    return await this.prismaClient.event.count({
+      where: {
+        companyId,
+        isActive: true,
+      },
+    });
+  }
+
   async findById(input: FindEventInputDto): Promise<Event | null> {
     try {
       const event = await this.prismaClient.event.findUnique({
@@ -140,28 +118,14 @@ export class EventRepositoryPrisma implements IEventGateway {
           companyId: input.companyId,
         },
         include: {
-          sales: true,
+          sales: { include: { seller: true } },
           sellerEvents: true,
         },
       });
 
       if (!event) return null;
 
-      return Event.with({
-        id: event.id,
-        name: event.name,
-        photo: event.photo ?? "",
-        photoPublicId: event.photoPublicId ?? "",
-        startDate: event.startDate,
-        endDate: event.endDate ?? undefined,
-        companyId: event.companyId,
-        goal: event.goal,
-        isActive: event.isActive,
-        goalType: event.goalType,
-        createdAt: event.createdAt,
-        sales: event.sales,
-        sellerEvents: event.sellerEvents,
-      });
+      return this.toEntity(event);
     } catch (error: any) {
       throw new Error(`Error finding event: ${error.message}`);
     }
@@ -171,7 +135,6 @@ export class EventRepositoryPrisma implements IEventGateway {
     try {
       const events = await this.prismaClient.event.findMany({
         where: {
-          // id: input.eventId,
           companyId: input.companyId,
           isActive: true,
         },
@@ -181,25 +144,7 @@ export class EventRepositoryPrisma implements IEventGateway {
         },
       });
 
-      // if (!events) return null;
-
-      return events.map((event) =>
-        Event.with({
-          id: event.id,
-          name: event.name,
-          photo: event.photo ?? "",
-          photoPublicId: event.photoPublicId ?? "",
-          startDate: event.startDate,
-          endDate: event.endDate ?? undefined,
-          companyId: event.companyId,
-          isActive: event.isActive,
-          goal: event.goal,
-          goalType: event.goalType,
-          createdAt: event.createdAt,
-          sales: event.sales,
-          sellerEvents: event.sellerEvents,
-        })
-      );
+      return events.map((event) => this.toEntity(event));
     } catch (error: any) {
       throw new Error(`Error finding event: ${error.message}`);
     }
@@ -218,23 +163,27 @@ export class EventRepositoryPrisma implements IEventGateway {
 
       if (!event) return null;
 
-      return Event.with({
-        id: event.id,
-        name: event.name,
-        photo: event.photo ?? "",
-        photoPublicId: event.photoPublicId ?? "",
-        startDate: event.startDate,
-        endDate: event.endDate ?? undefined,
-        companyId: event.companyId,
-        goal: event.goal,
-        isActive: event.isActive,
-        goalType: event.goalType,
-        createdAt: event.createdAt,
-        sales: event.sales,
-        sellerEvents: event.sellerEvents,
-      });
+      return this.toEntity(event);
     } catch (error: any) {
       throw new Error(`Error finding last event: ${error.message}`);
     }
+  }
+
+  private toEntity(raw: any): Event {
+    return Event.with({
+      id: raw.id,
+      name: raw.name,
+      photo: raw.photo ?? "",
+      photoPublicId: raw.photoPublicId ?? "",
+      startDate: raw.startDate,
+      endDate: raw.endDate ?? undefined,
+      companyId: raw.companyId,
+      goal: raw.goal,
+      isActive: raw.isActive,
+      goalType: raw.goalType,
+      createdAt: raw.createdAt,
+      sales: raw.sales,
+      sellerEvents: raw.sellerEvents,
+    });
   }
 }

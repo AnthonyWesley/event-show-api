@@ -9,15 +9,21 @@ import { ILeadExporter } from "../exporters/ILeadExporter";
 import { EventRepositoryPrisma } from "../repositories/event/EventRepositoryPrisma";
 import { LeadRepositoryPrisma } from "../repositories/lead/LeadRepositoryPrisma";
 import { CompanyRepositoryPrisma } from "../repositories/company/CompanyRepositoryPrisma";
+import { LeadSourceRepositoryPrisma } from "../repositories/leadSource/LeadSourceRepositoryPrisma";
 
 export function makeLeadUseCases(
   leadRepository: LeadRepositoryPrisma,
   eventRepository: EventRepositoryPrisma,
   companyRepository: CompanyRepositoryPrisma,
+  leadSourceRepository: LeadSourceRepositoryPrisma,
   exporter: ILeadExporter
 ) {
   return {
-    create: CreateLead.create(leadRepository, eventRepository),
+    create: CreateLead.create(
+      leadRepository,
+      eventRepository,
+      leadSourceRepository
+    ),
     findOne: FindLead.create(leadRepository, companyRepository),
     exportLead: ExportLead.create(leadRepository, eventRepository, exporter),
     listByCompany: ListLeadsByCompany.create(leadRepository, companyRepository),

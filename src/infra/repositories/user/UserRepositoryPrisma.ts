@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { IUserGateway } from "../../../domain/entities/user/IUserGateway";
 import { User } from "../../../domain/entities/user/User";
 import { CompanyProps } from "../../../domain/entities/company/Company";
+import { ObjectHelper } from "../../../shared/utils/ObjectHelper";
 
 export class UserRepositoryPrisma implements IUserGateway {
   private constructor(private readonly prisma: PrismaClient) {}
@@ -11,38 +12,38 @@ export class UserRepositoryPrisma implements IUserGateway {
   }
 
   async save(user: User): Promise<void> {
-    const existing = await this.prisma.user.findUnique({
-      where: { email: user.email },
-    });
+    try {
+      const existing = await this.prisma.user.findUnique({
+        where: { email: user.email },
+      });
 
-    if (existing) {
-      throw new Error("E-mail já cadastrado.");
-    }
+      if (existing) {
+        throw new Error("E-mail já cadastrado.");
+      }
 
-    const data: any = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      password: user.password,
-      role: user.role,
-      photo: user.photo,
-      photoPublicId: user.photoPublicId,
-      phone: user.phone,
-      refreshToken: user.refreshToken,
-      createdAt: user.createdAt,
-      // companyId: user.companyId,
-      // company: {
-      //   connect: { id: user.companyId },
-      // },
-    };
-
-    if (user.companyId) {
-      data.company = {
-        connect: { id: user.companyId },
+      const data: any = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        password: user.password,
+        role: user.role,
+        photo: user.photo,
+        photoPublicId: user.photoPublicId,
+        phone: user.phone,
+        refreshToken: user.refreshToken,
+        createdAt: user.createdAt,
       };
-    }
 
-    await this.prisma.user.create({ data, include: { company: true } });
+      if (user.companyId) {
+        data.company = {
+          connect: { id: user.companyId },
+        };
+      }
+
+      await this.prisma.user.create({ data, include: { company: true } });
+    } catch (error: any) {
+      throw new Error("Error saving user: " + error.message);
+    }
   }
 
   private static mapCompanyPartial(company: any): Partial<CompanyProps> {
@@ -51,7 +52,6 @@ export class UserRepositoryPrisma implements IUserGateway {
       name: company.name,
       plan: company.plan,
       status: company.status,
-
       photo: company.photo ?? undefined,
       photoPublicId: company.photoPublicId ?? undefined,
       accessExpiresAt: company.accessExpiresAt ?? undefined,
@@ -59,14 +59,7 @@ export class UserRepositoryPrisma implements IUserGateway {
     };
   }
 
-  async findById(id: string): Promise<User | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
-      include: { company: true },
-    });
-
-    if (!user) return null;
-
+  private toEntity(user: any): User {
     return User.with({
       ...user,
       phone: user.phone ?? undefined,
@@ -80,25 +73,34 @@ export class UserRepositoryPrisma implements IUserGateway {
     });
   }
 
+  async findById(id: string): Promise<User | null> {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id },
+        include: { company: true },
+      });
+      return user ? this.toEntity(user) : null;
+    } catch (error: any) {
+      throw new Error("Error finding user by id: " + error.message);
+    }
+  }
+
+  async countByCompany(companyId: string): Promise<number> {
+    return await this.prisma.user.count({
+      where: { companyId },
+    });
+  }
+
   async findByEmail(email: string): Promise<User | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-      include: { company: true },
-    });
-
-    if (!user) return null;
-
-    return User.with({
-      ...user,
-      phone: user.phone ?? undefined,
-      photo: user.photo ?? undefined,
-      photoPublicId: user.photoPublicId ?? undefined,
-      refreshToken: user.refreshToken ?? undefined,
-      companyId: user.companyId ?? undefined,
-      company: user.company
-        ? UserRepositoryPrisma.mapCompanyPartial(user.company)
-        : undefined,
-    });
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { email },
+        include: { company: true },
+      });
+      return user ? this.toEntity(user) : null;
+    } catch (error: any) {
+      throw new Error("Error finding user by email: " + error.message);
+    }
   }
 
   async findByRefreshToken(refreshToken: string): Promise<string | null> {
@@ -120,87 +122,69 @@ export class UserRepositoryPrisma implements IUserGateway {
     userId: string,
     refreshToken: string
   ): Promise<void> {
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { refreshToken },
-    });
+    try {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { refreshToken },
+      });
+    } catch (error: any) {
+      throw new Error("Error updating refresh token: " + error.message);
+    }
   }
 
-  async update(id: string, data: User): Promise<User> {
-    const dataToUpdate: any = {};
+  async update(id: string, data: Partial<User>): Promise<User> {
+    try {
+      const dataToUpdate = ObjectHelper.removeUndefinedFields({
+        name: data.name,
+        companyId: data.companyId,
+        email: data.email,
+        password: data.password,
+        phone: data.phone,
+        photo: data.photo,
+        photoPublicId: data.photoPublicId,
+        refreshToken: data.refreshToken,
+      });
 
-    if (data.name !== undefined) dataToUpdate.name = data.name;
-    if (data.companyId !== undefined) dataToUpdate.companyId = data.companyId;
-    if (data.email !== undefined) dataToUpdate.email = data.email;
-    if (data.password !== undefined) dataToUpdate.password = data.password;
-    if (data.phone !== undefined) dataToUpdate.phone = data.phone;
-    if (data.photo !== undefined) dataToUpdate.photo = data.photo;
-    if (data.photoPublicId !== undefined)
-      dataToUpdate.photoPublicId = data.photoPublicId;
-    if (data.refreshToken !== undefined)
-      dataToUpdate.refreshToken = data.refreshToken;
+      const updatedUser = await this.prisma.user.update({
+        where: { id },
+        data: dataToUpdate,
+        include: { company: true },
+      });
 
-    const updatedUser = await this.prisma.user.update({
-      where: { id },
-      data: dataToUpdate,
-    });
-
-    return User.with({
-      ...updatedUser,
-      phone: updatedUser.phone ?? undefined,
-      photo: updatedUser.photo ?? undefined,
-      photoPublicId: updatedUser.photoPublicId ?? undefined,
-      refreshToken: updatedUser.refreshToken ?? undefined,
-      companyId: updatedUser.companyId ?? undefined,
-    });
+      return this.toEntity(updatedUser);
+    } catch (error: any) {
+      throw new Error("Error updating user: " + error.message);
+    }
   }
 
   async list(search?: string): Promise<User[]> {
-    const filters: any = {};
+    try {
+      const filters: any = {};
 
-    if (search) {
-      filters.OR = [
-        {
-          name: {
-            contains: search,
-            //  mode: "insensitive"
-          },
-        },
-        {
-          email: {
-            contains: search, //mode: "insensitive"
-          },
-        },
-        {
-          phone: {
-            contains: search,
-            // mode: "insensitive"
-          },
-        },
-      ];
+      if (search) {
+        filters.OR = [
+          { name: { contains: search, mode: "insensitive" } },
+          { email: { contains: search, mode: "insensitive" } },
+          { phone: { contains: search, mode: "insensitive" } },
+        ];
+      }
+
+      const users = await this.prisma.user.findMany({
+        where: filters,
+        include: { company: true },
+      });
+
+      return users.map((u) => this.toEntity(u));
+    } catch (error: any) {
+      throw new Error("Error listing users: " + error.message);
     }
-
-    const users = await this.prisma.user.findMany({
-      where: filters,
-      include: { company: true },
-    });
-
-    return users.map((u) =>
-      User.with({
-        ...u,
-        phone: u.phone ?? undefined,
-        photo: u.photo ?? undefined,
-        photoPublicId: u.photoPublicId ?? undefined,
-        refreshToken: u.refreshToken ?? undefined,
-        companyId: u.companyId ?? undefined,
-        company: u.company
-          ? UserRepositoryPrisma.mapCompanyPartial(u.company)
-          : undefined,
-      })
-    );
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.user.delete({ where: { id } });
+    try {
+      await this.prisma.user.delete({ where: { id } });
+    } catch (error: any) {
+      throw new Error("Error deleting user: " + error.message);
+    }
   }
 }

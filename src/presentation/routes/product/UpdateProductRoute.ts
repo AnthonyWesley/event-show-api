@@ -4,19 +4,19 @@ import {
   UpdateProduct,
   UpdateProductInputDto,
 } from "../../../usecase/product/UpdateProduct";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export class UpdateProductRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly updateProductService: UpdateProduct,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   static create(
     updateProductService: UpdateProduct,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new UpdateProductRoute(
       "/products/:productId",
@@ -55,6 +55,6 @@ export class UpdateProductRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

@@ -41,11 +41,12 @@ export class ExportLead implements IUseCases<ExportLeadInputDto, any> {
       }
 
       leadsToExport = await this.leadGateway.listByEvent(input.eventId);
+      leadsToExport[0].event?.name;
     } else {
       leadsToExport = await this.leadGateway.listByCompany(input.companyId);
     }
 
-    const maxProducts = 3;
+    const maxProducts = 2;
 
     const formatted = leadsToExport.map((lead) => {
       const productIds = lead.products?.map((p: any) => p.name) || [];
@@ -60,10 +61,13 @@ export class ExportLead implements IUseCases<ExportLeadInputDto, any> {
         Email: lead.email || "Não informado",
         Telefone: lead.phone || "Não informado",
         ...productInterests,
-        Origem: lead.source,
+        Origem: lead.leadSource?.name ?? lead.seller?.name,
         Observações: lead.notes || "",
-        Evento: lead.eventId,
+        Evento: lead.event?.name,
         CriadoEm: lead.createdAt.toLocaleString("pt-BR"),
+        ConvertidoEm: (lead.convertedAt || "Não convertido").toLocaleString(
+          "pt-BR"
+        ),
       };
     });
 

@@ -3,6 +3,10 @@ import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { CloudinaryUploadService } from "../../infra/services/CloudinaryUploadService";
 import fs from "fs";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
+import { SocketServer } from "../../infra/socket/SocketServer";
+import { S3Client } from "@aws-sdk/client-s3";
+import { MinIoUploadService } from "../../infra/services/MinIoUploadService";
+import { WhatsAppService } from "../../infra/mail/WhatsAppService";
 
 export type UpdateSellerPhotoInputDto = {
   sellerId: string;
@@ -21,18 +25,25 @@ export class UpdateSellerPhoto {
   constructor(
     private readonly sellerGateway: ISellerGateway,
     private readonly companyGateway: ICompanyGateway,
-    private readonly uploadPhotoService: CloudinaryUploadService
+    private readonly uploadPhotoService: CloudinaryUploadService,
+    // private readonly minIoUploadService: S3Client,
+
+    private readonly socketServer: SocketServer
   ) {}
 
   static create(
     sellerGateway: ISellerGateway,
     companyGateway: ICompanyGateway,
-    uploadPhotoService: CloudinaryUploadService
+    uploadPhotoService: CloudinaryUploadService,
+    // minIoUploadService: S3Client,
+    socketServer: SocketServer
   ) {
     return new UpdateSellerPhoto(
       sellerGateway,
       companyGateway,
-      uploadPhotoService
+      uploadPhotoService,
+      // minIoUploadService,
+      socketServer
     );
   }
 
@@ -54,6 +65,13 @@ export class UpdateSellerPhoto {
     if (existingSeller.photoPublicId) {
       await this.uploadPhotoService.deleteImage(existingSeller.photoPublicId);
     }
+
+    const minUpload = await new MinIoUploadService().uploadImage(
+      input.file.path,
+      {
+        objectName: `sellers/${input.file.filename}`,
+      }
+    );
 
     const upload = await this.uploadPhotoService.uploadImage(input.file.path, {
       folder: `seller/${existingSeller.id}`,
@@ -80,6 +98,7 @@ export class UpdateSellerPhoto {
       photo: upload.secure_url,
       photoPublicId: upload.public_id,
     });
+    this.socketServer?.emit("seller:updated", { id: input.companyId });
 
     return {
       id: updated.id,

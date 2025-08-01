@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 import { PlanType } from "../../../domain/entities/company/Company";
 import { SuspendCompany } from "../../../usecase/company/SuspendCompany";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export type suspendCompanyResponseDto = {
   id: string;
@@ -17,12 +17,12 @@ export class SuspendCompanyRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly suspendCompanyService: SuspendCompany,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   static create(
     suspendCompanyService: SuspendCompany,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new SuspendCompanyRoute(
       "/companies/:id/suspend",
@@ -49,6 +49,6 @@ export class SuspendCompanyRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

@@ -1,13 +1,12 @@
-import { Plan, SubscriptionStatus } from "@prisma/client";
+import { SubscriptionStatus } from "@prisma/client";
 import { ISubscriptionGateway } from "../../domain/entities/subscription/ISubscriptionGateway";
 import { Subscription } from "../../domain/entities/subscription/Subscription";
 import { ValidationError } from "../../shared/errors/ValidationError";
-import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 
 export type CreateSubscriptionInputDto = {
   companyId: string;
   externalId: string;
-  plan: Plan;
+  planId: string;
   startedAt: Date;
   expiresAt?: Date;
 };
@@ -28,10 +27,12 @@ export class CreateSubscription {
   public async execute(
     input: CreateSubscriptionInputDto
   ): Promise<CreateSubscriptionOutputDto> {
+    console.log(input);
+
     if (
       !input.companyId ||
       !input.externalId ||
-      !input.plan ||
+      !input.planId ||
       !input.startedAt
     ) {
       throw new ValidationError("Missing required subscription fields.");
@@ -47,7 +48,7 @@ export class CreateSubscription {
     const subscription = Subscription.create({
       companyId: input.companyId,
       externalId: input.externalId,
-      plan: input.plan,
+      planId: input.planId,
       status: SubscriptionStatus.ACTIVE,
       startedAt: input.startedAt,
       expiresAt: input.expiresAt,

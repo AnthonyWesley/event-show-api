@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import {
   CreatePendingAction,
   CreatePendingActionInputDto,
@@ -11,12 +11,12 @@ export class CreatePendingActionRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly createPendingActionService: CreatePendingAction,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     createPendingActionService: CreatePendingAction,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new CreatePendingActionRoute(
       "/pending-action",
@@ -55,6 +55,6 @@ export class CreatePendingActionRoute implements IRoute {
   }
 
   getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

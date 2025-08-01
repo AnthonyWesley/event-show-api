@@ -4,6 +4,9 @@ import { Seller } from "../../domain/entities/seller/Seller";
 import { ValidationError } from "../../shared/errors/ValidationError";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
+import { SocketServer } from "../../infra/socket/SocketServer";
+import { ForbiddenError } from "../../shared/errors/ForbiddenError";
+import { hasReachedLimit } from "../../shared/utils/hasReachedLimit";
 
 export type CreateSellerInputDto = {
   name: string;
@@ -11,6 +14,7 @@ export type CreateSellerInputDto = {
   phone?: string;
   photo?: string;
   companyId: string;
+  keys: { limit_seller: number; unlimited_seller: boolean };
   // sales     Sale[]
   // createdAt: Date;
 };
@@ -24,19 +28,23 @@ export class CreateSeller
 {
   private constructor(
     private readonly sellerGateway: ISellerGateway,
-    private readonly companyGateway: ICompanyGateway
+    private readonly companyGateway: ICompanyGateway,
+    private readonly socketServer: SocketServer
   ) {}
 
   public static create(
     sellerGateway: ISellerGateway,
-    companyGateway: ICompanyGateway
+    companyGateway: ICompanyGateway,
+    socketServer: SocketServer
   ) {
-    return new CreateSeller(sellerGateway, companyGateway);
+    return new CreateSeller(sellerGateway, companyGateway, socketServer);
   }
 
   public async execute(
     input: CreateSellerInputDto
   ): Promise<CreateSellerOutputDto> {
+    console.log(input.keys);
+
     if (!input.name || !input.email || !input.companyId) {
       throw new ValidationError(
         "All fields are required: name, email, companyId."
@@ -48,7 +56,6 @@ export class CreateSeller
       throw new NotFoundError("Company");
     }
 
-    // ✅ Check for existing seller by email
     const existingSeller = await this.sellerGateway.findByEmail({
       email: input.email,
       companyId: input.companyId,
@@ -56,6 +63,18 @@ export class CreateSeller
 
     if (existingSeller) {
       throw new ValidationError("A seller with this email already exists.");
+    }
+
+    const allSellersCount = await this.sellerGateway.countByCompany(
+      input.companyId
+    );
+
+    if (!input.keys.unlimited_seller) {
+      if (hasReachedLimit(allSellersCount, input.keys.limit_seller)) {
+        throw new ForbiddenError(
+          "Limite de vendedores atingido pelo seu plano."
+        );
+      }
     }
 
     const anEvent = Seller.create(
@@ -67,6 +86,7 @@ export class CreateSeller
     );
 
     await this.sellerGateway.save(anEvent);
+    this.socketServer?.emit("seller:created", { id: input.companyId });
 
     return { id: anEvent.id };
   }

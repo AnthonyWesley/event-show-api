@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 import {
   FindSellerByEmail,
@@ -22,12 +22,12 @@ export class FindSellerByEmailRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly findSellerByEmail: FindSellerByEmail,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     findSellerByEmail: FindSellerByEmail,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new FindSellerByEmailRoute(
       "/sellers/email/:email",
@@ -69,6 +69,6 @@ export class FindSellerByEmailRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

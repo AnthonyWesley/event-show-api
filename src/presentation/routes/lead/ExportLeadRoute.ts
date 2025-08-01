@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import { HttpMethod, IRoute } from "../IRoute";
 
 import { ExportLead } from "../../../usecase/lead/ExportLead";
@@ -13,12 +13,12 @@ export class ExportLeadRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly exportLeadRouteService: ExportLead,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     exportLeadRouteService: ExportLead,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new ExportLeadRoute(
       "/export/leads/:eventId?",
@@ -56,6 +56,6 @@ export class ExportLeadRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

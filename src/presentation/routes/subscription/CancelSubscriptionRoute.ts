@@ -1,19 +1,19 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 import { CancelSubscription } from "../../../usecase/subscription/CancelSubscription";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export class CancelSubscriptionRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly cancelSubscriptionService: CancelSubscription,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     cancelSubscriptionService: CancelSubscription,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new CancelSubscriptionRoute(
       "/subscriptions/:id/cancel",
@@ -39,6 +39,6 @@ export class CancelSubscriptionRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

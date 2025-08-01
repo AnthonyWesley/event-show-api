@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 import { Multer } from "multer";
 
@@ -21,13 +21,13 @@ export class UpdateSellerPhotoRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly updateSellerPhotoService: UpdateSellerPhoto,
-    private readonly authorization: Authorization,
+    private readonly authorization: AuthorizationRoute,
     private readonly multer: Multer
   ) {}
 
   static create(
     updateSellerPhotoService: UpdateSellerPhoto,
-    authorization: Authorization,
+    authorization: AuthorizationRoute,
     multer: Multer
   ) {
     return new UpdateSellerPhotoRoute(
@@ -43,6 +43,7 @@ export class UpdateSellerPhotoRoute implements IRoute {
     return async (request: Request, response: Response): Promise<void> => {
       const { sellerId } = request.params;
       const { user } = request as any;
+
       const file = request.file;
 
       const input: UpdateSellerPhotoInputDto = {
@@ -72,6 +73,6 @@ export class UpdateSellerPhotoRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute, this.multer.single("photo")];
+    return [this.authorization.userRoute, this.multer.single("photo")];
   }
 }

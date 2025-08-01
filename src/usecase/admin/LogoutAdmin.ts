@@ -1,7 +1,8 @@
 import { IUseCases } from "../IUseCases";
-import { Authorization } from "../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../infra/http/middlewares/AuthorizationRoute";
 import { UnauthorizedError } from "../../shared/errors/UnauthorizedError";
 import { IAdminGateway } from "../../domain/entities/admin/IAdminGateway";
+import { AuthTokenService } from "../../service/AuthTokenService";
 
 export type LogoutAdminInputDto = {
   refreshToken: string;
@@ -16,10 +17,10 @@ export class LogoutAdmin
 {
   private constructor(
     private readonly adminGateway: IAdminGateway,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthTokenService
   ) {}
 
-  static create(adminGateway: IAdminGateway, authorization: Authorization) {
+  static create(adminGateway: IAdminGateway, authorization: AuthTokenService) {
     return new LogoutAdmin(adminGateway, authorization);
   }
 

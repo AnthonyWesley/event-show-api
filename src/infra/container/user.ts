@@ -1,3 +1,4 @@
+import { AuthTokenService } from "../../service/AuthTokenService";
 import { ActivateCompany } from "../../usecase/company/ActivateCompany";
 import { CreateCompany } from "../../usecase/company/CreateCompany";
 import { DeleteCompany } from "../../usecase/company/DeleteCompany";
@@ -16,14 +17,14 @@ import { LogoutUser } from "../../usecase/user/LogoutUser";
 import { RefreshUser } from "../../usecase/user/RefreshUser";
 import { UpdateUser } from "../../usecase/user/UpdateUser";
 import { UpdateUserPhoto } from "../../usecase/user/UpdateUserPhoto";
-import { Authorization } from "../http/middlewares/Authorization";
+import { AuthorizationRoute } from "../http/middlewares/AuthorizationRoute";
 import { UserRepositoryPrisma } from "../repositories/user/UserRepositoryPrisma";
 import { CloudinaryUploadService } from "../services/CloudinaryUploadService";
 
 export function makeUserUseCases(
   userRepository: UserRepositoryPrisma,
   uploadPhotoService: CloudinaryUploadService,
-  authorization: Authorization
+  authorization: AuthTokenService
 ) {
   return {
     login: LoginUser.create(userRepository, authorization),

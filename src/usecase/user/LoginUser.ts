@@ -2,12 +2,13 @@ import bcrypt from "bcryptjs";
 import { IUseCases } from "../IUseCases";
 import { EventProps, Goal } from "../../domain/entities/event/Event";
 import { StatusType } from "../../domain/entities/company/Company";
-import { Authorization } from "../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../infra/http/middlewares/AuthorizationRoute";
 import { ProductProps } from "../../domain/entities/product/Product";
 import { ValidationError } from "../../shared/errors/ValidationError";
 import { UnauthorizedError } from "../../shared/errors/UnauthorizedError";
 import { IUserGateway } from "../../domain/entities/user/IUserGateway";
-import { company } from "../../infra/Container";
+
+import { AuthTokenService } from "../../service/AuthTokenService";
 
 export type LoginUserInputDto = {
   email: string;
@@ -58,10 +59,10 @@ export class LoginUser
 {
   private constructor(
     private readonly userGateway: IUserGateway,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthTokenService
   ) {}
 
-  static create(userGateway: IUserGateway, authorization: Authorization) {
+  static create(userGateway: IUserGateway, authorization: AuthTokenService) {
     return new LoginUser(userGateway, authorization);
   }
 

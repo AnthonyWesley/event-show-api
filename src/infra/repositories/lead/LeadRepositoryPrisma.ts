@@ -4,12 +4,13 @@ import { ILeadGateway } from "../../../domain/entities/lead/ILeadGateway";
 import { UpdateLeadInputDto } from "../../../usecase/lead/UpdateLead";
 import { DeleteLeadInputDto } from "../../../usecase/lead/DeleteLead";
 import { FindLeadInputDto } from "../../../usecase/lead/FindLead";
+import { ObjectHelper } from "../../../shared/utils/ObjectHelper";
 
 export class LeadRepositoryPrisma implements ILeadGateway {
-  private constructor(private readonly prismaClient: PrismaClient) {}
+  private constructor(private readonly prisma: PrismaClient) {}
 
-  public static create(prismaClient: PrismaClient) {
-    return new LeadRepositoryPrisma(prismaClient);
+  public static create(prisma: PrismaClient) {
+    return new LeadRepositoryPrisma(prisma);
   }
 
   async save(lead: Lead): Promise<void> {
@@ -19,91 +20,64 @@ export class LeadRepositoryPrisma implements ILeadGateway {
       email: lead.email,
       phone: lead.phone,
       notes: lead.notes,
-      source: lead.source,
       customInterest: lead.customInterest,
+      ...(lead.leadSourceId ? { leadSourceId: lead.leadSourceId } : {}),
+      ...(lead.sellerId ? { sellerId: lead.sellerId } : {}),
+      products: {
+        connect: lead.products.map((product) => ({ id: product.id })),
+      },
       eventId: lead.eventId,
       companyId: lead.companyId,
       createdAt: lead.createdAt,
-      products: {
-        connect: lead.products?.map((p) => ({ id: p.id })) ?? [],
-      },
+      convertedAt: lead.convertedAt,
     };
 
     try {
-      await this.prismaClient.lead.create({ data });
+      await this.prisma.lead.create({ data });
     } catch (error: any) {
       throw new Error("Error saving lead: " + error.message);
     }
   }
 
-  async listByCompany(companyId: string): Promise<Lead[]> {
-    const leads = await this.prismaClient.lead.findMany({
+  async listByCompany(companyId: string): Promise<any[]> {
+    return this.prisma.lead.findMany({
       where: { companyId },
-      include: { products: true },
+      orderBy: { createdAt: "desc" },
+      include: {
+        products: { select: { id: true, name: true } },
+        leadSource: { select: { id: true, name: true } },
+        seller: { select: { id: true, name: true } },
+        event: { select: { id: true, name: true } },
+      },
     });
-
-    return leads.map((l) =>
-      Lead.with({
-        id: l.id,
-        name: l.name,
-        email: l.email ?? undefined,
-        phone: l.phone ?? undefined,
-        notes: l.notes ?? undefined,
-        source: l.source,
-        customInterest: l.customInterest ?? undefined,
-        eventId: l.eventId,
-        companyId: l.companyId,
-        createdAt: l.createdAt,
-        products: l.products,
-      })
-    );
   }
 
-  async listByEvent(eventId: string): Promise<Lead[]> {
-    const leads = await this.prismaClient.lead.findMany({
+  async listByEvent(eventId: string): Promise<any[]> {
+    return this.prisma.lead.findMany({
       where: { eventId },
-      include: { products: true },
+      orderBy: { createdAt: "desc" },
+      include: {
+        products: { select: { id: true, name: true } },
+        leadSource: { select: { id: true, name: true } },
+        seller: { select: { id: true, name: true } },
+        event: { select: { id: true, name: true } },
+      },
     });
-
-    return leads.map((l) =>
-      Lead.with({
-        id: l.id,
-        name: l.name,
-        email: l.email ?? undefined,
-        phone: l.phone ?? undefined,
-        notes: l.notes ?? undefined,
-        source: l.source,
-        customInterest: l.customInterest ?? undefined,
-        eventId: l.eventId,
-        companyId: l.companyId,
-        createdAt: l.createdAt,
-        products: l.products,
-      })
-    );
   }
 
-  async findById(input: FindLeadInputDto): Promise<Lead | null> {
+  async findById(input: FindLeadInputDto): Promise<any | null> {
     try {
-      const lead = await this.prismaClient.lead.findUnique({
+      const lead = await this.prisma.lead.findUnique({
         where: { id: input.leadId, companyId: input.companyId },
-        include: { products: true },
+        include: {
+          products: { select: { id: true, name: true } },
+          leadSource: { select: { id: true, name: true } },
+          seller: { select: { id: true, name: true } },
+          event: { select: { id: true, name: true } },
+        },
       });
 
-      if (!lead) return null;
-
-      return Lead.with({
-        id: lead.id,
-        name: lead.name,
-        email: lead.email ?? undefined,
-        phone: lead.phone ?? undefined,
-        notes: lead.notes ?? undefined,
-        source: lead.source,
-        customInterest: lead.customInterest ?? undefined,
-        eventId: lead.eventId,
-        companyId: lead.companyId,
-        createdAt: lead.createdAt,
-        products: lead.products,
-      });
+      return lead;
     } catch (error: any) {
       throw new Error("Error finding lead: " + error.message);
     }
@@ -111,47 +85,30 @@ export class LeadRepositoryPrisma implements ILeadGateway {
 
   async update(input: UpdateLeadInputDto): Promise<Lead> {
     try {
-      const dataToUpdate: any = {};
+      const cleanData = ObjectHelper.removeUndefinedFields(input);
+      const { companyId, leadSourceId, products, leadId, ...rest } = cleanData;
 
-      if (input.name !== undefined) dataToUpdate.name = input.name;
-      if (input.email !== undefined) dataToUpdate.email = input.email;
-      if (input.phone !== undefined) dataToUpdate.phone = input.phone;
-      if (input.notes !== undefined) dataToUpdate.notes = input.notes;
-      if (input.source !== undefined) dataToUpdate.source = input.source;
-      if (input.customInterest !== undefined)
-        dataToUpdate.customInterest = input.customInterest;
+      const data: any = {
+        ...rest,
+      };
 
-      if (input.products !== undefined) {
-        dataToUpdate.products = {
-          set: [],
-          connect: input.products.map((p) => ({ id: p.id })),
-        };
+      if (leadSourceId) {
+        data.leadSource = { connect: { id: leadSourceId } };
       }
 
-      const updated = await this.prismaClient.lead.update({
-        where: {
-          id: input.leadId,
-          companyId: input.companyId,
-        },
-        data: dataToUpdate,
+      const updated = await this.prisma.lead.update({
+        where: { id: leadId },
+
+        data,
         include: {
           products: true,
+          leadSource: true,
+          seller: true,
+          event: true,
         },
       });
 
-      return Lead.with({
-        id: updated.id,
-        name: updated.name,
-        email: updated.email ?? undefined,
-        phone: updated.phone ?? undefined,
-        notes: updated.notes ?? undefined,
-        source: updated.source,
-        customInterest: updated.customInterest ?? undefined,
-        eventId: updated.eventId,
-        companyId: updated.companyId,
-        createdAt: updated.createdAt,
-        products: updated.products,
-      });
+      return this.toEntity(updated);
     } catch (error: any) {
       throw new Error("Error updating lead: " + error.message);
     }
@@ -165,7 +122,7 @@ export class LeadRepositoryPrisma implements ILeadGateway {
     if (!lead) throw new Error("Lead not found.");
 
     try {
-      await this.prismaClient.lead.delete({
+      await this.prisma.lead.delete({
         where: {
           id: lead.id,
           companyId: lead.companyId,
@@ -175,5 +132,26 @@ export class LeadRepositoryPrisma implements ILeadGateway {
     } catch (error: any) {
       throw new Error("Error deleting lead: " + error.message);
     }
+  }
+
+  private toEntity(raw: any): Lead {
+    return Lead.with({
+      id: raw.id,
+      name: raw.name,
+      email: raw.email ?? undefined,
+      phone: raw.phone ?? undefined,
+      notes: raw.notes ?? undefined,
+      customInterest: raw.customInterest ?? undefined,
+      leadSourceId: raw.leadSourceId,
+      sellerId: raw.sellerId,
+      eventId: raw.eventId,
+      companyId: raw.companyId,
+      createdAt: raw.createdAt,
+      products: raw.products,
+      convertedAt: raw.convertedAt,
+
+      sales: raw.sales,
+      leadSource: raw.leadSource,
+    });
   }
 }

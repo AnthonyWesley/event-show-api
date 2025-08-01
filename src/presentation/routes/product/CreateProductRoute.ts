@@ -4,7 +4,8 @@ import {
   CreateProductInputDto,
 } from "../../../usecase/product/CreateProduct";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
+import { checkFeatures } from "../../../infra/http/middlewares/checkFeature";
 
 export type CreateProductResponseDto = {
   id: string;
@@ -15,12 +16,12 @@ export class CreateProductRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly createProductService: CreateProduct,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     createProductService: CreateProduct,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new CreateProductRoute(
       "/products",
@@ -36,10 +37,13 @@ export class CreateProductRoute implements IRoute {
 
       const { name, price } = request.body;
 
+      const keys = (request as any).featureValues;
+
       const input: CreateProductInputDto = {
         name,
         price,
         companyId: user.companyId,
+        keys,
       };
 
       const output: CreateProductResponseDto =
@@ -59,6 +63,9 @@ export class CreateProductRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [
+      this.authorization.userRoute,
+      checkFeatures(["limit_product", "unlimited_product"]),
+    ];
   }
 }

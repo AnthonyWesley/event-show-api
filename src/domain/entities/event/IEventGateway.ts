@@ -7,6 +7,8 @@ export interface IEventGateway {
   save(event: Event): Promise<void>;
   list(eventId: string, search?: string): Promise<Event[]>;
   findById(input: FindEventInputDto): Promise<Event | null>;
+  countActiveByCompany(companyId: string): Promise<number>;
+
   findActiveByCompanyId(input: FindEventInputDto): Promise<Event[]>;
   findLastEventByCompany(companyId: string): Promise<Event | null>;
   update(input: UpdateEventInputDto): Promise<Event>;

@@ -45,12 +45,13 @@ export class CreatePendingAction
       input.sellerId,
       input.actionType,
       input.payload,
+      // input.leadId,
       input.targetId
     );
 
     await this.pendingActionGateway.save(action);
 
-    this.socketServer?.emitPendingCreated({
+    this.socketServer?.emit("new-pending", {
       id: action.id,
       companyId: input.companyId,
       eventId: input.eventId,

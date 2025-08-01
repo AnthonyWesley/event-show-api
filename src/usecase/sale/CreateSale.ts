@@ -3,6 +3,7 @@ import { IProductGateway } from "../../domain/entities/product/IProductGateway";
 import { ISaleGateway } from "../../domain/entities/sale/ISaleGateway";
 import { Sale } from "../../domain/entities/sale/Sale";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
+import { SocketServer } from "../../infra/socket/SocketServer";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { ValidationError } from "../../shared/errors/ValidationError";
 import { IUseCases } from "../IUseCases";
@@ -13,7 +14,8 @@ export type CreateSaleInputDto = {
   productId: string;
   sellerId: string;
   quantity: number;
-  // total: number;
+  leadId: string;
+  lead: any;
 };
 
 export type CreateSaleOutputDto = {
@@ -27,27 +29,35 @@ export class CreateSale
     private readonly saleGateway: ISaleGateway,
     private readonly eventGateway: IEventGateway,
     private readonly productGateway: IProductGateway,
-    private readonly sellerGateway: ISellerGateway
+    private readonly sellerGateway: ISellerGateway,
+    private readonly socketServer: SocketServer
   ) {}
 
   public static create(
     saleGateway: ISaleGateway,
     eventGateway: IEventGateway,
     productGateway: IProductGateway,
-    sellerGateway: ISellerGateway
+    sellerGateway: ISellerGateway,
+    socketServer: SocketServer
   ) {
     return new CreateSale(
       saleGateway,
       eventGateway,
       productGateway,
-      sellerGateway
+      sellerGateway,
+      socketServer
     );
   }
 
   public async execute(
     input: CreateSaleInputDto
   ): Promise<CreateSaleOutputDto> {
-    if (!input.productId || !input.sellerId || !input.quantity) {
+    if (
+      !input.productId ||
+      !input.sellerId ||
+      !input.quantity
+      // !input.leadId
+    ) {
       throw new ValidationError(
         "All fields are required: sellerI, eventId, quantity."
       );
@@ -72,14 +82,24 @@ export class CreateSale
     if (!productExists) throw new NotFoundError("Product");
     if (!sellerExists) throw new NotFoundError("Seller");
 
-    const anSale = Sale.create(
-      input.eventId,
-      input.productId,
-      input.sellerId,
-      input.quantity
-    );
+    const anSale = Sale.create({
+      eventId: input.eventId,
+      productId: input.productId,
+      sellerId: input.sellerId,
+      quantity: input.quantity,
+      leadId: input.leadId,
+    });
 
-    await this.saleGateway.save(anSale);
+    const leadWithCompanyId = {
+      ...input.lead,
+      companyId: input.companyId,
+    };
+
+    await this.saleGateway.save(anSale, leadWithCompanyId);
+    this.socketServer?.emit("sale:created", { id: input.sellerId });
+    this.socketServer?.emit("sale:message", {
+      message: `${sellerExists?.name} acabou de realizar uma venda!`,
+    });
 
     return { id: anSale.id };
   }

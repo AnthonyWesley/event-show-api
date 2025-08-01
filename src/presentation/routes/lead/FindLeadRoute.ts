@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import {
   FindLead,
   FindLeadInputDto,
@@ -22,15 +22,15 @@ export class FindLeadRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly findLeadService: FindLead,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     findLeadService: FindLead,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new FindLeadRoute(
-      "/events/:eventId/leads/:leadId",
+      "/leads/:leadId",
       HttpMethod.GET,
       findLeadService,
       authorization
@@ -39,12 +39,11 @@ export class FindLeadRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response): Promise<void> => {
-      const { eventId, leadId } = request.params;
+      const { leadId } = request.params;
       const { user } = request as any;
 
       const input: FindLeadInputDto = {
         companyId: user.companyId,
-        eventId,
         leadId,
       };
       const result: FindLeadOutputDto = await this.findLeadService.execute(
@@ -64,6 +63,6 @@ export class FindLeadRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

@@ -1,5 +1,3 @@
-// src/presentation/routes/Routes.ts
-// ajuste o caminho conforme seu projeto
 import { upload } from "../../infra/http/middlewares/multer";
 
 import { CreateAdminRoute } from "./admin/CreateAdminRoute";
@@ -73,9 +71,16 @@ import { CreateInvoiceRoute } from "./invoice/CreateInvoiceRoute";
 import { GetInvoiceByIdRoute } from "./invoice/GetInvoiceByIdRoute";
 import { GetInvoicesByCompanyRoute } from "./invoice/GetInvoicesByCompanyRoute";
 import { MarkInvoiceAsPaidRoute } from "./invoice/MarkInvoiceAsPaidRoute";
-import { Authorization } from "../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../infra/http/middlewares/AuthorizationRoute";
+import { CreateLeadSourceRoute } from "./leadSource/CreateLeadSourceRoute";
+import { DeleteLeadSourceRoute } from "./leadSource/DeleteLeadRoute";
+import { FindLeadSourceRoute } from "./leadSource/FindLeadSourceRoute";
+import { ListLeadSourceRoute } from "./leadSource/ListLeadSourceRoute";
+import { UpdateLeadSourceRoute } from "./leadSource/UpdateLeadSourceRoute";
+import { RegisterUserRoute } from "./user/RegisterUserRoute";
+import { SendGuestAccessInviteRoute } from "./sellerEvent/SendGuestAccessInviteRoute";
 
-export function makeRoutes(useCases: any, authorization: Authorization) {
+export function makeRoutes(useCases: any, authorization: AuthorizationRoute) {
   return [
     LoginAdminRoute.create(useCases.admin.login),
     CreateAdminRoute.create(useCases.admin.create),
@@ -88,6 +93,7 @@ export function makeRoutes(useCases: any, authorization: Authorization) {
     LogoutUserRoute.create(useCases.user.logout),
     FindUserRoute.create(useCases.user.findOne, authorization),
     CreateUserRoute.create(useCases.user.create, authorization),
+    RegisterUserRoute.create(useCases.user.create),
     ListUserRoute.create(useCases.user.list, authorization),
     DeleteUserRoute.create(useCases.user.delete, authorization),
     UpdateUserRoute.create(useCases.user.update, authorization),
@@ -141,6 +147,12 @@ export function makeRoutes(useCases: any, authorization: Authorization) {
     DeleteLeadRoute.create(useCases.lead.delete, authorization),
     UpdateLeadRoute.create(useCases.lead.update, authorization),
 
+    CreateLeadSourceRoute.create(useCases.leadSource.create, authorization),
+    ListLeadSourceRoute.create(useCases.leadSource.list, authorization),
+    FindLeadSourceRoute.create(useCases.leadSource.findOne, authorization),
+    DeleteLeadSourceRoute.create(useCases.leadSource.delete, authorization),
+    UpdateLeadSourceRoute.create(useCases.leadSource.update, authorization),
+
     CreateSellerRoute.create(useCases.seller.create, authorization),
     ListSellerRoute.create(useCases.seller.list, authorization),
     FindSellerRoute.create(useCases.seller.findOne, authorization),
@@ -160,10 +172,10 @@ export function makeRoutes(useCases: any, authorization: Authorization) {
     UpdateSaleRoute.create(useCases.sale.update, authorization),
 
     CreateSellerEventRoute.create(useCases.sellerEvent.create, authorization),
-    // SendGuestAccessInviteRoute.create(
-    //   useCases.sellerEvent.register,
-    //   authorization
-    // ),
+    SendGuestAccessInviteRoute.create(
+      useCases.sellerEvent.sendMessage,
+      authorization
+    ),
     GuestAccessRoute.create(useCases.sellerEvent.guestAccess, authorization),
     ListEventsBySellerRoute.create(
       useCases.sellerEvent.listEvent,

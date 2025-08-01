@@ -1,5 +1,3 @@
-import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
-import { Company } from "../../domain/entities/company/Company";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 import fs from "fs";
@@ -38,8 +36,6 @@ export class UpdateUserPhoto
   async execute(
     input: UpdateUserPhotoInputDto
   ): Promise<UpdateUserPhotoOutputDto> {
-    console.log(input);
-
     if (!input.file) throw new NotFoundError("File");
 
     const existingUser = await this.userGateway.findById(input.id);

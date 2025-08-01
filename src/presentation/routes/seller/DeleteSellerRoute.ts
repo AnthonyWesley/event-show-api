@@ -4,7 +4,7 @@ import {
   DeleteSellerInputDto,
 } from "../../../usecase/seller/DeleteSeller";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export type DeleteSellerResponseDto = {
   id: string;
@@ -14,12 +14,12 @@ export class DeleteSellerRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly deleteSellerService: DeleteSeller,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   static create(
     deleteSellerService: DeleteSeller,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new DeleteSellerRoute(
       "/sellers/:sellerId",
@@ -53,6 +53,6 @@ export class DeleteSellerRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

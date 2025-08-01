@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
 
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import {
   DeleteLead,
   DeleteLeadInputDto,
@@ -17,10 +17,13 @@ export class DeleteLeadRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly deleteLeadService: DeleteLead,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
-  static create(deleteLeadService: DeleteLead, authorization: Authorization) {
+  static create(
+    deleteLeadService: DeleteLead,
+    authorization: AuthorizationRoute
+  ) {
     return new DeleteLeadRoute(
       "/leads/:leadId",
       HttpMethod.DELETE,
@@ -31,6 +34,7 @@ export class DeleteLeadRoute implements IRoute {
   getHandler() {
     return async (request: Request, response: Response) => {
       const { eventId, leadId } = request.params;
+
       const { user } = request as any;
 
       const input: DeleteLeadInputDto = {
@@ -53,6 +57,6 @@ export class DeleteLeadRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

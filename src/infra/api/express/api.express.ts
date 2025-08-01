@@ -7,8 +7,12 @@ import cookieParser from "cookie-parser";
 import { createServer, Server as HttpServer } from "http";
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://192.168.0.93",
+  "http://192.168.0.93:5173",
+  "http://192.168.100.62:5173",
   "https://event-flow-awl.netlify.app",
 ];
+
 export class ApiExpress {
   private app: express.Application;
   private httpServer: HttpServer;

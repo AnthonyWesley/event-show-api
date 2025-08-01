@@ -5,37 +5,26 @@ import { FindSellerInputDto } from "../../../usecase/seller/FindSeller";
 import { DeleteSellerInputDto } from "../../../usecase/seller/DeleteSeller";
 import { UpdateSellerInputDto } from "../../../usecase/seller/UpdateSeller";
 import { FindSellerByEmailInputDto } from "../../../usecase/seller/FindSellerByEmail";
+import { ObjectHelper } from "../../../shared/utils/ObjectHelper";
 
 export class SellerRepositoryPrisma implements ISellerGateway {
-  private constructor(private readonly prismaClient: PrismaClient) {}
+  private constructor(private readonly prisma: PrismaClient) {}
 
-  public static create(prismaClient: PrismaClient) {
-    return new SellerRepositoryPrisma(prismaClient);
+  public static create(prisma: PrismaClient) {
+    return new SellerRepositoryPrisma(prisma);
   }
 
   async save(seller: Seller): Promise<void> {
-    const data = {
-      id: seller.id,
-      name: seller.name,
-      email: seller.email,
-      phone: seller.phone,
-      photo: seller.photo,
-      companyId: seller.companyId,
-      createdAt: seller.createdAt,
-    };
-
     try {
-      await this.prismaClient.seller.create({ data });
+      await this.prisma.seller.create({ data: this.toRaw(seller) });
     } catch (error: any) {
-      throw new Error("Error saving Seller: " + error.message);
+      throw new Error("Error saving seller: " + error.message);
     }
   }
 
   async list(companyId: string, search?: string): Promise<Seller[]> {
     try {
-      const filters: any = {
-        companyId,
-      };
+      const filters: any = { companyId };
 
       if (search) {
         filters.OR = [
@@ -45,78 +34,65 @@ export class SellerRepositoryPrisma implements ISellerGateway {
         ];
       }
 
-      const sellers = await this.prismaClient.seller.findMany({
+      const sellers = await this.prisma.seller.findMany({
         where: filters,
-        include: { sales: true },
+        include: { sales: { orderBy: { createdAt: "desc" } } },
       });
 
-      return sellers.map((s) =>
-        Seller.with({
-          id: s.id,
-          name: s.name,
-          email: s.email,
-          phone: s.phone ?? "",
-          photo: s.photo ?? "",
-          photoPublicId: s.photoPublicId ?? "",
-          companyId: s.companyId,
-          createdAt: s.createdAt,
-        })
-      );
+      return sellers.map(this.toEntity);
     } catch (error: any) {
-      throw new Error("Error listing seller: " + error.message);
+      throw new Error("Error listing sellers: " + error.message);
     }
+  }
+
+  async countByCompany(companyId: string): Promise<number> {
+    return await this.prisma.seller.count({
+      where: { companyId },
+    });
   }
 
   async update(input: UpdateSellerInputDto): Promise<Seller> {
     try {
-      const dataToUpdate: any = {};
-
-      if (input.name !== undefined) dataToUpdate.name = input.name;
+      const dataToUpdate: any = ObjectHelper.removeUndefinedFields({
+        name: input.name,
+        email: input.email,
+        phone: input.phone,
+        photo: input.photo,
+        photoPublicId: input.photoPublicId,
+      });
 
       if (input.email !== undefined) {
-        const emailExist = await this.findByEmail({ email: input.email });
+        const emailExist = await this.findByEmail({
+          email: input.email,
+          companyId: input.companyId,
+        });
         if (emailExist && emailExist.id !== input.sellerId) {
           throw new Error("Email already in use by another seller.");
         }
-        dataToUpdate.email = input.email;
       }
 
-      if (input.phone !== undefined) dataToUpdate.phone = input.phone;
-      if (input.photo !== undefined) dataToUpdate.photo = input.photo;
-      if (input.photoPublicId !== undefined)
-        dataToUpdate.photoPublicId = input.photoPublicId;
-
-      const updatedSeller = await this.prismaClient.seller.update({
+      const updatedSeller = await this.prisma.seller.update({
         where: { id: input.sellerId, companyId: input.companyId },
         data: dataToUpdate,
       });
 
-      return Seller.with({
-        id: updatedSeller.id,
-        name: updatedSeller.name,
-        email: updatedSeller.email,
-        phone: updatedSeller.phone ?? "",
-        photo: updatedSeller.photo ?? "",
-        photoPublicId: updatedSeller.photoPublicId ?? "",
-        companyId: updatedSeller.companyId,
-        createdAt: updatedSeller.createdAt,
-      });
+      return this.toEntity(updatedSeller);
     } catch (error: any) {
       throw new Error("Error updating seller: " + error.message);
     }
   }
 
   async delete(input: DeleteSellerInputDto): Promise<void> {
-    const aSeller = await this.prismaClient.seller.findUnique({
+    const seller = await this.prisma.seller.findUnique({
       where: { id: input.sellerId, companyId: input.companyId },
     });
 
-    if (!aSeller) {
+    if (!seller) {
       throw new Error("Seller not found.");
     }
 
     try {
-      await this.prismaClient.seller.delete({
+      await this.prisma.seller.delete({
         where: { id: input.sellerId, companyId: input.companyId },
       });
     } catch (error: any) {
@@ -126,55 +102,62 @@ export class SellerRepositoryPrisma implements ISellerGateway {
 
   async findById(input: FindSellerInputDto): Promise<Seller | null> {
     try {
-      const sellers = await this.prismaClient.seller.findUnique({
+      const seller = await this.prisma.seller.findUnique({
         where: { id: input.sellerId, companyId: input.companyId },
-        include: { sales: true },
+        include: { sales: { orderBy: { createdAt: "desc" } } },
       });
 
-      if (!sellers) return null;
+      if (!seller) return null;
 
-      return Seller.with({
-        id: sellers.id,
-        name: sellers.name,
-        email: sellers.email,
-        phone: sellers.phone ?? "",
-        photo: sellers.photo ?? "",
-        photoPublicId: sellers.photoPublicId ?? "",
-        sales: sellers.sales,
-        companyId: sellers.companyId,
-        createdAt: sellers.createdAt,
-      });
+      return this.toEntity(seller);
     } catch (error: any) {
-      throw new Error("Error finding Event: " + error.message);
+      throw new Error("Error finding seller: " + error.message);
     }
   }
 
   async findByEmail(input: FindSellerByEmailInputDto): Promise<Seller | null> {
     try {
-      const seller = await this.prismaClient.seller.findUnique({
+      const seller = await this.prisma.seller.findUnique({
         where: {
           companyId_email: {
             email: input.email,
             companyId: input.companyId ?? "",
           },
         },
-        // include: { events: true },
       });
 
       if (!seller) return null;
 
-      return Seller.with({
-        id: seller.id,
-        name: seller.name,
-        email: seller.email,
-        phone: seller.phone ?? "",
-        photo: seller.photo ?? "",
-        photoPublicId: seller.photoPublicId ?? "",
-        companyId: seller.companyId,
-        createdAt: seller.createdAt,
-      });
+      return this.toEntity(seller);
     } catch (error: any) {
-      throw new Error("Error finding company: " + error.message);
+      throw new Error("Error finding seller by email: " + error.message);
     }
+  }
+
+  private toEntity(raw: any): Seller {
+    return Seller.with({
+      id: raw.id,
+      name: raw.name,
+      email: raw.email,
+      phone: raw.phone ?? "",
+      photo: raw.photo ?? "",
+      photoPublicId: raw.photoPublicId ?? "",
+      sales: raw.sales,
+      companyId: raw.companyId,
+      createdAt: raw.createdAt,
+    });
+  }
+
+  private toRaw(seller: Seller) {
+    return {
+      id: seller.id,
+      name: seller.name,
+      email: seller.email,
+      phone: seller.phone,
+      photo: seller.photo,
+      photoPublicId: seller.photoPublicId,
+      companyId: seller.companyId,
+      createdAt: seller.createdAt,
+    };
   }
 }

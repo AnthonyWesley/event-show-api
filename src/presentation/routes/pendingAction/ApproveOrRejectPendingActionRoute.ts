@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import {
   ApproveOrRejectPendingAction,
   ApproveOrRejectPendingActionInputDto,
@@ -11,12 +11,12 @@ export class ApproveOrRejectPendingActionRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly approveOrRejectPendingActionService: ApproveOrRejectPendingAction,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     approveOrRejectPendingActionService: ApproveOrRejectPendingAction,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new ApproveOrRejectPendingActionRoute(
       "/pending-action/approve-reject",
@@ -52,6 +52,6 @@ export class ApproveOrRejectPendingActionRoute implements IRoute {
   }
 
   getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

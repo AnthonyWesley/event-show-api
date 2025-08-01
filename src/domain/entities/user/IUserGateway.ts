@@ -6,6 +6,7 @@ export interface IUserGateway {
   findById(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;
   findByRefreshToken(refreshToken: string): Promise<string | null>;
+  countByCompany(companyId: string): Promise<number>;
   updateRefreshToken(userId: string, refreshToken: string): Promise<void>;
   update(id: string, data: User): Promise<User>;
   delete(id: string): Promise<void>;

@@ -4,7 +4,8 @@ import {
   CreateEventInputDto,
 } from "../../../usecase/event/CreateEvent";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
+import { checkFeatures } from "../../../infra/http/middlewares/checkFeature";
 
 export type CreateEventResponseDto = {
   id: string;
@@ -15,12 +16,12 @@ export class CreateEventRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly createEventService: CreateEvent,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     createEventService: CreateEvent,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new CreateEventRoute(
       "/events",
@@ -62,6 +63,6 @@ export class CreateEventRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

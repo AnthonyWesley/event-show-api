@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 import { ListSale, ListSaleOutputDto } from "../../../usecase/sale/ListSale";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export type ListSaleResponseDto = {
   sales: {
@@ -19,10 +19,13 @@ export class ListSaleRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly listSaleServer: ListSale,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
-  public static create(listSaleServer: ListSale, authorization: Authorization) {
+  public static create(
+    listSaleServer: ListSale,
+    authorization: AuthorizationRoute
+  ) {
     return new ListSaleRoute(
       "/events/:eventId/sales",
       HttpMethod.GET,
@@ -47,6 +50,10 @@ export class ListSaleRoute implements IRoute {
           quantity: sale.quantity,
           // total: sale.total,
           productId: sale.productId,
+          // product: sale.product,
+          // lead: sale.lead,
+          // seller: sale.seller,
+          leadId: sale.sellerId,
           eventId: sale.eventId,
           sellerId: sale.sellerId,
           createdAt: sale.createdAt,
@@ -65,6 +72,6 @@ export class ListSaleRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

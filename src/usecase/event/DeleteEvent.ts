@@ -1,5 +1,6 @@
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
+import { SocketServer } from "../../infra/socket/SocketServer";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 
@@ -11,11 +12,16 @@ export type DeleteEventInputDto = {
 export class DeleteEvent implements IUseCases<DeleteEventInputDto, void> {
   private constructor(
     readonly eventGateway: IEventGateway,
-    readonly companyGateway: ICompanyGateway
+    readonly companyGateway: ICompanyGateway,
+    readonly socketServer?: SocketServer
   ) {}
 
-  static create(eventGateway: IEventGateway, companyGateway: ICompanyGateway) {
-    return new DeleteEvent(eventGateway, companyGateway);
+  static create(
+    eventGateway: IEventGateway,
+    companyGateway: ICompanyGateway,
+    socketServer?: SocketServer
+  ) {
+    return new DeleteEvent(eventGateway, companyGateway, socketServer);
   }
 
   async execute(input: DeleteEventInputDto): Promise<void> {
@@ -24,6 +30,7 @@ export class DeleteEvent implements IUseCases<DeleteEventInputDto, void> {
     if (!companyExists) {
       throw new NotFoundError("Company");
     }
-    await this.eventGateway.delete(input);
+    const anDeletedEvent = await this.eventGateway.delete(input);
+    this.socketServer?.emit("event:deleted", anDeletedEvent);
   }
 }

@@ -16,7 +16,8 @@ export function makePendingActionUseCases(
     list: ListPendingAction.create(pendingActionRepository),
     approveOrReject: ApproveOrRejectPendingAction.create(
       pendingActionRepository,
-      saleRepository
+      saleRepository,
+      socketServer
     ),
   };
 }

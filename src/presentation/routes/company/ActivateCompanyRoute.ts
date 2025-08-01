@@ -3,7 +3,7 @@ import { HttpMethod, IRoute } from "../IRoute";
 import { PlanType } from "../../../domain/entities/company/Company";
 
 import { ActivateCompany } from "../../../usecase/company/ActivateCompany";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export type UpdateCompanyResponseDto = {
   id: string;
@@ -18,12 +18,12 @@ export class ActivateCompanyRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly activeCompanyService: ActivateCompany,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   static create(
     activeCompanyService: ActivateCompany,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new ActivateCompanyRoute(
       "/companies/:id/activate",
@@ -51,6 +51,6 @@ export class ActivateCompanyRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

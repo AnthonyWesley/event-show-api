@@ -4,8 +4,9 @@ import { UnauthorizedError } from "../../shared/errors/UnauthorizedError";
 import { ValidationError } from "../../shared/errors/ValidationError";
 import { IUseCases } from "../IUseCases";
 import { IUserGateway } from "../../domain/entities/user/IUserGateway";
-import { Authorization } from "../../infra/http/middlewares/Authorization";
+
 import { NotFoundError } from "../../shared/errors/NotFoundError";
+import { AuthTokenService } from "../../service/AuthTokenService";
 
 export type CreateCompanyInputDto = {
   userId?: string;
@@ -20,6 +21,7 @@ export type CreateCompanyInputDto = {
   address?: string;
   city?: string;
   state?: string;
+  platformId: string;
   zipCode?: string;
   website?: string;
   segment?: string;
@@ -30,6 +32,7 @@ export type CreateCompanyInputDto = {
 
 export type CreateCompanyOutputDto = {
   accessToken: string;
+  companyId: string;
 };
 
 export class CreateCompany
@@ -38,13 +41,13 @@ export class CreateCompany
   private constructor(
     private readonly companyGateway: ICompanyGateway,
     private readonly userGateway: IUserGateway,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthTokenService
   ) {}
 
   public static create(
     companyGateway: ICompanyGateway,
     userGateway: IUserGateway,
-    authorization: Authorization
+    authorization: AuthTokenService
   ) {
     return new CreateCompany(companyGateway, userGateway, authorization);
   }
@@ -67,24 +70,24 @@ export class CreateCompany
       throw new UnauthorizedError("E-mail da empresa já está em uso.");
     }
 
-    const aCompany = await Company.create(
-      input.name,
-      input.email,
-      input.plan,
-      input.phone,
-      input.cnpj,
-      input.ie,
-      input.responsibleName,
-      input.address,
-      input.city,
-      input.state,
-      input.zipCode,
-      input.website,
-      input.segment,
-      input.notes,
-      input.photo,
-      input.photoPublicId
-    );
+    const aCompany = await Company.create({
+      name: input.name,
+      email: input.email,
+      phone: input.phone,
+      cnpj: input.cnpj,
+      ie: input.ie,
+      responsibleName: input.responsibleName,
+      address: input.address,
+      city: input.city,
+      state: input.state,
+      zipCode: input.zipCode,
+      website: input.website,
+      segment: input.segment,
+      platformId: input.platformId,
+      notes: input.notes,
+      photo: input.photo,
+      photoPublicId: input.photoPublicId,
+    });
 
     await this.companyGateway.save(aCompany, user.id);
 
@@ -97,6 +100,6 @@ export class CreateCompany
       "1d"
     );
 
-    return { accessToken };
+    return { accessToken, companyId: aCompany.id };
   }
 }

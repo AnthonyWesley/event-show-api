@@ -6,7 +6,7 @@ import {
   UpdateCompanyInputDto,
   UpdateCompanyOutputDto,
 } from "../../../usecase/company/UpdateCompany";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export type UpdateCompanyResponseDto = {
   id: string;
@@ -21,12 +21,12 @@ export class UpdateCompanyRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly updateCompanyService: UpdateCompany,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   static create(
     updateCompanyService: UpdateCompany,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new UpdateCompanyRoute(
       "/companies/:id",
@@ -97,6 +97,6 @@ export class UpdateCompanyRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

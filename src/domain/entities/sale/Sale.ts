@@ -5,53 +5,34 @@ export type SaleProps = {
   eventId: string;
   productId: string;
   sellerId: string;
+  leadId: string;
   quantity: number;
   seller?: any;
   product?: any;
+  lead?: any;
   createdAt: Date;
 };
 
 export class Sale {
   private constructor(private readonly props: SaleProps) {}
 
-  public static create(
-    eventId: string,
-    productId: string,
-    sellerId: string,
-    quantity: number
-
-    // total: number
-  ) {
-    if (!eventId.trim()) {
+  public static create(props: Omit<SaleProps, "id" | "createdAt">): Sale {
+    if (!props.eventId.trim()) {
       throw new Error("Event ID is required.");
     }
 
-    if (!productId.trim()) {
+    if (!props.productId.trim()) {
       throw new Error("Product ID is required.");
     }
 
-    if (!sellerId.trim()) {
+    if (!props.sellerId.trim()) {
       throw new Error("Seller ID is required.");
     }
 
-    if (!Number.isInteger(quantity) || quantity <= 0) {
+    if (!Number.isInteger(props.quantity) || props.quantity <= 0) {
       throw new Error("Quantity must be a positive integer.");
     }
-
-    // if (isNaN(total) || total <= 0) {
-    //   throw new Error("Total must be a positive number greater than zero.");
-    // }
-
-    return new Sale({
-      id: generateId(),
-      eventId,
-      productId,
-      sellerId,
-      quantity,
-
-      // total,
-      createdAt: new Date(),
-    });
+    return new Sale({ ...props, id: generateId(), createdAt: new Date() });
   }
 
   public static with(props: SaleProps) {
@@ -85,9 +66,12 @@ export class Sale {
     return this.props.seller;
   }
 
-  // public get total() {
-  //   return this.props.total;
-  // }
+  public get leadId() {
+    return this.props.leadId;
+  }
+  public get lead() {
+    return this.props.lead;
+  }
 
   public get createdAt() {
     return this.props.createdAt;

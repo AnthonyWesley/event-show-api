@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import { GuestAccess } from "../../../usecase/sellerEvent/GuestAccess";
 
 export class GuestAccessRoute implements IRoute {
@@ -8,15 +8,15 @@ export class GuestAccessRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly guestAccessService: GuestAccess,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     guestAccessService: GuestAccess,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new GuestAccessRoute(
-      "/events/:eventId/guest/:sellerId",
+      "/guest/:invite",
       HttpMethod.GET,
       guestAccessService,
       authorization
@@ -26,13 +26,11 @@ export class GuestAccessRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response) => {
       const { user } = request as any;
-      const { eventId, sellerId } = request.params;
+
+      const { invite } = request.params;
 
       const result = await this.guestAccessService.execute({
-        companyId: user.companyId,
-        email: user.email,
-        eventId,
-        sellerId,
+        invite,
       });
 
       response.status(200).json(result);
@@ -48,6 +46,6 @@ export class GuestAccessRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [];
   }
 }

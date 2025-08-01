@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import { PlanType, StatusType } from "../../../domain/entities/admin/Admin";
 import { ListUsers } from "../../../usecase/user/ListUsers";
 
@@ -36,12 +36,12 @@ export class ListUserRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly listUserServer: ListUsers,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     listUserServer: ListUsers,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new ListUserRoute(
       "/users",
@@ -88,6 +88,6 @@ export class ListUserRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

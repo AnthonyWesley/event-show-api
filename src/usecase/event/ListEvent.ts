@@ -2,12 +2,12 @@ import { GoalType } from "@prisma/client";
 import { Goal } from "../../domain/entities/event/Event";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import { SaleProps } from "../../domain/entities/sale/Sale";
-import { SellerStatsHelper } from "../../helpers/SellerStatsHelper";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 import { SellerEventProps } from "../../domain/entities/sellerEvent/SellerEvent";
-import { SellerProps } from "../../domain/entities/seller/Seller";
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
+import { GoalUtils } from "../../shared/utils/GoalUtils";
+import { SellerStatsHelper } from "../../shared/utils/SellerStatsHelper";
 
 export type ListEventInputDto = { companyId: string; search?: string };
 
@@ -18,7 +18,7 @@ export type ListEventOutputDto = {
     startDate: Date;
     endDate?: Date;
     sellerEvents: SellerEventProps[];
-    sales: SaleProps[];
+    // sales: SaleProps[];
     photo?: string;
     photoPublicId?: string;
     file?: any;
@@ -27,10 +27,13 @@ export type ListEventOutputDto = {
     isActive?: boolean;
     companyId: string;
     createdAt: Date;
-    allSellers: (SellerProps & {
-      totalSalesCount: number;
-      totalSalesValue: number;
-    })[];
+    totalSalesValue: number;
+    totalUnitsSold: number;
+    // allSellers: (SellerProps & {
+    //   totalSalesCount: number;
+    //   totalSalesValue: number;
+    //   goal: number;
+    // })[];
   }[];
 };
 
@@ -70,7 +73,8 @@ export class ListEvent
 
         const sellersWithStats = SellerStatsHelper.applyStatsToSellers(
           eventSellers,
-          stats
+          stats,
+          event.goal
         );
 
         const allSellers = SellerStatsHelper.sortByGoalType(
@@ -78,21 +82,34 @@ export class ListEvent
           event.goalType as Goal
         );
 
+        const totalSalesValue = GoalUtils.sumSellerProgressForGoal(
+          allSellers,
+          event.goalType
+        );
+
+        const totalUnitsSold =
+          event?.sales?.reduce(
+            (acc: number, sale: SaleProps) => acc + (sale?.quantity ?? 0),
+            0
+          ) ?? 0;
+
         return {
           id: event.id,
           name: event.name,
           photo: event.photo,
-          photoPublicId: event.photoPublicId,
+          // photoPublicId: event.photoPublicId,
           startDate: event.startDate,
           endDate: event.endDate ?? undefined,
-          sales: event.sales,
+          // sales: event.sales,
           sellerEvents: event.sellerEvents,
           isActive: event.isActive,
           goal: event.goal,
           goalType: event.goalType as GoalType,
           companyId: event.companyId,
           createdAt: event.createdAt,
-          allSellers,
+          totalSalesValue,
+          totalUnitsSold,
+          // allSellers,
         };
       }),
     };

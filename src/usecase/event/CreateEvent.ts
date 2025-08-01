@@ -4,6 +4,7 @@ import { IUseCases } from "../IUseCases";
 import { ValidationError } from "../../shared/errors/ValidationError";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
+import { SocketServer } from "../../infra/socket/SocketServer";
 
 export type CreateEventInputDto = {
   name: string;
@@ -23,14 +24,16 @@ export class CreateEvent
 {
   private constructor(
     private readonly eventGateway: IEventGateway,
-    private readonly companyGateway: ICompanyGateway
+    private readonly companyGateway: ICompanyGateway,
+    private readonly socketServer?: SocketServer
   ) {}
 
   public static create(
     eventGateway: IEventGateway,
-    companyGateway: ICompanyGateway
+    companyGateway: ICompanyGateway,
+    socketServer?: SocketServer
   ) {
-    return new CreateEvent(eventGateway, companyGateway);
+    return new CreateEvent(eventGateway, companyGateway, socketServer);
   }
 
   public async execute(
@@ -54,6 +57,7 @@ export class CreateEvent
       input.photo ?? ""
     );
     await this.eventGateway.save(anEvent);
+    this.socketServer?.emit("event:created", anEvent);
 
     return { id: anEvent.id };
   }

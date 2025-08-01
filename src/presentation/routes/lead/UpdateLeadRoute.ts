@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import {
   UpdateLead,
   UpdateLeadInputDto,
@@ -12,10 +12,13 @@ export class UpdateLeadRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly updateLeadService: UpdateLead,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
-  static create(updateLeadService: UpdateLead, authorization: Authorization) {
+  static create(
+    updateLeadService: UpdateLead,
+    authorization: AuthorizationRoute
+  ) {
     return new UpdateLeadRoute(
       "/leads/:leadId",
       HttpMethod.PATCH,
@@ -29,8 +32,15 @@ export class UpdateLeadRoute implements IRoute {
       const { leadId } = request.params;
       const { user } = request as any;
 
-      const { name, email, phone, notes, source, customInterest, products } =
-        request.body;
+      const {
+        name,
+        email,
+        phone,
+        notes,
+        leadSourceId,
+        customInterest,
+        products,
+      } = request.body;
 
       const input: UpdateLeadInputDto = {
         companyId: user.companyId,
@@ -39,7 +49,7 @@ export class UpdateLeadRoute implements IRoute {
         email,
         phone,
         notes,
-        source,
+        leadSourceId,
         customInterest,
         products,
       };
@@ -59,6 +69,6 @@ export class UpdateLeadRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import { GetInvoiceById } from "../../../usecase/invoice/GetInvoiceById";
 
 export class GetInvoiceByIdRoute implements IRoute {
@@ -8,12 +8,12 @@ export class GetInvoiceByIdRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly getInvoicesByIdService: GetInvoiceById,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     getInvoicesByIdService: GetInvoiceById,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new GetInvoiceByIdRoute(
       "/invoices/:id",
@@ -42,6 +42,6 @@ export class GetInvoiceByIdRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

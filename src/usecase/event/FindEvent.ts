@@ -2,13 +2,15 @@ import { GoalType } from "@prisma/client";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { SaleProps } from "../../domain/entities/sale/Sale";
-import {
-  SellerStatsHelper,
-  SellerWithStats,
-} from "../../helpers/SellerStatsHelper";
+
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 import { SellerEventProps } from "../../domain/entities/sellerEvent/SellerEvent";
+import { GoalUtils } from "../../shared/utils/GoalUtils";
+import {
+  SellerStatsHelper,
+  SellerWithStats,
+} from "../../shared/utils/SellerStatsHelper";
 
 export type FindEventInputDto = {
   companyId: string;
@@ -27,7 +29,8 @@ export type FindEventOutputDto = {
   sales: SaleProps[];
   goal: number;
   isActive?: boolean;
-
+  totalSalesValue: number;
+  totalUnitsSold: number;
   goalType: GoalType;
   companyId: string;
   createdAt: Date;
@@ -67,13 +70,25 @@ export class FindEvent
     );
     const sellersWithStats = SellerStatsHelper.applyStatsToSellers(
       sellers,
-      stats
+      stats,
+      event.goal
     );
 
     const allSellers = SellerStatsHelper.sortByGoalType(
       sellersWithStats,
       event.goalType as GoalType
     );
+
+    const totalSalesValue = GoalUtils.sumSellerProgressForGoal(
+      allSellers,
+      event.goalType
+    );
+
+    const totalUnitsSold =
+      event?.sales?.reduce(
+        (acc: number, sale: SaleProps) => acc + (sale?.quantity ?? 0),
+        0
+      ) ?? 0;
 
     return {
       id: event.id,
@@ -89,6 +104,8 @@ export class FindEvent
       goalType: event.goalType as GoalType,
       companyId: event.companyId,
       createdAt: event.createdAt,
+      totalSalesValue,
+      totalUnitsSold,
       allSellers,
     };
   }

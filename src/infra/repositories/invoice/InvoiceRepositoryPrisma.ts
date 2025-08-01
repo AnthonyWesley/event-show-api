@@ -10,8 +10,6 @@ export class InvoiceRepositoryPrisma implements IInvoiceGateway {
   }
 
   async save(invoice: Invoice): Promise<void> {
-    console.log(invoice);
-
     const data = invoice.toResponse();
 
     await this.prisma.invoice.create({

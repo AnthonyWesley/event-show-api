@@ -1,9 +1,10 @@
+import { AuthTokenService } from "../../service/AuthTokenService";
 import { CreateAdmin } from "../../usecase/admin/CreateAdmin";
 import { ImpersonateCompany } from "../../usecase/admin/ImpersonateCompany";
 import { LoginAdmin } from "../../usecase/admin/LoginAdmin";
 import { LogoutAdmin } from "../../usecase/admin/LogoutAdmin";
 import { RefreshAdmin } from "../../usecase/admin/RefreshAdmin";
-import { Authorization } from "../http/middlewares/Authorization";
+import { AuthorizationRoute } from "../http/middlewares/AuthorizationRoute";
 import { AdminRepositoryPrisma } from "../repositories/admin/AdminRepositoryPrisma";
 import { CompanyRepositoryPrisma } from "../repositories/company/CompanyRepositoryPrisma";
 import { UserRepositoryPrisma } from "../repositories/user/UserRepositoryPrisma";
@@ -11,7 +12,7 @@ import { UserRepositoryPrisma } from "../repositories/user/UserRepositoryPrisma"
 export function makeAdminUseCases(
   adminRepository: AdminRepositoryPrisma,
   userRepository: UserRepositoryPrisma,
-  authorization: Authorization,
+  authorization: AuthTokenService,
   companyRepository: CompanyRepositoryPrisma
 ) {
   return {

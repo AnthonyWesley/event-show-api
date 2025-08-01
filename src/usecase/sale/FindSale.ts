@@ -67,6 +67,10 @@ export class FindSale
         throw new NotFoundError("Sale");
       }
 
+      // const existSeller = await this.sellerGateway.findById({companyId:input.companyId,sellerId:} )
+
+      // const seller = eventExists..find(sl=>sl.id)
+
       return {
         id: aSale.id,
         eventId: aSale.eventId,

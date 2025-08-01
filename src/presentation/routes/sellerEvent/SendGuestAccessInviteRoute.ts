@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
-
-import { CreateSellerEvent } from "../../../usecase/sellerEvent/CreateSellerEvent";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import { SendGuestAccessInvite } from "../../../usecase/sellerEvent/SendGuestAccessInvite";
 
 export class SendGuestAccessInviteRoute implements IRoute {
@@ -10,12 +8,12 @@ export class SendGuestAccessInviteRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly sendGuestAccessInvite: SendGuestAccessInvite,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     sendGuestAccessInvite: SendGuestAccessInvite,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new SendGuestAccessInviteRoute(
       "/events/:eventId/guest/:sellerId",
@@ -49,6 +47,6 @@ export class SendGuestAccessInviteRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

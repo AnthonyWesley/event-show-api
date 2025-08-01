@@ -1,15 +1,15 @@
 import { PrismaClient } from "@prisma/client";
-
 import { Product } from "../../../domain/entities/product/Product";
 import { IProductGateway } from "../../../domain/entities/product/IProductGateway";
 import { DeleteProductInputDto } from "../../../usecase/product/DeleteProduct";
 import { UpdateProductInputDto } from "../../../usecase/product/UpdateProduct";
+import { ObjectHelper } from "../../../shared/utils/ObjectHelper";
 
 export class ProductRepositoryPrisma implements IProductGateway {
-  private constructor(private readonly prismaClient: PrismaClient) {}
+  private constructor(private readonly prisma: PrismaClient) {}
 
-  public static create(prismaClient: PrismaClient) {
-    return new ProductRepositoryPrisma(prismaClient);
+  public static create(prisma: PrismaClient) {
+    return new ProductRepositoryPrisma(prisma);
   }
 
   async save(product: Product): Promise<void> {
@@ -23,51 +23,42 @@ export class ProductRepositoryPrisma implements IProductGateway {
     };
 
     try {
-      await this.prismaClient.product.create({ data });
+      await this.prisma.product.create({ data });
     } catch (error: any) {
       throw new Error("Error saving product: " + error.message);
     }
   }
 
-  async list(companyId: string, search: string): Promise<Product[]> {
-    const filters: any = {
-      companyId,
-    };
+  async list(companyId: string, search?: string): Promise<Product[]> {
+    const filters: any = { companyId };
 
     if (search) {
-      filters.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        // { price: { contains: search } },
-      ];
+      filters.OR = [{ name: { contains: search, mode: "insensitive" } }];
     }
-    const products = await this.prismaClient.product.findMany({
+
+    const products = await this.prisma.product.findMany({
       where: filters,
     });
 
-    return products.map((e) =>
-      Product.with({
-        id: e.id,
-        name: e.name,
-        price: e.price,
-        photo: e.photo ?? "",
-        photoPublicId: e.photoPublicId ?? "",
-        companyId: e.companyId,
-        createdAt: e.createdAt,
-      })
-    );
+    return products.map(this.toEntity);
+  }
+
+  async countByCompany(companyId: string): Promise<number> {
+    return await this.prisma.product.count({
+      where: { companyId },
+    });
   }
 
   async update(input: UpdateProductInputDto): Promise<Product> {
     try {
-      const dataToUpdate: any = {};
+      const dataToUpdate = ObjectHelper.removeUndefinedFields({
+        name: input.name,
+        price: input.price,
+        photo: input.photo,
+        photoPublicId: input.photoPublicId,
+      });
 
-      if (input.name !== undefined) dataToUpdate.name = input.name;
-      if (input.price !== undefined) dataToUpdate.price = input.price;
-      if (input.photo !== undefined) dataToUpdate.photo = input.photo;
-      if (input.photoPublicId !== undefined)
-        dataToUpdate.photoPublicId = input.photoPublicId;
-
-      const updatedProduct = await this.prismaClient.product.update({
+      const updatedProduct = await this.prisma.product.update({
         where: {
           id: input.productId,
           companyId: input.companyId,
@@ -76,22 +67,14 @@ export class ProductRepositoryPrisma implements IProductGateway {
         include: { sales: true },
       });
 
-      return Product.with({
-        id: updatedProduct.id,
-        name: updatedProduct.name,
-        price: updatedProduct.price,
-        photo: updatedProduct.photo ?? "",
-        photoPublicId: updatedProduct.photoPublicId ?? "",
-        companyId: updatedProduct.companyId,
-        createdAt: updatedProduct.createdAt,
-      });
+      return this.toEntity(updatedProduct);
     } catch (error: any) {
       throw new Error("Error updating product: " + error.message);
     }
   }
 
   async delete(input: DeleteProductInputDto): Promise<void> {
-    const product = await this.prismaClient.product.findUnique({
+    const product = await this.prisma.product.findUnique({
       where: { id: input.productId, companyId: input.companyId },
     });
 
@@ -100,7 +83,7 @@ export class ProductRepositoryPrisma implements IProductGateway {
     }
 
     try {
-      await this.prismaClient.product.delete({
+      await this.prisma.product.delete({
         where: { id: input.productId, companyId: input.companyId },
       });
     } catch (error: any) {
@@ -110,24 +93,28 @@ export class ProductRepositoryPrisma implements IProductGateway {
 
   async findById(input: DeleteProductInputDto): Promise<Product | null> {
     try {
-      const product = await this.prismaClient.product.findUnique({
+      const product = await this.prisma.product.findUnique({
         where: { id: input.productId, companyId: input.companyId },
         include: { sales: true },
       });
 
       if (!product) return null;
 
-      return Product.with({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        photo: product.photo ?? "",
-        photoPublicId: product.photoPublicId ?? "",
-        companyId: product.companyId,
-        createdAt: product.createdAt,
-      });
+      return this.toEntity(product);
     } catch (error: any) {
       throw new Error("Error finding product: " + error.message);
     }
+  }
+
+  private toEntity(raw: any): Product {
+    return Product.with({
+      id: raw.id,
+      name: raw.name,
+      price: raw.price,
+      photo: raw.photo ?? "",
+      photoPublicId: raw.photoPublicId ?? "",
+      companyId: raw.companyId,
+      createdAt: raw.createdAt,
+    });
   }
 }

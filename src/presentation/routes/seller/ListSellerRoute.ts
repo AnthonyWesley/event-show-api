@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 import { ListSeller } from "../../../usecase/seller/ListSeller";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export type ListSellerResponseDto = {
   sellers: {
@@ -18,12 +18,12 @@ export class ListSellerRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly listSellerService: ListSeller,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     listSellerService: ListSeller,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new ListSellerRoute(
       "/sellers",
@@ -67,6 +67,6 @@ export class ListSellerRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

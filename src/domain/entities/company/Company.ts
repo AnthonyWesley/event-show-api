@@ -4,7 +4,9 @@ import { EventProps } from "../event/Event";
 import { ProductProps } from "../product/Product";
 import { SellerProps } from "../seller/Seller";
 import { UserProps } from "../user/User";
-import { Validator } from "../../../helpers/Validator";
+import { LeadSource } from "@prisma/client";
+import { SubscriptionProps } from "../subscription/Subscription";
+import { Validator } from "../../../shared/utils/Validator";
 
 export type PlanType = "TEST" | "BASIC" | "PREMIUM";
 export type StatusType = "ACTIVE" | "SUSPENDED";
@@ -22,6 +24,7 @@ export const StatusType = {
 
 export type CompanyProps = {
   id: string;
+  platformId: string;
   name: string;
   cnpj?: string;
   ie?: string;
@@ -39,12 +42,14 @@ export type CompanyProps = {
   photo?: string;
   photoPublicId?: string;
 
-  plan: PlanType;
+  // plan: PlanType;
   status: StatusType;
   accessExpiresAt: Date;
   createdAt: Date;
 
   products?: ProductProps[];
+  subscriptions?: SubscriptionProps[];
+  sources?: LeadSource[];
   events?: EventProps[];
   sellers?: SellerProps[];
   users?: UserProps[];
@@ -54,29 +59,18 @@ export class Company {
   private constructor(private readonly props: CompanyProps) {}
 
   public static create(
-    name: string,
-    email: string,
-    plan: PlanType = "TEST",
-    phone?: string,
-    cnpj?: string,
-    ie?: string,
-    responsibleName?: string,
-    address?: string,
-    city?: string,
-    state?: string,
-    zipCode?: string,
-    website?: string,
-    segment?: string,
-    notes?: string,
-    photo?: string,
-    photoPublicId?: string
+    props: Omit<CompanyProps, "id" | "createdAt" | "status" | "accessExpiresAt">
   ): Company {
-    if (!name.trim()) {
+    if (!props.name.trim()) {
       throw new Error("Company name is required.");
     }
 
-    const normalizedPhone = phone ? Validator.normalizePhone(phone) : undefined;
-    const normalizedCNPJ = cnpj ? Validator.normalizeCNPJ(cnpj) : undefined;
+    const normalizedPhone = props.phone
+      ? Validator.normalizePhone(props.phone)
+      : undefined;
+    const normalizedCNPJ = props.cnpj
+      ? Validator.normalizeCNPJ(props.cnpj)
+      : undefined;
 
     if (normalizedPhone && !Validator.isValidPhone(normalizedPhone)) {
       throw new Error("Invalid phone number.");
@@ -84,32 +78,16 @@ export class Company {
 
     const createdAt = new Date();
     const accessExpiresAt = addDays(createdAt, 30);
-
     return new Company({
+      ...props,
       id: generateId(),
-      name,
-      email: email.trim().toLowerCase(),
+      platformId: "01K0D7WQQN1DCPBYZJB059CB5W",
+      email: props.email?.trim().toLowerCase(),
       phone: normalizedPhone,
       cnpj: normalizedCNPJ,
-      ie,
-      responsibleName,
-      address,
-      city,
-      state,
-      zipCode,
-      website,
-      segment,
-      notes,
-      photo,
-      photoPublicId,
-      plan,
-      status: "ACTIVE",
       accessExpiresAt,
-      createdAt,
-      users: [],
-      events: [],
-      products: [],
-      sellers: [],
+      status: "ACTIVE",
+      createdAt: new Date(),
     });
   }
 
@@ -128,11 +106,11 @@ export class Company {
       name: this.name,
       email: this.email,
       phone: this.phone,
-      plan: this.plan,
+      // plan: this.plan,
       status: this.status,
       accessExpiresAt: this.accessExpiresAt,
       createdAt: this.createdAt,
-      maxConcurrentEvents: this.maxConcurrentEvents,
+      // maxConcurrentEvents: this.maxConcurrentEvents,
     };
   }
 
@@ -141,7 +119,7 @@ export class Company {
       throw new Error("Invalid plan type.");
     }
 
-    this.props.plan = newPlan;
+    // this.props.plan = newPlan;
     this.props.accessExpiresAt = addDays(new Date(), 30);
   }
 
@@ -194,8 +172,8 @@ export class Company {
   get photoPublicId() {
     return this.props.photoPublicId;
   }
-  get plan() {
-    return this.props.plan;
+  get platformId() {
+    return this.props.platformId;
   }
   get status() {
     return this.props.status;
@@ -209,6 +187,12 @@ export class Company {
   get products() {
     return this.props.products;
   }
+  get subscriptions() {
+    return this.props.subscriptions;
+  }
+  get sources() {
+    return this.props.sources;
+  }
   get events() {
     return this.props.events;
   }
@@ -217,14 +201,5 @@ export class Company {
   }
   get users() {
     return this.props.users;
-  }
-
-  get maxConcurrentEvents(): number {
-    switch (this.props.plan) {
-      case "PREMIUM":
-        return 5;
-      default:
-        return 1;
-    }
   }
 }

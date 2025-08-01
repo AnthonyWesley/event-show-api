@@ -2,7 +2,9 @@ import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { Goal } from "../../domain/entities/event/Event";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import { ConflictError } from "../../shared/errors/ConflictError";
+import { ForbiddenError } from "../../shared/errors/ForbiddenError";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
+import { hasReachedLimit } from "../../shared/utils/hasReachedLimit";
 
 export type SwitchEventStateInputDto = {
   companyId: string;
@@ -12,6 +14,7 @@ export type SwitchEventStateInputDto = {
   endDate?: Date | null;
   goal?: number;
   goalType?: Goal;
+  eventLimit: number;
 };
 
 export type SwitchEventStateResponseDto = {
@@ -50,9 +53,13 @@ export class SwitchEventState {
         companyId: input.companyId,
       });
 
-      if (activeEvents.length >= companyExists.maxConcurrentEvents) {
-        throw new ConflictError(
-          "Maximum number of active events reached for this company."
+      const allEventsCount = await this.eventGateway.countActiveByCompany(
+        input.companyId
+      );
+
+      if (hasReachedLimit(allEventsCount, input.eventLimit)) {
+        throw new ForbiddenError(
+          "Limite de eventos ativos atingido pelo seu plano."
         );
       }
     }

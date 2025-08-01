@@ -1,8 +1,9 @@
 import { IUseCases } from "../IUseCases";
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
-import { Authorization } from "../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../infra/http/middlewares/AuthorizationRoute";
 import { UnauthorizedError } from "../../shared/errors/UnauthorizedError";
 import { IUserGateway } from "../../domain/entities/user/IUserGateway";
+import { AuthTokenService } from "../../service/AuthTokenService";
 
 type Input = { userId: string; adminId: string };
 type Output = { accessToken: string };
@@ -11,13 +12,13 @@ export class ImpersonateCompany implements IUseCases<Input, Output> {
   private constructor(
     private readonly userGateway: IUserGateway,
     private readonly companyGateway: ICompanyGateway,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthTokenService
   ) {}
 
   static create(
     userGateway: IUserGateway,
     companyGateway: ICompanyGateway,
-    authorization: Authorization
+    authorization: AuthTokenService
   ) {
     return new ImpersonateCompany(userGateway, companyGateway, authorization);
   }

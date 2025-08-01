@@ -5,7 +5,8 @@ import {
   CreateUser,
   CreateUserInputDto,
 } from "../../../usecase/user/CreateUser";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
+import { checkFeatures } from "../../../infra/http/middlewares/checkFeature";
 
 export type CreateCompanyResponseDto = {
   id: string;
@@ -16,15 +17,15 @@ export class CreateUserRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly createUserService: CreateUser,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     createUserService: CreateUser,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new CreateUserRoute(
-      "/auth/register",
+      "/users",
       HttpMethod.POST,
       createUserService,
       authorization
@@ -34,6 +35,9 @@ export class CreateUserRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response) => {
       const { name, email, password, phone, companyId, company } = request.body;
+      console.log(request.body);
+
+      const keys = (request as any).featureValues;
 
       const input: CreateUserInputDto = {
         name,
@@ -42,7 +46,9 @@ export class CreateUserRoute implements IRoute {
         phone,
         companyId,
         company,
+        keys,
       };
+      console.log(keys);
 
       const output: CreateCompanyResponseDto =
         await this.createUserService.execute(input);
@@ -59,5 +65,9 @@ export class CreateUserRoute implements IRoute {
 
   public getMethod(): HttpMethod {
     return this.method;
+  }
+
+  public getMiddlewares() {
+    return [this.authorization.userRoute, checkFeatures(["limit_user"])];
   }
 }

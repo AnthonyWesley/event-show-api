@@ -1,20 +1,22 @@
+import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
+import { IEventGateway } from "../../domain/entities/event/IEventGateway";
+import { IInviteGateway } from "../../domain/entities/invite/IInviteGateway";
+import { Invite } from "../../domain/entities/invite/Invite";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
-
-import { Authorization } from "../../infra/http/middlewares/Authorization";
-import { IMailerService } from "../../infra/mail/IMailerService";
 import { IWhatsAppService } from "../../infra/mail/IWhatsAppService";
+import { AuthTokenService } from "../../service/AuthTokenService";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { ValidationError } from "../../shared/errors/ValidationError";
+import { generateInviteCode } from "../../shared/utils/IdGenerator";
 import { IUseCases } from "../IUseCases";
 
 export type SendGuestAccessInviteInputDto = {
-  companyId: string;
-  eventId: string;
   sellerId: string;
+  eventId: string;
+  companyId: string;
 };
 
 export type SendGuestAccessInviteOutputDto = {
-  //   id: string;
   link: string;
 };
 
@@ -23,23 +25,30 @@ export class SendGuestAccessInvite
     IUseCases<SendGuestAccessInviteInputDto, SendGuestAccessInviteOutputDto>
 {
   private constructor(
+    private readonly companyGateway: ICompanyGateway,
+    private readonly eventGateway: IEventGateway,
     private readonly sellerGateway: ISellerGateway,
-    private readonly authorization: Authorization,
-    private readonly mailerService: IMailerService,
-    private readonly whatsappService: IWhatsAppService
+    private readonly inviteGateway: IInviteGateway,
+
+    private readonly sendMessageService?: IWhatsAppService,
+    private readonly tokenService?: AuthTokenService
   ) {}
 
   public static create(
+    companyGateway: ICompanyGateway,
+    eventGateway: IEventGateway,
     sellerGateway: ISellerGateway,
-    authorization: Authorization,
-    mailerService: IMailerService,
-    whatsappService: IWhatsAppService
+    inviteGateway: IInviteGateway,
+    sendMessageService?: IWhatsAppService,
+    tokenService?: AuthTokenService
   ) {
     return new SendGuestAccessInvite(
+      companyGateway,
+      eventGateway,
       sellerGateway,
-      authorization,
-      mailerService,
-      whatsappService
+      inviteGateway,
+      sendMessageService,
+      tokenService
     );
   }
 
@@ -50,44 +59,62 @@ export class SendGuestAccessInvite
       throw new ValidationError("Seller ID and Event ID are required.");
     }
 
-    const seller = await this.sellerGateway.findById({
+    const existCompany = await this.companyGateway.findById(input.companyId);
+    if (!existCompany) {
+      throw new NotFoundError("Company");
+    }
+
+    const existEvent = await this.eventGateway.findById({
+      companyId: input.companyId,
+      eventId: input.eventId,
+    });
+    if (!existEvent) {
+      throw new NotFoundError("Event");
+    }
+
+    const existSeller = await this.sellerGateway.findById({
       companyId: input.companyId,
       sellerId: input.sellerId,
     });
-
-    if (!seller) {
+    if (!existSeller) {
       throw new NotFoundError("Seller");
     }
-    // const guestToken = this.authorization.generateToken(
-    //   { id: seller.id, email: seller.email },
-    //   "1m"
-    // );
 
-    const companyToken = this.authorization.generateToken(
-      { id: input.companyId },
-      "1d"
+    const findSellerEvent = existEvent?.sellerEvents.find(
+      (se) => se.sellerId === existSeller?.id
+    );
+    if (!findSellerEvent) {
+      throw new NotFoundError("SellerEvent");
+    }
+
+    const invite = await this.inviteGateway.findBySellerEventId(
+      findSellerEvent?.id ?? ""
     );
 
-    // const link = `http://localhost:5173/guest/${seller.id}?companyToken=${companyToken}&guestToken=${guestToken}`;
-    const link = `http://localhost:5173/guest/${seller.id}?companyToken=${companyToken}`;
+    let newInvite = invite;
+    if (!invite || invite.expiresAt < new Date()) {
+      const code = generateInviteCode();
 
-    // await this.mailerService.sendMail(
-    //   seller.email,
-    //   "Event Flow",
-    //   ` <h2>Olá, ${seller.name}!</h2>
-    //     <p>Você foi cadastrado no sistema de ranking de vendas.</p>
-    //     <p>Clique no link abaixo para acessar os detalhes de suas vendas:</p>
-    //     <a href="${link}">${link}</a>
-    //     <p><i>Este link expira em 24 horas.</i></p>`
-    // );
+      newInvite = await Invite.create({
+        sellerEventId: findSellerEvent?.id,
+        code: code(),
+        eventId: existEvent?.id,
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24h
+      });
+
+      await this.inviteGateway.save(newInvite); // ← agora sim
+    }
+    const urlInvite = `event-flow-awl.netlify.app/guest/${newInvite?.code}`;
 
     const message =
-      `Olá, ${seller.name}! Você foi cadastrado no sistema de ranking de vendas.\n\n` +
-      `Acesse o link abaixo para ver seus detalhes de vendas (expira em 24h):\n` +
-      `${link}`;
+      `Você foi convidado para participar do EventShow no evento "${existEvent?.name}".\n\n` +
+      `Acesse o link abaixo:\n${urlInvite}`;
 
-    await this.whatsappService.sendMessage(seller.phone ?? "", message);
+    await this.sendMessageService?.sendMessage(
+      existSeller?.phone ?? "",
+      message
+    );
 
-    return { link };
+    return { link: urlInvite };
   }
 }

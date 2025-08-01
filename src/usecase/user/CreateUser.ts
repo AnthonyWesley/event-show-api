@@ -1,8 +1,10 @@
 import { CompanyProps } from "../../domain/entities/company/Company";
 import { IUserGateway } from "../../domain/entities/user/IUserGateway";
 import { User, UserRole } from "../../domain/entities/user/User";
+import { ForbiddenError } from "../../shared/errors/ForbiddenError";
 import { UnauthorizedError } from "../../shared/errors/UnauthorizedError";
 import { ValidationError } from "../../shared/errors/ValidationError";
+import { hasReachedLimit } from "../../shared/utils/hasReachedLimit";
 import { IUseCases } from "../IUseCases";
 
 export type CreateUserInputDto = {
@@ -13,6 +15,7 @@ export type CreateUserInputDto = {
   role?: UserRole;
   companyId?: string;
   company?: Partial<CompanyProps>;
+  keys: { limit_user: number };
 };
 
 export type CreateUserOutputDto = {
@@ -39,6 +42,14 @@ export class CreateUser
     if (existUser) {
       throw new UnauthorizedError("E-mail already exist.");
     }
+
+    const allUsersCount = await this.userGateway.countByCompany(
+      input.companyId ?? ""
+    );
+
+    // if (hasReachedLimit(allUsersCount, input.keys.limit_user)) {
+    //   throw new ForbiddenError("Limite de usuário atingido pelo seu plano.");
+    // }
 
     const aUser = await User.create(
       input.name,

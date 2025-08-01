@@ -3,6 +3,7 @@ import { PlanType, StatusType } from "../../domain/entities/company/Company";
 
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
+import { SubscriptionProps } from "../../domain/entities/subscription/Subscription";
 
 export type FindCompanyInputDto = { id: string };
 
@@ -25,11 +26,10 @@ export type FindCompanyOutputDto = {
   photo?: string;
   photoPublicId?: string;
 
-  plan: PlanType;
+  planId: string;
   status: StatusType;
   accessExpiresAt: Date;
   createdAt: Date;
-  maxConcurrentEvents: number;
 };
 
 export class FindCompany
@@ -47,6 +47,9 @@ export class FindCompany
     const aCompany = await this.companyGateway.findById(input.id);
     if (!aCompany) throw new NotFoundError("Company");
 
+    const planActive = aCompany.subscriptions?.find(
+      (sub) => sub.status === "ACTIVE"
+    );
     return {
       id: aCompany.id,
       name: aCompany.name,
@@ -66,11 +69,10 @@ export class FindCompany
       photo: aCompany.photo,
       photoPublicId: aCompany.photoPublicId,
 
-      plan: aCompany.plan,
+      planId: planActive?.id ?? "",
       status: aCompany.status,
       accessExpiresAt: aCompany.accessExpiresAt,
       createdAt: aCompany.createdAt,
-      maxConcurrentEvents: aCompany.maxConcurrentEvents,
     };
   }
 }

@@ -31,49 +31,31 @@ export class PendingActionRepositoryPrisma implements IPendingActionGateway {
     try {
       const actions = await this.prisma.pendingAction.findMany({
         where: {
-          companyId: companyId,
+          companyId,
           status: "PENDING",
         },
       });
 
-      return actions.map((action) => {
-        return PendingAction.with({
-          id: action.id,
-          companyId: action.companyId,
-          eventId: action.eventId,
-          sellerId: action.sellerId,
-          targetId: action.targetId,
-          payload: action.payload,
-          actionType: action.actionType,
-          status: action.status,
-          createdAt: action.createdAt,
-        });
-      });
+      return actions.map(this.toEntity);
     } catch (error: any) {
       throw new Error("Error finding Pending action: " + error.message);
     }
   }
 
   async findById(pendingActionId: string): Promise<PendingAction | null> {
-    const aPendingAction = await this.prisma.pendingAction.findUnique({
-      where: {
-        id: pendingActionId,
-      },
-    });
+    try {
+      const raw = await this.prisma.pendingAction.findUnique({
+        where: {
+          id: pendingActionId,
+        },
+      });
 
-    if (!aPendingAction) return null;
+      if (!raw) return null;
 
-    return PendingAction.with({
-      id: aPendingAction.id,
-      companyId: aPendingAction.companyId,
-      eventId: aPendingAction.eventId,
-      sellerId: aPendingAction.sellerId,
-      targetId: aPendingAction.targetId,
-      payload: aPendingAction.payload,
-      actionType: aPendingAction.actionType,
-      status: aPendingAction.status,
-      createdAt: aPendingAction.createdAt,
-    });
+      return this.toEntity(raw);
+    } catch (error: any) {
+      throw new Error("Error finding Pending action by ID: " + error.message);
+    }
   }
 
   async update(
@@ -94,19 +76,23 @@ export class PendingActionRepositoryPrisma implements IPendingActionGateway {
         },
       });
 
-      return PendingAction.with({
-        id: pendingAction.id,
-        companyId: pendingAction.companyId,
-        eventId: pendingAction.eventId,
-        sellerId: pendingAction.sellerId,
-        targetId: pendingAction.targetId,
-        payload: pendingAction.payload,
-        actionType: pendingAction.actionType,
-        status: pendingAction.status,
-        createdAt: pendingAction.createdAt,
-      });
+      return this.toEntity(pendingAction);
     } catch (error: any) {
       throw new Error("Error updating Pending action: " + error.message);
     }
+  }
+
+  private toEntity(raw: any): PendingAction {
+    return PendingAction.with({
+      id: raw.id,
+      companyId: raw.companyId,
+      eventId: raw.eventId,
+      sellerId: raw.sellerId,
+      targetId: raw.targetId,
+      payload: raw.payload,
+      actionType: raw.actionType,
+      status: raw.status,
+      createdAt: raw.createdAt,
+    });
   }
 }

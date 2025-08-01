@@ -28,21 +28,30 @@ import { makeInvoiceUseCases } from "./container/invoice";
 import { makeSubscriptionUseCases } from "./container/subscription";
 
 import { SocketServer } from "./socket/SocketServer";
-import { Authorization } from "./http/middlewares/Authorization";
 import { prisma } from "../package/prisma";
+import { makeLeadSourceUseCases } from "./container/leadSource";
+import { LeadSourceRepositoryPrisma } from "./repositories/leadSource/LeadSourceRepositoryPrisma";
+import { AuthTokenService } from "../service/AuthTokenService";
+import { ServiceTokenService } from "../service/ServiceTokenService";
+import { WhatsAppService } from "./mail/WhatsAppService";
+import { InviteRepositoryPrisma } from "./repositories/invite/InviteRepositoryPrisma";
 
 export function makeUseCases(
   socketServer: SocketServer,
-  authorization: Authorization
+  authorization: AuthTokenService,
+  serviceToken: ServiceTokenService
 ) {
   const uploader = new CloudinaryUploadService();
   const exporter = new CsvLeadExporter();
+  const sendMessageService = new WhatsAppService();
+  // const minIoUploadService = new MinIoUploadService();
 
   const adminRepository = AdminRepositoryPrisma.create(prisma);
   const userRepository = UserRepositoryPrisma.create(prisma);
   const companyRepository = CompanyRepositoryPrisma.create(prisma);
   const eventRepository = EventRepositoryPrisma.create(prisma);
   const leadRepository = LeadRepositoryPrisma.create(prisma);
+  const leadSourceRepository = LeadSourceRepositoryPrisma.create(prisma);
   const productRepository = ProductRepositoryPrisma.create(prisma);
   const sellerRepository = SellerRepositoryPrisma.create(prisma);
   const saleRepository = SaleRepositoryPrisma.create(prisma);
@@ -50,6 +59,7 @@ export function makeUseCases(
   const pendingActionRepository = PendingActionRepositoryPrisma.create(prisma);
   const invoiceRepository = InvoiceRepositoryPrisma.create(prisma);
   const subscriptionRepository = SubscriptionRepositoryPrisma.create(prisma);
+  const inviteRepository = InviteRepositoryPrisma.create(prisma);
 
   return {
     admin: makeAdminUseCases(
@@ -65,7 +75,12 @@ export function makeUseCases(
       uploader,
       authorization
     ),
-    event: makeEventUseCases(eventRepository, companyRepository, uploader),
+    event: makeEventUseCases(
+      eventRepository,
+      companyRepository,
+      uploader,
+      socketServer
+    ),
     product: makeProductUseCases(
       productRepository,
       companyRepository,
@@ -75,21 +90,33 @@ export function makeUseCases(
       leadRepository,
       eventRepository,
       companyRepository,
+      leadSourceRepository,
       exporter
     ),
-    seller: makeSellerUseCases(sellerRepository, companyRepository, uploader),
+    leadSource: makeLeadSourceUseCases(leadSourceRepository, companyRepository),
+    seller: makeSellerUseCases(
+      sellerRepository,
+      companyRepository,
+      uploader,
+      // minIoUploadService,
+      socketServer
+    ),
     sellerEvent: makeSellerEventUseCases(
       sellerEventRepository,
       companyRepository,
       eventRepository,
       sellerRepository,
-      authorization
+      inviteRepository,
+      authorization,
+      socketServer,
+      sendMessageService
     ),
     sale: makeSaleUseCases(
       saleRepository,
       eventRepository,
       productRepository,
-      sellerRepository
+      sellerRepository,
+      socketServer
     ),
     pendingAction: makePendingActionUseCases(
       pendingActionRepository,
@@ -97,6 +124,10 @@ export function makeUseCases(
       socketServer
     ),
     invoice: makeInvoiceUseCases(invoiceRepository),
-    subscription: makeSubscriptionUseCases(subscriptionRepository),
+    subscription: makeSubscriptionUseCases(
+      subscriptionRepository,
+      companyRepository,
+      serviceToken
+    ),
   };
 }

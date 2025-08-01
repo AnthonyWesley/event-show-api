@@ -1,8 +1,9 @@
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { IUseCases } from "../IUseCases";
-import { Authorization } from "../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../infra/http/middlewares/AuthorizationRoute";
 import { UnauthorizedError } from "../../shared/errors/UnauthorizedError";
 import { IUserGateway } from "../../domain/entities/user/IUserGateway";
+import { AuthTokenService } from "../../service/AuthTokenService";
 
 export type LogoutInputDto = {
   refreshToken: string;
@@ -15,10 +16,10 @@ export type LogoutOutputDto = {
 export class LogoutUser implements IUseCases<LogoutInputDto, LogoutOutputDto> {
   private constructor(
     private readonly userGateway: IUserGateway,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthTokenService
   ) {}
 
-  static create(userGateway: IUserGateway, authorization: Authorization) {
+  static create(userGateway: IUserGateway, authorization: AuthTokenService) {
     return new LogoutUser(userGateway, authorization);
   }
 

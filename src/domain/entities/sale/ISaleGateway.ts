@@ -4,10 +4,11 @@ import {
   FindSaleOutputDto,
 } from "../../../usecase/sale/FindSale";
 import { UpdateSaleInputDto } from "../../../usecase/sale/UpdateSale";
+import { Lead } from "../lead/Lead";
 import { Sale } from "./Sale";
 
 export interface ISaleGateway {
-  save(sale: Sale): Promise<void>;
+  save(sale: Sale, lead?: Lead): Promise<void>;
   list(saleId: string): Promise<Sale[]>;
   findById(input: FindSaleInputDto): Promise<FindSaleOutputDto | null>;
   update(input: UpdateSaleInputDto): Promise<Sale>;

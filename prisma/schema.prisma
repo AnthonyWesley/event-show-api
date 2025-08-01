@@ -3,54 +3,37 @@ generator client {
 }
 
 datasource db {
-  // provider = "postgresql"
-  provider = "sqlite"
+  // provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Admin {
-  id       String   @id @default(uuid())
-  email    String   @unique
-  password String
-  photo           String?
-  photoPublicId   String?
-  refreshToken String?
-  createdAt DateTime @default(now())
+  id             String   @id @default(uuid())
+  email          String   @unique
+  password       String
+  photo          String?
+  photoPublicId  String?
+  refreshToken   String?
+  createdAt      DateTime @default(now())
 }
 
 model User {
-  id         String    @id @default(uuid())
-  email      String    @unique
-  password   String
-  name       String
-  phone           String?
-  photo           String?
-  photoPublicId   String?
-  role       UserRole  @default(ADMIN) 
-  createdAt  DateTime  @default(now())
-  refreshToken    String?
-  companyId  String?
-  company    Company?   @relation(fields: [companyId], references: [id])
+  id             String    @id @default(uuid())
+  email          String    @unique
+  password       String
+  name           String
+  phone          String?
+  photo          String?
+  photoPublicId  String?
+  role           UserRole  @default(ADMIN) 
+  createdAt      DateTime  @default(now())
+  refreshToken   String?
+  companyId      String?
+  company        Company?  @relation(fields: [companyId], references: [id])
 
   @@map("users")
 }
-
-model Service {
-  id         String    @id @default(uuid())
-  name       String
-  companyId  String
-  company    Company?   @relation(fields: [companyId], references: [id])
-  modules   Module[]
-  @@map("services")
-}
-
-model Module {
-  id         String    @id @default(uuid())
-  serviceId  String
-  service    Service?   @relation(fields: [serviceId], references: [id])
-  @@map("modules")
-}
-
 
 model Company {
   id              String    @id @default(uuid())
@@ -71,155 +54,57 @@ model Company {
   photo           String?
   photoPublicId   String?
 
-  plan            Plan      @default(TEST)
-  status          Status    @default(ACTIVE)
   accessExpiresAt DateTime?
+  status          Status    @default(ACTIVE)
   createdAt       DateTime  @default(now())
+  platformId       String    // <- Define de qual plataforma essa empresa faz parte
+
   invoice         Invoice[]
-  subscription    Subscription[]
+  subscriptions    Subscription[]
   users           User[]
   events          Event[]
   products        Product[]
   sellers         Seller[]
-  services        Service[]
+  sources         LeadSource[]
   pendingAction   PendingAction[]
   leads           Lead[]
 
-  @@index([plan])
   @@map("companies")
 }
 
+// model Address {
+//   id         String   @id @default(uuid())
+//   street     String?
+//   number     String?
+//   complement String?
+//   neighborhood String?
+//   city       String
+//   state      String
+//   zipCode    String
+//   country    String?   @default("BR")
+//   createdAt  DateTime  @default(now())
 
+//   companyId  String
+//   company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-model Product {
-  id         String   @id @default(uuid())
-  name       String
-  price      Float
-  photo      String?
-  photoPublicId String?
-  companyId  String
-  createdAt  DateTime @default(now())
-  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  sales      Sale[]
-  leads      Lead[]    @relation("LeadProducts") 
-  @@index([companyId])
-}
+//   @@index([companyId])
+// }
 
-model Event {
-  id           String        @id @default(uuid())
-  name         String
-  photo        String?
-  photoPublicId String?
-  startDate    DateTime
-  endDate      DateTime?
-  isActive     Boolean       @default(true) 
-  companyId    String
-  goal         Float         @default(0.0)
-  goalType     GoalType      @default(QUANTITY)
-  createdAt    DateTime      @default(now())
-  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  sellerEvents SellerEvent[] 
-  sales        Sale[]
-  leads        Lead[]    
-
-  @@index([companyId])
-  @@index([isActive])
-  @@index([companyId, isActive])
-}
-
-
-model Lead {
-  id              String     @id @default(uuid())
-  name            String
-  email           String?
-  phone           String?
-  customInterest  String?                
-  notes           String?
-  source          String     
-  sellerId        String?    
-  eventId         String
-  companyId       String
-  createdAt       DateTime   @default(now())
-
-  event           Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  company         Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  seller          Seller?    @relation(fields: [sellerId], references: [id], onDelete: SetNull)
-  products        Product[]  @relation("LeadProducts")
-
-  @@index([eventId])
-  @@index([companyId])
-  @@index([sellerId])
-}
-
-
-model Seller {
-  id        String        @id @default(uuid())
-  name      String
-  email     String        
-  phone     String?
-  photo     String?
-  photoPublicId String?
-  companyId String
-  createdAt DateTime      @default(now())
-  company   Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  sales     Sale[]
-  events    SellerEvent[] 
-  leads        Lead[]    
-  @@unique([companyId, email]) 
-  @@index([companyId])
-}
-
-model SellerEvent {
-  id        String   @id @default(uuid())
-  sellerId  String
-  eventId   String
-
-  seller    Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-
-  @@unique([sellerId, eventId], name: "sellerId_eventId")
-}
-
-model Sale {
-  id        String   @id @default(uuid())
-  sellerId  String
-  productId String
-  eventId   String
-  quantity  Int
-  createdAt DateTime @default(now())
-
-  seller    Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-}
-
-model PendingAction {
-  id         String        @id @default(uuid())
-  companyId  String
-  eventId    String
-  actionType ActionType
-  targetId   String?
-  sellerId   String
-  payload    Json
-  status     ActionStatus  @default(PENDING)
-  createdAt  DateTime      @default(now())
-  company    Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-}
 
 model Subscription {
-  id           String   @id @default(uuid())
-  companyId    String
-  externalId   String   
-  plan         Plan
-  status       SubscriptionStatus
-  startedAt    DateTime
-  expiresAt    DateTime?
-  canceledAt   DateTime?
-  createdAt    DateTime @default(now())
-  company      Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  invoices     Invoice[]   @relation("SubscriptionInvoices")
-}
+  id              String   @id @default(uuid())
+  companyId       String
+  externalId      String
+  planId          String   
+  status          SubscriptionStatus
+  startedAt       DateTime
+  expiresAt       DateTime?
+  canceledAt      DateTime?
+  createdAt       DateTime @default(now())
 
+  company         Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invoices        Invoice[] @relation("SubscriptionInvoices")
+}
 
 model Invoice {
   id              String   @id @default(uuid())
@@ -236,6 +121,156 @@ model Invoice {
   subscription    Subscription? @relation(fields: [subscriptionId], references: [id], name: "SubscriptionInvoices")
 }
 
+model Product {
+  id             String   @id @default(uuid())
+  name           String
+  price          Float
+  photo          String?
+  photoPublicId  String?
+  companyId      String
+  createdAt      DateTime @default(now())
+
+  company        Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  sales          Sale[]
+  leads          Lead[]   @relation("LeadProducts")
+
+  @@index([companyId])
+}
+
+model Event {
+  id             String        @id @default(uuid())
+  name           String
+  photo          String?
+  photoPublicId  String?
+  startDate      DateTime
+  endDate        DateTime?
+  isActive       Boolean       @default(true) 
+  goal           Float         @default(0.0)
+  goalType       GoalType      @default(QUANTITY)
+  companyId      String
+  createdAt      DateTime      @default(now())
+
+  company        Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  sellerEvents   SellerEvent[] 
+  sales          Sale[]
+  leads          Lead[]    
+  invites        Invite[]
+  @@index([companyId])
+  @@index([isActive])
+  @@index([companyId, isActive])
+}
+
+model Seller {
+  id             String        @id @default(uuid())
+  name           String
+  email          String        
+  phone          String?
+  photo          String?
+  photoPublicId  String?
+  companyId      String
+  createdAt      DateTime @default(now())
+
+  company        Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  sales          Sale[]
+  events         SellerEvent[] 
+  leads          Lead[]    
+  @@unique([companyId, email]) 
+  @@index([companyId])
+}
+
+model Invite {
+  id         String   @id @default(uuid())
+  code       String   @unique
+  sellerEventId     String
+  eventId    String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  sellerEvent  SellerEvent   @relation(fields: [sellerEventId], references: [id], onDelete: Cascade)
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+
+model SellerEvent {
+  id        String   @id @default(uuid())
+  sellerId  String
+  eventId   String
+
+  seller    Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  invites        Invite[]
+
+  @@unique([sellerId, eventId], name: "sellerId_eventId")
+}
+
+model Sale {
+  id        String   @id @default(uuid())
+  sellerId  String
+  productId String
+  eventId   String
+  leadId    String?
+  quantity  Int
+  createdAt DateTime @default(now())
+
+  seller    Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  lead      Lead?    @relation("LeadSales", fields: [leadId], references: [id], onDelete: SetNull)
+}
+
+model Lead {
+  id             String     @id @default(uuid())
+  name           String
+  email          String?
+  phone          String?
+  customInterest String?
+  notes          String?
+  leadSourceId   String?     
+  sellerId       String?
+  eventId        String
+  companyId      String
+  createdAt      DateTime   @default(now())
+  convertedAt    DateTime?
+
+  event          Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  company        Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  seller         Seller?    @relation(fields: [sellerId], references: [id], onDelete: SetNull)
+  products       Product[]  @relation("LeadProducts")
+  leadSource     LeadSource? @relation(fields: [leadSourceId], references: [id])
+  sales          Sale[]     @relation("LeadSales")
+
+  @@index([eventId])
+  @@index([companyId])
+  @@index([sellerId])
+  @@index([leadSourceId])
+}
+
+model LeadSource {
+  id             String   @id @default(uuid())
+  name           String
+  photo          String?
+  photoPublicId  String?
+  description    String?
+  createdAt      DateTime @default(now())
+  companyId      String
+
+  company        Company @relation(fields: [companyId], references: [id])
+  leads          Lead[]  
+}
+
+model PendingAction {
+  id          String       @id @default(uuid())
+  companyId   String
+  eventId     String
+  actionType  ActionType
+  targetId    String?
+  sellerId    String
+  payload     Json
+  status      ActionStatus @default(PENDING)
+  createdAt   DateTime     @default(now())
+
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
 
 enum SubscriptionStatus {
   ACTIVE
@@ -251,15 +286,10 @@ enum InvoiceStatus {
   FAILED
 }
 
-
 enum ActionType {
   CREATE_SALE
   UPDATE_SALE
   DELETE_SALE
-  // CREATE_SELLER
-  // UPDATE_SELLER
-  // DELETE_SELLER
-  // OTHER
 }
 
 enum ActionStatus {
@@ -268,20 +298,14 @@ enum ActionStatus {
   REJECTED
 }
 
-enum Plan {
-  TEST
-  BASIC
-  PREMIUM
+enum GoalType {
+  QUANTITY
+  VALUE
 }
 
 enum Status {
   ACTIVE
   SUSPENDED
-}
-
-enum GoalType {
-  QUANTITY
-  VALUE
 }
 
 enum UserRole {

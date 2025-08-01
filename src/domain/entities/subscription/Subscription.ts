@@ -1,4 +1,3 @@
-import { Plan } from "@prisma/client";
 import { generateId } from "../../../shared/utils/IdGenerator";
 import { InvoiceProps } from "../invoice/Invoice";
 
@@ -19,7 +18,7 @@ export type SubscriptionProps = {
   id: string;
   companyId: string;
   externalId: string;
-  plan: Plan;
+  planId: string;
   status: SubscriptionStatus;
   startedAt: Date;
   expiresAt?: Date | null;
@@ -50,7 +49,7 @@ export class Subscription {
       id: this.id,
       companyId: this.companyId,
       externalId: this.externalId,
-      plan: this.plan,
+      planId: this.planId,
       status: this.status,
       startedAt: this.startedAt,
       expiresAt: this.expiresAt,
@@ -81,8 +80,8 @@ export class Subscription {
     return this.props.externalId;
   }
 
-  get plan() {
-    return this.props.plan;
+  get planId() {
+    return this.props.planId;
   }
 
   get status() {

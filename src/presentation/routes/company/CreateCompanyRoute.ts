@@ -4,10 +4,11 @@ import {
   CreateCompany,
   CreateCompanyInputDto,
 } from "../../../usecase/company/CreateCompany";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export type CreateCompanyResponseDto = {
   accessToken: string;
+  companyId: string;
 };
 
 export class CreateCompanyRoute implements IRoute {
@@ -15,12 +16,12 @@ export class CreateCompanyRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly createCompanyService: CreateCompany,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     createCompanyService: CreateCompany,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new CreateCompanyRoute(
       "/companies",
@@ -39,6 +40,7 @@ export class CreateCompanyRoute implements IRoute {
         phone,
         plan,
         cnpj,
+        platformId,
         ie,
         responsibleName,
         address,
@@ -70,12 +72,15 @@ export class CreateCompanyRoute implements IRoute {
         notes,
         photo,
         photoPublicId,
+        platformId,
       };
 
       const output: CreateCompanyResponseDto =
         await this.createCompanyService.execute(input);
 
-      response.status(201).json({ token: output.accessToken });
+      response
+        .status(201)
+        .json({ token: output.accessToken, companyId: output.companyId });
     };
   }
 
@@ -88,6 +93,6 @@ export class CreateCompanyRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

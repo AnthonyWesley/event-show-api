@@ -10,7 +10,7 @@ export type UpdateLeadInputDto = {
 
   customInterest?: string;
   notes?: string;
-  source?: string;
+  leadSourceId?: string;
 
   leadId: string;
   companyId: string;
@@ -24,7 +24,8 @@ export type UpdateLeadOutputDto = {
   products: { id: string }[];
   customInterest?: string;
   notes?: string;
-  source: string;
+  leadSourceId?: string;
+
   companyId: string;
   createdAt: Date;
 };
@@ -61,7 +62,7 @@ export class UpdateLead {
       email: updatedLead.email ?? "",
       phone: updatedLead.phone ?? "",
       notes: updatedLead.notes ?? "",
-      source: updatedLead.source,
+      leadSourceId: updatedLead.leadSourceId,
       customInterest: updatedLead.customInterest,
       companyId: updatedLead.companyId,
       products: updatedLead.products ?? [],

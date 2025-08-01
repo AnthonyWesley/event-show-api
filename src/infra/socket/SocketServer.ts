@@ -7,7 +7,12 @@ export class SocketServer {
   constructor(server: HttpServer) {
     this.io = new Server(server, {
       cors: {
-        origin: ["http://localhost:5173", "https://event-flow-awl.netlify.app"],
+        origin: [
+          "http://localhost:5173",
+          "https://event-flow-awl.netlify.app",
+          "http://192.168.0.93:5173",
+          "http://192.168.100.62:5173",
+        ],
         credentials: true,
       },
     });
@@ -21,7 +26,7 @@ export class SocketServer {
     });
   }
 
-  public emitPendingCreated(pendingData: any) {
-    this.io.emit("new-pending", pendingData);
+  public emit(eventName: string, payload: any) {
+    this.io.emit(eventName, payload);
   }
 }

@@ -2,6 +2,7 @@ import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import { IProductGateway } from "../../domain/entities/product/IProductGateway";
 import { ISaleGateway } from "../../domain/entities/sale/ISaleGateway";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
+import { SocketServer } from "../../infra/socket/SocketServer";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 
@@ -16,20 +17,23 @@ export class DeleteSale implements IUseCases<DeleteSaleInputDto, void> {
     private readonly saleGateway: ISaleGateway,
     private readonly eventGateway: IEventGateway,
     private readonly productGateway: IProductGateway,
-    private readonly sellerGateway: ISellerGateway
+    private readonly sellerGateway: ISellerGateway,
+    private readonly socketServer: SocketServer
   ) {}
 
   public static create(
     saleGateway: ISaleGateway,
     eventGateway: IEventGateway,
     productGateway: IProductGateway,
-    sellerGateway: ISellerGateway
+    sellerGateway: ISellerGateway,
+    socketServer: SocketServer
   ) {
     return new DeleteSale(
       saleGateway,
       eventGateway,
       productGateway,
-      sellerGateway
+      sellerGateway,
+      socketServer
     );
   }
 
@@ -48,6 +52,7 @@ export class DeleteSale implements IUseCases<DeleteSaleInputDto, void> {
       }
 
       await this.saleGateway.delete(input);
+      this.socketServer?.emit("sale:deleted", { id: input.saleId });
     } catch (error) {
       console.error("Error in FindSale.execute:", error);
     }

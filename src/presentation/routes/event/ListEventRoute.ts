@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 import { ListEvent } from "../../../usecase/event/ListEvent";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import { Goal } from "../../../domain/entities/event/Event";
 
 export type ListEventResponseDto = {
@@ -26,12 +26,12 @@ export class ListEventRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly listEventServer: ListEvent,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     listEventServer: ListEvent,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new ListEventRoute(
       "/events",
@@ -55,18 +55,21 @@ export class ListEventRoute implements IRoute {
           id: event.id,
           name: event.name,
           photo: event.photo,
-          photoPublicId: event.photoPublicId,
+          // photoPublicId: event.photoPublicId,
           startDate: event.startDate,
           endDate: event.endDate,
           goal: event.goal,
           goalType: event.goalType,
           companyId: event.companyId,
-          allSellers: event.allSellers,
+          // allSellers: event.allSellers,
           isActive: event.isActive,
-          sales: event.sales,
+          // sales: event.sales,
+          totalSalesValue: event.totalSalesValue,
+          totalUnitsSold: event.totalUnitsSold,
           createdAt: event.createdAt,
         })),
       };
+
       response.status(200).json(result);
     };
   }
@@ -80,6 +83,6 @@ export class ListEventRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

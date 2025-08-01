@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 import { ListProduct } from "../../../usecase/product/ListProduct";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export type ListProductResponseDto = {
   products: {
@@ -21,12 +21,12 @@ export class ListProductRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly listProductServer: ListProduct,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     listProductServer: ListProduct,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new ListProductRoute(
       "/products",
@@ -69,6 +69,6 @@ export class ListProductRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

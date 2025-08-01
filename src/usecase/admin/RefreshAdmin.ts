@@ -1,9 +1,10 @@
 import { IUseCases } from "../IUseCases";
-import { Authorization } from "../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../infra/http/middlewares/AuthorizationRoute";
 import { JwtPayload } from "jsonwebtoken";
 import { UnauthorizedError } from "../../shared/errors/UnauthorizedError";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IAdminGateway } from "../../domain/entities/admin/IAdminGateway";
+import { AuthTokenService } from "../../service/AuthTokenService";
 
 export type RefreshInputDto = {
   refreshToken: string;
@@ -18,9 +19,9 @@ export class RefreshAdmin
 {
   private constructor(
     private readonly adminGateway: IAdminGateway,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthTokenService
   ) {}
-  static create(adminGateway: IAdminGateway, authorization: Authorization) {
+  static create(adminGateway: IAdminGateway, authorization: AuthTokenService) {
     return new RefreshAdmin(adminGateway, authorization);
   }
 

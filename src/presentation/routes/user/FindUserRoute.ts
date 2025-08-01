@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import { FindUser } from "../../../usecase/user/FindUser";
 import { PlanType } from "../../../domain/entities/admin/Admin";
 import { company } from "../../../infra/Container";
@@ -34,10 +34,13 @@ export class FindUserRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly findUserServer: FindUser,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
-  public static create(findUserServer: FindUser, authorization: Authorization) {
+  public static create(
+    findUserServer: FindUser,
+    authorization: AuthorizationRoute
+  ) {
     return new FindUserRoute(
       "/auth/me",
       HttpMethod.GET,
@@ -76,6 +79,6 @@ export class FindUserRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

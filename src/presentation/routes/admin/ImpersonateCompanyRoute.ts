@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 import { Goal } from "../../../domain/entities/event/Event";
 import { ImpersonateCompany } from "../../../usecase/admin/ImpersonateCompany";
@@ -22,12 +22,12 @@ export class ImpersonateCompanyRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly impersonateCompanyServer: ImpersonateCompany,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     impersonateCompanyServer: ImpersonateCompany,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new ImpersonateCompanyRoute(
       "/impersonate/:userId",
@@ -60,6 +60,6 @@ export class ImpersonateCompanyRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.adminAuthorizationRoute];
+    return [this.authorization.adminRoute];
   }
 }

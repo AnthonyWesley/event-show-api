@@ -3,6 +3,7 @@ import { Goal } from "../../domain/entities/event/Event";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
+import { SocketServer } from "../../infra/socket/SocketServer";
 
 export type UpdateEventInputDto = {
   companyId: string;
@@ -32,11 +33,16 @@ export type UpdateEventResponseDto = {
 export class UpdateEvent {
   constructor(
     private readonly eventGateway: IEventGateway,
-    private readonly companyGateway: ICompanyGateway
+    private readonly companyGateway: ICompanyGateway,
+    private readonly socketServer?: SocketServer
   ) {}
 
-  static create(eventGateway: IEventGateway, companyGateway: ICompanyGateway) {
-    return new UpdateEvent(eventGateway, companyGateway);
+  static create(
+    eventGateway: IEventGateway,
+    companyGateway: ICompanyGateway,
+    socketServer?: SocketServer
+  ) {
+    return new UpdateEvent(eventGateway, companyGateway, socketServer);
   }
 
   async execute(input: UpdateEventInputDto): Promise<UpdateEventResponseDto> {
@@ -54,6 +60,17 @@ export class UpdateEvent {
     if (!updatedEvent) {
       throw new Error("Failed to update event.");
     }
+
+    this.socketServer?.emit("event:updated", {
+      id: updatedEvent.id,
+      name: updatedEvent.name,
+      startDate: updatedEvent.startDate,
+      endDate: updatedEvent.endDate ?? null,
+      isActive: updatedEvent.isActive,
+      goal: updatedEvent.goal,
+      goalType: updatedEvent.goalType as GoalType,
+      companyId: updatedEvent.companyId,
+    });
 
     return {
       id: updatedEvent.id,

@@ -1,23 +1,23 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 import { GetSubscriptionByCompany } from "../../../usecase/subscription/GetSubscriptionByCompany";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export class GetSubscriptionByCompanyRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly getSubscriptionByCompanyService: GetSubscriptionByCompany,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     getSubscriptionByCompanyService: GetSubscriptionByCompany,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new GetSubscriptionByCompanyRoute(
       "/subscriptions/company/:companyId",
-      HttpMethod.POST,
+      HttpMethod.GET,
       getSubscriptionByCompanyService,
       authorization
     );
@@ -26,6 +26,7 @@ export class GetSubscriptionByCompanyRoute implements IRoute {
   public getHandler() {
     return async (req: Request, res: Response) => {
       const { companyId } = req.params;
+
       const subscription = await this.getSubscriptionByCompanyService.execute(
         companyId
       );
@@ -42,6 +43,6 @@ export class GetSubscriptionByCompanyRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

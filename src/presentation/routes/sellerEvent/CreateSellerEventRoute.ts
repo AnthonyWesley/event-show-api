@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 import { CreateSellerEvent } from "../../../usecase/sellerEvent/CreateSellerEvent";
 
@@ -9,12 +9,12 @@ export class CreateSellerEventRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly createSellerEventService: CreateSellerEvent,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     createSellerEventService: CreateSellerEvent,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new CreateSellerEventRoute(
       "/events/:eventId/sellers/:sellerId",
@@ -32,6 +32,7 @@ export class CreateSellerEventRoute implements IRoute {
       const output = await this.createSellerEventService.execute({
         eventId,
         sellerId,
+        companyId: user.companyId,
       });
 
       response.status(201).json({ id: output.id });
@@ -47,6 +48,6 @@ export class CreateSellerEventRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

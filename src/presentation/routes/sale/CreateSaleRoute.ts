@@ -4,7 +4,7 @@ import {
   CreateSaleInputDto,
 } from "../../../usecase/sale/CreateSale";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export type CreateSaleResponseDto = {
   id: string;
@@ -15,12 +15,12 @@ export class CreateSaleRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly createSaleService: CreateSale,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     createSaleService: CreateSale,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new CreateSaleRoute(
       "/events/:eventId/sales",
@@ -35,7 +35,7 @@ export class CreateSaleRoute implements IRoute {
       const { eventId } = request.params;
       const { user } = request as any;
 
-      const { sellerId, productId, quantity } = request.body;
+      const { sellerId, productId, quantity, leadId, lead } = request.body;
 
       const input: CreateSaleInputDto = {
         companyId: user.companyId,
@@ -43,7 +43,8 @@ export class CreateSaleRoute implements IRoute {
         sellerId,
         productId,
         quantity,
-        // total,
+        leadId,
+        lead,
       };
 
       const output = await this.createSaleService.execute(input);
@@ -60,6 +61,6 @@ export class CreateSaleRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

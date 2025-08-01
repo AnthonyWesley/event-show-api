@@ -2,12 +2,13 @@ import { IUseCases } from "../IUseCases";
 import { ISellerEventGateway } from "../../domain/entities/sellerEvent/ISellerEventGateway";
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
+
+import { NotFoundError } from "../../shared/errors/NotFoundError";
+import { SaleProps } from "../../domain/entities/sale/Sale";
 import {
   SellerStatsHelper,
   SellerWithStats,
-} from "../../helpers/SellerStatsHelper";
-import { NotFoundError } from "../../shared/errors/NotFoundError";
-import { SaleProps } from "../../domain/entities/sale/Sale";
+} from "../../shared/utils/SellerStatsHelper";
 
 export type ListSellerByEventInputDto = {
   // sellerId: string;
@@ -21,7 +22,7 @@ export type ListSellerByEventInputDto = {
 // };
 export type ListSellerByEventOutputDto = {
   SellerWithStats: {
-    sellerId: string;
+    id: string;
     name: string;
     email: string;
     phone?: string;
@@ -80,13 +81,14 @@ export class ListSellerByEvent
 
     const sellersWithStats = SellerStatsHelper.applyStatsToSellers(
       sellers,
-      stats
+      stats,
+      event.goal
     );
 
     return {
       SellerWithStats: sellersWithStats.map(
         (sellerWithStats: SellerWithStats) => ({
-          sellerId: sellerWithStats.id,
+          id: sellerWithStats.id,
           name: sellerWithStats.name,
           email: sellerWithStats.email,
           phone: sellerWithStats.phone,

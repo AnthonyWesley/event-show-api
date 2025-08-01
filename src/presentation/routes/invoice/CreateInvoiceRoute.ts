@@ -1,19 +1,19 @@
 import { Request, Response } from "express";
 import { CreateInvoice } from "../../../usecase/invoice/CreateInvoice";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export class CreateInvoiceRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly createInvoiceService: CreateInvoice,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     createInvoiceService: CreateInvoice,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new CreateInvoiceRoute(
       "/invoices",
@@ -42,6 +42,6 @@ export class CreateInvoiceRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

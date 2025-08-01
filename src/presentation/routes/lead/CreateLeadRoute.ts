@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import { HttpMethod, IRoute } from "../IRoute";
 import {
   CreateLead,
@@ -15,12 +15,12 @@ export class CreateLeadRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly createLeadRouteService: CreateLead,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     createLeadRouteService: CreateLead,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new CreateLeadRoute(
       "/events/:eventId/leads",
@@ -34,8 +34,16 @@ export class CreateLeadRoute implements IRoute {
     return async (request: Request, response: Response) => {
       const { user } = request as any;
       const { eventId } = request.params;
-      const { name, email, phone, products, customInterest, notes, source } =
-        request.body;
+      const {
+        name,
+        email,
+        phone,
+        products,
+        customInterest,
+        notes,
+        sellerId,
+        leadSourceId,
+      } = request.body;
 
       const input: CreateLeadInputDto = {
         name,
@@ -44,9 +52,10 @@ export class CreateLeadRoute implements IRoute {
         products,
         customInterest,
         notes,
-        source,
         eventId,
         companyId: user.companyId,
+        leadSourceId,
+        sellerId,
       };
 
       const output: CreateLeadRouteResponseDto =
@@ -66,6 +75,6 @@ export class CreateLeadRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

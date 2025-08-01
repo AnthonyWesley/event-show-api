@@ -1,5 +1,6 @@
 import { ISellerEventGateway } from "../../domain/entities/sellerEvent/ISellerEventGateway";
 import { SellerEvent } from "../../domain/entities/sellerEvent/SellerEvent";
+import { SocketServer } from "../../infra/socket/SocketServer";
 import { ValidationError } from "../../shared/errors/ValidationError";
 import { IUseCases } from "../IUseCases";
 
@@ -16,11 +17,15 @@ export class CreateSellerEvent
   implements IUseCases<CreateSellerEventInputDto, CreateSellerEventOutputDto>
 {
   private constructor(
-    private readonly sellerEventGateway: ISellerEventGateway
+    private readonly sellerEventGateway: ISellerEventGateway,
+    private readonly socketServer?: SocketServer
   ) {}
 
-  public static create(sellerEventGateway: ISellerEventGateway) {
-    return new CreateSellerEvent(sellerEventGateway);
+  public static create(
+    sellerEventGateway: ISellerEventGateway,
+    socketServer?: SocketServer
+  ) {
+    return new CreateSellerEvent(sellerEventGateway, socketServer);
   }
 
   public async execute(
@@ -42,6 +47,7 @@ export class CreateSellerEvent
     const sellerEvent = SellerEvent.create(input.sellerId, input.eventId);
 
     await this.sellerEventGateway.save(sellerEvent);
+    this.socketServer?.emit("sellerEvent:created", { id: sellerEvent.id });
 
     return { id: sellerEvent.id };
   }

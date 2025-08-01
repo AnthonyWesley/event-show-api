@@ -8,19 +8,22 @@ import { ProductRepositoryPrisma } from "../repositories/product/ProductReposito
 
 import { SaleRepositoryPrisma } from "../repositories/sale/SaleRepositoryPrisma";
 import { SellerRepositoryPrisma } from "../repositories/seller/SellerRepositoryPrisma";
+import { SocketServer } from "../socket/SocketServer";
 
 export function makeSaleUseCases(
   saleRepository: SaleRepositoryPrisma,
   eventRepository: EventRepositoryPrisma,
   productRepository: ProductRepositoryPrisma,
-  sellerRepository: SellerRepositoryPrisma
+  sellerRepository: SellerRepositoryPrisma,
+  socketServer: SocketServer
 ) {
   return {
     create: CreateSale.create(
       saleRepository,
       eventRepository,
       productRepository,
-      sellerRepository
+      sellerRepository,
+      socketServer
     ),
     list: ListSale.create(
       saleRepository,
@@ -38,7 +41,8 @@ export function makeSaleUseCases(
       saleRepository,
       eventRepository,
       productRepository,
-      sellerRepository
+      sellerRepository,
+      socketServer
     ),
     update: UpdateSale.create(
       saleRepository,

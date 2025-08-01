@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import { PlanType } from "../../../domain/entities/admin/Admin";
 import {
   UpdateUser,
@@ -21,10 +21,13 @@ export class UpdateUserRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly updateUserService: UpdateUser,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
-  static create(updateUserService: UpdateUser, authorization: Authorization) {
+  static create(
+    updateUserService: UpdateUser,
+    authorization: AuthorizationRoute
+  ) {
     return new UpdateUserRoute(
       "/users/:id",
       HttpMethod.PATCH,
@@ -65,6 +68,6 @@ export class UpdateUserRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

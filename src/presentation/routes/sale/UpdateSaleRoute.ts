@@ -4,17 +4,20 @@ import {
   UpdateSale,
   UpdateSaleInputDto,
 } from "../../../usecase/sale/UpdateSale";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export class UpdateSaleRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly updateSaleService: UpdateSale,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
-  static create(updateSaleService: UpdateSale, authorization: Authorization) {
+  static create(
+    updateSaleService: UpdateSale,
+    authorization: AuthorizationRoute
+  ) {
     return new UpdateSaleRoute(
       "/events/:eventId/sales/:saleId",
       HttpMethod.PATCH,
@@ -52,6 +55,6 @@ export class UpdateSaleRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

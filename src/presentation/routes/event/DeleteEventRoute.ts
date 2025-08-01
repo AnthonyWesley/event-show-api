@@ -4,7 +4,7 @@ import {
   DeleteEventInputDto,
 } from "../../../usecase/event/DeleteEvent";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export type DeleteEventResponseDto = {
   id: string;
@@ -14,10 +14,13 @@ export class DeleteEventRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly deleteEventService: DeleteEvent,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
-  static create(deleteEventService: DeleteEvent, authorization: Authorization) {
+  static create(
+    deleteEventService: DeleteEvent,
+    authorization: AuthorizationRoute
+  ) {
     return new DeleteEventRoute(
       "/events/:eventId",
       HttpMethod.DELETE,
@@ -50,6 +53,6 @@ export class DeleteEventRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

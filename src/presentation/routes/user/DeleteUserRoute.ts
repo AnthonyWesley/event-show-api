@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import { IRoute, HttpMethod } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import {
   DeleteUser,
   DeleteUserInputDto,
@@ -15,10 +15,13 @@ export class DeleteUserRoute implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly deleteUserService: DeleteUser,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
-  static create(deleteUserService: DeleteUser, authorization: Authorization) {
+  static create(
+    deleteUserService: DeleteUser,
+    authorization: AuthorizationRoute
+  ) {
     return new DeleteUserRoute(
       "/user/:id",
       HttpMethod.DELETE,
@@ -47,6 +50,6 @@ export class DeleteUserRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.adminAuthorizationRoute];
+    return [this.authorization.adminRoute];
   }
 }

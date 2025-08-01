@@ -1,19 +1,19 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 import { CreateSubscription } from "../../../usecase/subscription/CreateSubscription";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export class CreateSubscriptionRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly createSubscriptionService: CreateSubscription,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     createSubscriptionService: CreateSubscription,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new CreateSubscriptionRoute(
       "/subscriptions",
@@ -39,6 +39,6 @@ export class CreateSubscriptionRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

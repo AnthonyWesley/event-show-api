@@ -4,19 +4,19 @@ import {
   UpdateSeller,
   UpdateSellerInputDto,
 } from "../../../usecase/seller/UpdateSeller";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 
 export class UpdateSellerRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly updateSellerService: UpdateSeller,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   static create(
     updateSellerService: UpdateSeller,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new UpdateSellerRoute(
       "/sellers/:sellerId",
@@ -60,6 +60,6 @@ export class UpdateSellerRoute implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }

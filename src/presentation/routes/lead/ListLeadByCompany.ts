@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
-import { Authorization } from "../../../infra/http/middlewares/Authorization";
+import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import { ListLeadsByCompany } from "../../../usecase/lead/ListLeadsByCompany";
 
 export type ListLeadResponseDto = {
@@ -19,12 +19,12 @@ export class ListLeadByCompanies implements IRoute {
     private readonly path: string,
     private readonly method: HttpMethod,
     private readonly listLeadServer: ListLeadsByCompany,
-    private readonly authorization: Authorization
+    private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
     listLeadServer: ListLeadsByCompany,
-    authorization: Authorization
+    authorization: AuthorizationRoute
   ) {
     return new ListLeadByCompanies(
       "/leads",
@@ -54,6 +54,6 @@ export class ListLeadByCompanies implements IRoute {
   }
 
   public getMiddlewares() {
-    return [this.authorization.authorizationRoute];
+    return [this.authorization.userRoute];
   }
 }
