@@ -2,9 +2,6 @@ import { PrismaClient } from "@prisma/client";
 import { ulid } from "ulid";
 
 const prisma = new PrismaClient();
-
-const companyId = "01JYDXSRNA52QGB9T0ZEQA2ESX";
-
 const sellerData = [
   {
     name: "Leslie Alexander",
@@ -130,6 +127,7 @@ const realLeadNames = [
   "Thiago Almeida",
   "Vanessa Moura",
 ];
+const companyId = "01K1JWQASY7MEH2N92R9SWMJNY";
 
 function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -142,13 +140,29 @@ function generatePhotoUrl(index: number) {
 }
 
 async function main() {
-  await prisma.lead.deleteMany();
+  // Limpa dados relacionados (não apaga a empresa)
+  await prisma.lead.deleteMany({ where: { companyId } });
   await prisma.sellerEvent.deleteMany();
   await prisma.sale.deleteMany();
-  await prisma.event.deleteMany();
-  await prisma.product.deleteMany();
-  await prisma.seller.deleteMany();
+  await prisma.event.deleteMany({ where: { companyId } });
+  await prisma.product.deleteMany({ where: { companyId } });
+  await prisma.seller.deleteMany({ where: { companyId } });
+  await prisma.leadSource.deleteMany({ where: { companyId } });
 
+  // Cria fontes de lead
+  for (const name of leadSources) {
+    await prisma.leadSource.create({
+      data: {
+        id: ulid(),
+        name,
+        description: `${name} como fonte de lead`,
+        companyId,
+      },
+    });
+  }
+  const sources = await prisma.leadSource.findMany({ where: { companyId } });
+
+  // Cria produtos
   await prisma.product.createMany({
     data: productNames.map((name, index) => ({
       id: ulid(),
@@ -158,8 +172,9 @@ async function main() {
       photo: generatePhotoUrl(index + 100),
     })),
   });
-  const products = await prisma.product.findMany();
+  const products = await prisma.product.findMany({ where: { companyId } });
 
+  // Cria vendedores
   await prisma.seller.createMany({
     data: sellerData.map((seller, index) => ({
       id: ulid(),
@@ -170,15 +185,15 @@ async function main() {
       photo: seller.photo,
     })),
   });
-  const sellers = await prisma.seller.findMany();
+  const sellers = await prisma.seller.findMany({ where: { companyId } });
 
+  // Cria eventos
   const baseDate = new Date("2025-07-01");
   const eventIds: string[] = [];
 
   for (let i = 0; i < eventNames.length; i++) {
     const id = ulid();
     eventIds.push(id);
-    const isActive = i < 3;
 
     const startDate = new Date(baseDate);
     startDate.setDate(baseDate.getDate() + i * 5);
@@ -192,13 +207,16 @@ async function main() {
         name: eventNames[i],
         startDate,
         endDate,
-        isActive,
+        isActive: i < 3,
+        goal: getRandomInt(20, 100),
+        goalType: "QUANTITY",
         companyId,
         photo: generatePhotoUrl(i + 300),
       },
     });
   }
 
+  // Cria leads
   for (const eventId of eventIds) {
     const leadCount = getRandomInt(10, 20);
 
@@ -209,6 +227,7 @@ async function main() {
           ? sellers[getRandomInt(0, sellers.length - 1)]
           : null;
       const name = realLeadNames[getRandomInt(0, realLeadNames.length - 1)];
+      const source = sources[getRandomInt(0, sources.length - 1)];
 
       await prisma.lead.create({
         data: {
@@ -218,12 +237,12 @@ async function main() {
             Math.random() > 0.3 ? `lead${ulid().slice(0, 6)}@mail.com` : null,
           phone:
             Math.random() > 0.3 ? `1198888-${getRandomInt(1000, 9999)}` : null,
-          source: leadSources[getRandomInt(0, leadSources.length - 1)],
           customInterest: Math.random() > 0.8 ? product.name : null,
           notes: Math.random() > 0.5 ? "Interessado com urgência" : null,
           eventId,
           companyId,
           sellerId: seller?.id ?? null,
+          leadSourceId: source.id,
           products: {
             connect: [{ id: product.id }],
           },

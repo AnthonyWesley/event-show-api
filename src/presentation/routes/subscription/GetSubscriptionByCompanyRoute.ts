@@ -30,6 +30,7 @@ export class GetSubscriptionByCompanyRoute implements IRoute {
       const subscription = await this.getSubscriptionByCompanyService.execute(
         companyId
       );
+
       res.json(subscription);
     };
   }

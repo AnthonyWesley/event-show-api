@@ -14,10 +14,11 @@ export type ListSaleOutputDto = {
   sales: {
     id: string;
     eventId: string;
-    productId: string;
-    sellerId: string;
     quantity: number;
     createdAt: Date;
+    seller: { id: string; name: string } | null;
+    product: { id: string; name: string } | null;
+    lead: { id: string; name: string } | null;
   }[];
 };
 
@@ -51,30 +52,25 @@ export class ListSale
         eventId: input.eventId,
         companyId: input.companyId,
       });
+
       if (!eventExists) throw new NotFoundError("Event");
 
       const sales = await this.saleGateway.list(input.eventId);
-      if (!sales) {
-        throw new Error("Failed to list sales");
-      }
-
-      // const existSeller = await this.sellerGateway.findById({companyId:input.companyId,sellerId:} )
-
-      // const seller = eventExists..find(sl=>sl.id)
+      if (!sales) throw new Error("Failed to list sales");
 
       return {
         sales: sales.map((s) => ({
           id: s.id,
           eventId: s.eventId,
-          productId: s.productId,
-          sellerId: s.sellerId,
           quantity: s.quantity,
-          seller: s.seller,
-          product: s.product,
-          lead: s.lead,
-          leadId: s.leadId,
-          // total: s.total,
           createdAt: s.createdAt,
+          seller: s.seller ? { id: s.seller.id, name: s.seller.name } : null,
+          product: s.product
+            ? { id: s.product.id, name: s.product.name }
+            : null,
+          lead: s.lead
+            ? { id: s.lead.id, name: s.lead.name, phone: s.lead.phone }
+            : null,
         })),
       };
     } catch (error) {

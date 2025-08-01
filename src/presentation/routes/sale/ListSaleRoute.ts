@@ -48,14 +48,11 @@ export class ListSaleRoute implements IRoute {
         sales: output.sales.map((sale) => ({
           id: sale.id,
           quantity: sale.quantity,
-          // total: sale.total,
-          productId: sale.productId,
-          // product: sale.product,
-          // lead: sale.lead,
-          // seller: sale.seller,
-          leadId: sale.sellerId,
+          product: sale.product,
+
+          lead: sale.lead,
           eventId: sale.eventId,
-          sellerId: sale.sellerId,
+          seller: sale.seller,
           createdAt: sale.createdAt,
         })),
       };
