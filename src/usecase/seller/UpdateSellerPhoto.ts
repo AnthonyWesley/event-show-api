@@ -85,7 +85,6 @@ export class UpdateSellerPhoto {
         caption: "Foto do vendedor",
       },
     });
-
     fs.unlinkSync(input.file.path);
 
     const updated = await this.sellerGateway.update({
