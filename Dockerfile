@@ -1,16 +1,27 @@
 FROM node:20-alpine
 
-# Cria diretório de trabalho
+# Define diretório de trabalho
 WORKDIR /app
 
-# Copia arquivos do projeto
-COPY . .
+# Copia apenas os arquivos de dependência para instalar dependências com cache
+COPY package*.json ./
+COPY tsconfig.json ./
+COPY prisma ./prisma
 
-# Instala dependências
+# Instala as dependências
 RUN npm install
 
-# Expõe a porta (ex: 3000)
+# Copia o restante do projeto
+COPY . .
+
+# Gera os arquivos do Prisma
+RUN npx prisma generate
+
+# Compila o projeto
+RUN npm run build
+
+# Expõe a porta da aplicação (ajuste se necessário)
 EXPOSE 3000
 
-# Comando para iniciar o servidor
-CMD ["node", "index.js"]
+# Inicia a aplicação
+CMD ["npm", "start"]
