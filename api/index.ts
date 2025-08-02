@@ -1,6 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import { ApiExpress } from "../src/infra/api/express/api.express";
 import { makeUseCases } from "../src/infra/Container";
 import { AuthorizationRoute } from "../src/infra/http/middlewares/AuthorizationRoute";
