@@ -1,4 +1,3 @@
-cat <<EOF > Dockerfile
 FROM node:20-alpine
 
 # Cria diretório de trabalho
@@ -15,4 +14,3 @@ EXPOSE 3000
 
 # Comando para iniciar o servidor
 CMD ["node", "index.js"]
-EOF
