@@ -8,7 +8,7 @@ if (
   !process.env.EVOLUTION_API_KEY
 ) {
   throw new Error(
-    "❌ Variáveis de ambiente do MinIO não estão configuradas corretamente."
+    "❌ Variáveis de ambiente do EVOLUTION API não estão configuradas corretamente."
   );
 }
 

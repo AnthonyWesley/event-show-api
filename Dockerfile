@@ -43,6 +43,8 @@ COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nodejs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nodejs:nodejs /app/package*.json ./
 
+# Cria diretório tmp com permissões corretas
+RUN mkdir -p /app/tmp && chown -R nodejs:nodejs /app/tmp
 # Muda para usuário não-root
 USER nodejs
 
