@@ -34,7 +34,8 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - app-network
+      - app-network:
+        driver: bridge
 
   # Opcional: Adicione um banco de dados se necessário
 #   postgres:
