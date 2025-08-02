@@ -79,9 +79,11 @@ import { ListLeadSourceRoute } from "./leadSource/ListLeadSourceRoute";
 import { UpdateLeadSourceRoute } from "./leadSource/UpdateLeadSourceRoute";
 import { RegisterUserRoute } from "./user/RegisterUserRoute";
 import { SendGuestAccessInviteRoute } from "./sellerEvent/SendGuestAccessInviteRoute";
+import { HealthRoute } from "./HealthRoute";
 
 export function makeRoutes(useCases: any, authorization: AuthorizationRoute) {
   return [
+    HealthRoute.create(),
     LoginAdminRoute.create(useCases.admin.login),
     CreateAdminRoute.create(useCases.admin.create),
     ImpersonateCompanyRoute.create(useCases.admin.impersonate, authorization),

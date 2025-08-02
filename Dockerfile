@@ -1,27 +1,58 @@
-FROM node:20-alpine
+# Multi-stage build para otimizar o tamanho da imagem
+FROM node:20-alpine AS builder
+
+# Instala dependências necessárias para build
+RUN apk add --no-cache python3 make g++
 
 # Define diretório de trabalho
 WORKDIR /app
 
-# Copia apenas os arquivos de dependência para instalar dependências com cache
+# Copia arquivos de dependência primeiro (otimização de cache)
 COPY package*.json ./
 COPY tsconfig.json ./
 COPY prisma ./prisma
 
-# Instala as dependências
-RUN npm install
-
-# Copia o restante do projeto
-COPY . .
+# Instala todas as dependências (incluindo devDependencies)
+RUN npm ci && npm cache clean --force
 
 # Gera os arquivos do Prisma
 RUN npx prisma generate
 
+# Copia o código fonte
+COPY src ./src
+
 # Compila o projeto
 RUN npm run build
 
-# Expõe a porta da aplicação (ajuste se necessário)
+# Stage de produção
+FROM node:20-alpine AS production
+
+# Instala dependências de runtime necessárias
+RUN apk add --no-cache dumb-init
+
+# Cria usuário não-root para segurança
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+# Define diretório de trabalho
+WORKDIR /app
+
+# Copia apenas os arquivos necessários do builder
+COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
+COPY --from=builder --chown=nodejs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nodejs:nodejs /app/package*.json ./
+
+# Muda para usuário não-root
+USER nodejs
+
+# Expõe a porta da aplicação
 EXPOSE 3000
 
-# Inicia a aplicação
+# Healthcheck para monitoramento
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
+
+# Inicia a aplicação com dumb-init
+ENTRYPOINT ["dumb-init", "--"]
 CMD ["npm", "start"]

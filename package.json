@@ -8,7 +8,9 @@
     "build": "prisma generate && tsup src",
     "start": "node dist/main.js",
     "vercel-build": "prisma generate",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "docker:build": "docker build -t event-flow-api .",
+    "docker:run": "docker run -p 3000:3000 event-flow-api"
   },
   "keywords": [],
   "author": "",
