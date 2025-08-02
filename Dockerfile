@@ -28,7 +28,7 @@ RUN npm run build
 FROM node:20-alpine AS production
 
 # Instala dependências de runtime necessárias
-RUN apk add --no-cache dumb-init
+RUN apk add --no-cache dumb-init curl
 
 # Cria usuário não-root para segurança
 RUN addgroup -g 1001 -S nodejs && \
@@ -49,9 +49,9 @@ USER nodejs
 # Expõe a porta da aplicação
 EXPOSE 3000
 
-# Healthcheck para monitoramento
+# Healthcheck compatível com Coolify
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
+  CMD curl -f http://localhost:3000/health || exit 1
 
 # Inicia a aplicação com dumb-init
 ENTRYPOINT ["dumb-init", "--"]
