@@ -1,6 +1,5 @@
 import axios from "axios";
-import dotenv from "dotenv";
-dotenv.config();
+
 const PLATFORM_CORE_BASE_URL =
   process.env.PLATFORM_CORE_URL || "http://localhost:7000";
 

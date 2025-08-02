@@ -1,18 +1,17 @@
-import dotenv from "dotenv";
 import { IWhatsAppService } from "./IWhatsAppService";
-dotenv.config();
-
-if (
-  !process.env.EVOLUTION_URL ||
-  !process.env.EVOLUTION_INSTANCE ||
-  !process.env.EVOLUTION_API_KEY
-) {
-  throw new Error(
-    "❌ Variáveis de ambiente do EVOLUTION API não estão configuradas corretamente."
-  );
-}
 
 export class WhatsAppService implements IWhatsAppService {
+  constructor() {
+    if (
+      !process.env.EVOLUTION_URL ||
+      !process.env.EVOLUTION_INSTANCE ||
+      !process.env.EVOLUTION_API_KEY
+    ) {
+      throw new Error(
+        "❌ Variáveis de ambiente do WhatsApp Evolution API não estão configuradas corretamente."
+      );
+    }
+  }
   async sendMessage(to: string, message: string) {
     const url = `${process.env.EVOLUTION_URL}/message/sendText/${process.env.EVOLUTION_INSTANCE}`;
 

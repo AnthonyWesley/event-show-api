@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
       target: production
     ports:
-      - "3000:3000"
+      - "3000:${PORT:-3000}"
     environment:
       - NODE_ENV=production
       - DATABASE_URL=${DATABASE_URL}
@@ -25,10 +25,10 @@ services:
       - EVOLUTION_URL=${EVOLUTION_URL}
       - EVOLUTION_INSTANCE=${EVOLUTION_INSTANCE}
       - EVOLUTION_API_KEY=${EVOLUTION_API_KEY}
-      - PORT=3000
+                                                                                                   - PORT=${PORT:-3000}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:${PORT:-3000}/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -48,12 +48,12 @@ RUN mkdir -p /app/tmp && chown -R nodejs:nodejs /app/tmp
 # Muda para usuário não-root
 USER nodejs
 
-# Expõe a porta da aplicação
-EXPOSE 3000
+# Expõe a porta da aplicação (será definida via PORT)
+EXPOSE ${PORT:-3000}
 
 # Healthcheck compatível com Coolify
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3000/health || exit 1
+  CMD curl -f http://localhost:${PORT:-3000}/health || exit 1
 
 # Inicia a aplicação com dumb-init
 ENTRYPOINT ["dumb-init", "--"]

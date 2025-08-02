@@ -6,6 +6,11 @@ import { makeRoutes } from "./presentation/routes/Routes";
 import { ServiceTokenService } from "./service/ServiceTokenService";
 import { AuthTokenService } from "./service/AuthTokenService";
 
+// Carrega variáveis de ambiente apenas em desenvolvimento
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
 function main() {
   const api = ApiExpress.create();
   const socketServer = new SocketServer(api.getHttpServer());
@@ -22,7 +27,8 @@ function main() {
   const routes = makeRoutes(useCases, authorization);
 
   api.setRoutes(routes);
-  api.start(8000);
+  const port = parseInt(process.env.PORT || '3000', 10);
+  api.start(port);
 }
 
 main();
