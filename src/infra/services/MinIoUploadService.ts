@@ -1,6 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import * as Minio from "minio";
 import { ObjectMetaData } from "minio/dist/main/internal/type";
 import mime from "mime-types";
