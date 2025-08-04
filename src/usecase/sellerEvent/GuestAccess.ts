@@ -132,11 +132,14 @@ export class GuestAccess
       event.sales,
       company.products ?? []
     );
-
+    const wasPresentMap = SellerStatsHelper.computeWasPresentPerSeller(
+      event?.leads ?? []
+    );
     const sellersWithStats = SellerStatsHelper.applyStatsToSellers(
       eventSellers,
       stats,
-      event.goal
+      event.goal,
+      wasPresentMap
     );
 
     const totalProgress = GoalUtils.sumSellerProgressForGoal(

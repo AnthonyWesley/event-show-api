@@ -7,6 +7,7 @@ import { IUserGateway } from "../../domain/entities/user/IUserGateway";
 
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { AuthTokenService } from "../../service/AuthTokenService";
+import { SetupDefaultLeadFields } from "../LeadCustomField/SetupDefaultLeadFields";
 
 export type CreateCompanyInputDto = {
   userId?: string;
@@ -41,15 +42,22 @@ export class CreateCompany
   private constructor(
     private readonly companyGateway: ICompanyGateway,
     private readonly userGateway: IUserGateway,
+    private readonly setupDefaultLeadFields: SetupDefaultLeadFields,
     private readonly authorization: AuthTokenService
   ) {}
 
   public static create(
     companyGateway: ICompanyGateway,
     userGateway: IUserGateway,
+    setupDefaultLeadFields: SetupDefaultLeadFields,
     authorization: AuthTokenService
   ) {
-    return new CreateCompany(companyGateway, userGateway, authorization);
+    return new CreateCompany(
+      companyGateway,
+      userGateway,
+      setupDefaultLeadFields,
+      authorization
+    );
   }
 
   public async execute(
@@ -100,6 +108,7 @@ export class CreateCompany
       "1d"
     );
 
+    // await this.setupDefaultLeadFields.execute({ companyId: aCompany?.id });
     return { accessToken, companyId: aCompany.id };
   }
 }

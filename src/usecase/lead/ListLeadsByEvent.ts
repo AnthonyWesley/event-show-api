@@ -6,6 +6,7 @@ import { NotFoundError } from "../../shared/errors/NotFoundError";
 export type ListLeadsInputDto = {
   companyId: string;
   eventId: string;
+  search?: string;
 };
 
 export type ListLeadsOutputDto = {
@@ -42,18 +43,20 @@ export class ListLeadsByEvent {
       throw new NotFoundError("Event");
     }
 
-    const leads = await this.leadGateway.listByEvent(event.id);
+    const leads = await this.leadGateway.listByEvent(event.id, input.search);
 
     return leads.map((lead) => ({
       id: lead.id,
       name: lead.name,
-      email: lead.email ?? undefined,
-      phone: lead.phone ?? undefined,
+      phone: lead.phone ?? "",
+      wasPresent: lead.wasPresent,
+
       notes: lead.notes ?? undefined,
       customInterest: lead.customInterest ?? undefined,
       companyId: lead.companyId,
       createdAt: lead.createdAt,
       convertedAt: lead.convertedAt ?? undefined,
+      // customValues: lead.customValues ?? undefined,
       event: {
         id: lead.event?.id ?? lead.eventId,
         name: lead.event?.name ?? "Evento desconhecido",

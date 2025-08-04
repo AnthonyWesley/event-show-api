@@ -1,6 +1,7 @@
 import { GoalType } from "@prisma/client";
 import { generateId } from "../../../shared/utils/IdGenerator";
 import { SaleProps } from "../sale/Sale";
+import { LeadProps } from "../lead/Lead";
 
 export type Goal = "QUANTITY" | "VALUE";
 
@@ -23,12 +24,14 @@ export type EventProps = {
   startDate: Date;
   endDate?: Date;
   isActive: boolean;
+  isSellerGoalCustom?: boolean;
   companyId: string;
   goal: number;
   goalType: GoalType;
   createdAt: Date;
   sales: SaleProps[];
   sellerEvents: SellerEvent[];
+  leads?: LeadProps[];
 };
 
 export class Event {
@@ -39,6 +42,7 @@ export class Event {
     goal: number,
     goalType: Goal,
     companyId: string,
+    isSellerGoalCustom: boolean,
     photo?: string
   ) {
     if (!name.trim()) {
@@ -58,6 +62,7 @@ export class Event {
       goal,
       goalType,
       companyId,
+      isSellerGoalCustom,
       sellerEvents: [],
       sales: [],
       createdAt: new Date(),
@@ -99,6 +104,9 @@ export class Event {
   public get goalType() {
     return this.props.goalType;
   }
+  public get isSellerGoalCustom() {
+    return this.props.isSellerGoalCustom;
+  }
 
   public get companyId() {
     return this.props.companyId;
@@ -110,6 +118,9 @@ export class Event {
 
   public get sales() {
     return this.props.sales;
+  }
+  public get leads() {
+    return this.props.leads;
   }
 
   public get createdAt() {

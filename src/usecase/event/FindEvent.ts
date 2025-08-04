@@ -25,10 +25,11 @@ export type FindEventOutputDto = {
   file?: any;
   startDate: Date;
   endDate?: Date;
-  sellerEvents: SellerEventProps[];
+  // sellerEvents: SellerEventProps[];
   sales: SaleProps[];
   goal: number;
   isActive?: boolean;
+  isValueVisible?: boolean;
   totalSalesValue: number;
   totalUnitsSold: number;
   goalType: GoalType;
@@ -68,10 +69,16 @@ export class FindEvent
       event.sales,
       company.products ?? []
     );
+
+    const wasPresentMap = SellerStatsHelper.computeWasPresentPerSeller(
+      event?.leads ?? []
+    );
+
     const sellersWithStats = SellerStatsHelper.applyStatsToSellers(
       sellers,
       stats,
-      event.goal
+      event.goal,
+      wasPresentMap
     );
 
     const allSellers = SellerStatsHelper.sortByGoalType(
@@ -97,10 +104,11 @@ export class FindEvent
       photoPublicId: event.photoPublicId,
       startDate: event.startDate,
       endDate: event.endDate ?? undefined,
-      sellerEvents: event.sellerEvents,
+      // sellerEvents: event.sellerEvents,
       sales: event.sales,
       isActive: event.isActive,
       goal: event.goal,
+      isValueVisible: company.isValueVisible,
       goalType: event.goalType as GoalType,
       companyId: event.companyId,
       createdAt: event.createdAt,

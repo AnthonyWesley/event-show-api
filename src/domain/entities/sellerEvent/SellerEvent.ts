@@ -5,13 +5,15 @@ export type SellerEventProps = {
   id: string;
   sellerId: string;
   eventId: string;
-  seller?: SellerProps;
+  goal: number;
+  event?: { id: string; name: string; goal: number };
+  seller?: { id: string; name: string };
 };
 
 export class SellerEvent {
   private constructor(private readonly props: SellerEventProps) {}
 
-  public static create(sellerId: string, eventId: string) {
+  public static create(sellerId: string, eventId: string, goal: number) {
     if (!sellerId.trim()) {
       throw new Error("Seller ID is required.");
     }
@@ -24,6 +26,7 @@ export class SellerEvent {
       id: generateId(),
       sellerId,
       eventId,
+      goal,
     });
   }
 
@@ -41,6 +44,12 @@ export class SellerEvent {
 
   public get eventId() {
     return this.props.eventId;
+  }
+  public get event() {
+    return this.props.event;
+  }
+  public get goal() {
+    return this.props.goal;
   }
 
   public get seller() {

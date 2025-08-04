@@ -7,6 +7,7 @@ import { ListCompany } from "../../usecase/company/ListCompany";
 import { SuspendCompany } from "../../usecase/company/SuspendCompany";
 import { UpdateCompany } from "../../usecase/company/UpdateCompany";
 import { UpdateCompanyPhoto } from "../../usecase/company/UpdateCompanyPhoto";
+import { SetupDefaultLeadFields } from "../../usecase/LeadCustomField/SetupDefaultLeadFields";
 import { AuthorizationRoute } from "../http/middlewares/AuthorizationRoute";
 import { CompanyRepositoryPrisma } from "../repositories/company/CompanyRepositoryPrisma";
 import { UserRepositoryPrisma } from "../repositories/user/UserRepositoryPrisma";
@@ -16,7 +17,8 @@ export function makeCompanyUseCases(
   companyRepository: CompanyRepositoryPrisma,
   userRepository: UserRepositoryPrisma,
   uploadPhotoService: CloudinaryUploadService,
-  authorization: AuthTokenService
+  authorization: AuthTokenService,
+  setupDefaultLeadFields: SetupDefaultLeadFields
 ) {
   return {
     active: ActivateCompany.create(companyRepository),
@@ -24,6 +26,7 @@ export function makeCompanyUseCases(
     create: CreateCompany.create(
       companyRepository,
       userRepository,
+      setupDefaultLeadFields,
       authorization
     ),
     findOne: FindCompany.create(companyRepository),

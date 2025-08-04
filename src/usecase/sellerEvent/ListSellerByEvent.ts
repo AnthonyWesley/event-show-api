@@ -9,6 +9,7 @@ import {
   SellerStatsHelper,
   SellerWithStats,
 } from "../../shared/utils/SellerStatsHelper";
+import { GoalType } from "@prisma/client";
 
 export type ListSellerByEventInputDto = {
   // sellerId: string;
@@ -29,6 +30,8 @@ export type ListSellerByEventOutputDto = {
     photo?: string;
     sales: SaleProps[];
     createdAt: Date;
+    wasPresentCount: number;
+    goal: number;
     totalValue: number;
     totalQuantity: number;
   }[];
@@ -78,27 +81,35 @@ export class ListSellerByEvent
     const sellers = sellerEvents.map((se) => se.seller); // já populado
 
     const stats = SellerStatsHelper.computeStats(sales, products);
-
+    const wasPresentMap = SellerStatsHelper.computeWasPresentPerSeller(
+      event?.leads ?? []
+    );
     const sellersWithStats = SellerStatsHelper.applyStatsToSellers(
       sellers,
       stats,
-      event.goal
+      event.goal,
+      wasPresentMap
+    );
+
+    const allSellers = SellerStatsHelper.sortByGoalType(
+      sellersWithStats,
+      event.goalType as GoalType
     );
 
     return {
-      SellerWithStats: sellersWithStats.map(
-        (sellerWithStats: SellerWithStats) => ({
-          id: sellerWithStats.id,
-          name: sellerWithStats.name,
-          email: sellerWithStats.email,
-          phone: sellerWithStats.phone,
-          photo: sellerWithStats.photo,
-          sales: sellerWithStats.sales,
-          createdAt: sellerWithStats.createdAt,
-          totalValue: sellerWithStats.totalSalesValue,
-          totalQuantity: sellerWithStats.totalSalesCount,
-        })
-      ),
+      SellerWithStats: allSellers.map((sellerWithStats: SellerWithStats) => ({
+        id: sellerWithStats.id,
+        name: sellerWithStats.name,
+        email: sellerWithStats.email,
+        phone: sellerWithStats.phone,
+        photo: sellerWithStats.photo,
+        sales: sellerWithStats.sales,
+        goal: sellerWithStats.goal,
+        wasPresentCount: sellerWithStats.wasPresentCount,
+        createdAt: sellerWithStats.createdAt,
+        totalValue: sellerWithStats.totalSalesValue,
+        totalQuantity: sellerWithStats.totalSalesCount,
+      })),
     };
   }
 }

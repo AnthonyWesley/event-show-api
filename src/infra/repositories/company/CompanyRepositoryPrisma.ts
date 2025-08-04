@@ -12,6 +12,7 @@ import { UserProps } from "../../../domain/entities/user/User";
 import { NotFoundError } from "../../../shared/errors/NotFoundError";
 import { SubscriptionProps } from "../../../domain/entities/subscription/Subscription";
 import { ObjectHelper } from "../../../shared/utils/ObjectHelper";
+import { LeadCustomFieldProps } from "../../../domain/entities/leadCustomField/LeadCustomField";
 
 export class CompanyRepositoryPrisma implements ICompanyGateway {
   private constructor(private readonly prisma: PrismaClient) {}
@@ -71,7 +72,7 @@ export class CompanyRepositoryPrisma implements ICompanyGateway {
 
       const companies = await this.prisma.company.findMany({
         where: filters,
-        include: { events: true, users: true },
+        include: { users: true },
       });
 
       return companies.map((p) => this.toEntity(p));
@@ -175,10 +176,7 @@ export class CompanyRepositoryPrisma implements ICompanyGateway {
         sources,
         sellers,
         subscriptions,
-        // invoice,
-        // subscription,
-        // leads,
-        // pendingAction,
+        leadsCustomField,
         createdAt,
         accessExpiresAt,
         status, // protegidos também
@@ -222,6 +220,7 @@ export class CompanyRepositoryPrisma implements ICompanyGateway {
           users: true,
           sources: true,
           subscriptions: true,
+          leadsCustomField: true,
         },
       });
 
@@ -255,6 +254,7 @@ export class CompanyRepositoryPrisma implements ICompanyGateway {
       name: raw.name,
       email: raw.email ?? "",
       phone: raw.phone ?? "",
+      isValueVisible: raw.isValueVisible,
       status: raw.status as StatusType,
       accessExpiresAt: raw.accessExpiresAt ?? new Date(),
       createdAt: raw.createdAt,
@@ -276,6 +276,7 @@ export class CompanyRepositoryPrisma implements ICompanyGateway {
       sources: (raw.source as LeadSource[]) ?? [],
       sellers: (raw.sellers as SellerProps[]) ?? [],
       users: (raw.users as UserProps[]) ?? [],
+      leadsCustomField: (raw.leadsCustomField as LeadCustomFieldProps[]) ?? [],
     });
   }
 }

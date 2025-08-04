@@ -50,6 +50,7 @@ model Company {
   website         String?
   segment         String?
   notes           String?
+  isValueVisible  Boolean? @default(true)
 
   photo           String?
   photoPublicId   String?
@@ -58,7 +59,7 @@ model Company {
   status          Status    @default(ACTIVE)
   createdAt       DateTime  @default(now())
   platformId       String    // <- Define de qual plataforma essa empresa faz parte
-
+  leadsCustomField   LeadCustomField[]
   invoice         Invoice[]
   subscriptions    Subscription[]
   users           User[]
@@ -144,6 +145,7 @@ model Event {
   photoPublicId  String?
   startDate      DateTime
   endDate        DateTime?
+  isSellerGoalCustom Boolean   @default(true) 
   isActive       Boolean       @default(true) 
   goal           Float         @default(0.0)
   goalType       GoalType      @default(QUANTITY)
@@ -195,7 +197,7 @@ model SellerEvent {
   id        String   @id @default(uuid())
   sellerId  String
   eventId   String
-
+  goal      Float    @default(0.0) 
   seller    Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
   event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   invites        Invite[]
@@ -218,10 +220,40 @@ model Sale {
   lead      Lead?    @relation("LeadSales", fields: [leadId], references: [id], onDelete: SetNull)
 }
 
+model LeadCustomField {
+  id        String     @id @default(uuid())
+  companyId String
+  name      String
+  key       String     // Chave única por empresa: "cpf", "birthDate"
+  type      FieldType
+  required  Boolean    @default(false)
+  order     Int        @default(0)
+
+  company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  values    LeadCustomValue[]
+
+  @@unique([companyId, key])
+  @@index([companyId])
+}
+
+model LeadCustomValue {
+  id       String           @id @default(uuid())
+  leadId   String
+  fieldId  String
+  value    String           // Valor sempre salvo como texto (pode ser "true", "2023-01-01", "123.45", etc.)
+
+  lead     Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  field    LeadCustomField  @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  @@unique([leadId, fieldId])
+  @@index([leadId])
+  @@index([fieldId])
+}
+
+
 model Lead {
   id             String     @id @default(uuid())
   name           String
-  email          String?
   phone          String?
   customInterest String?
   notes          String?
@@ -231,6 +263,10 @@ model Lead {
   companyId      String
   createdAt      DateTime   @default(now())
   convertedAt    DateTime?
+
+  status         LeadStatus         @default(NEW)
+  wasPresent     Boolean            @default(false)
+  customValues   LeadCustomValue[] // ✅ ligação com os campos personalizados
 
   event          Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
   company        Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
@@ -313,3 +349,19 @@ enum UserRole {
   MANAGER   
   GUEST   
 }
+
+enum FieldType {
+  STRING
+  NUMBER
+  DATE
+  BOOLEAN
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CONVERTED
+  DISCARDED
+}
+

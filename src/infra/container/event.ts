@@ -5,6 +5,7 @@ import { ListEvent } from "../../usecase/event/ListEvent";
 import { SwitchEventState } from "../../usecase/event/SwitchEventState";
 import { UpdateEvent } from "../../usecase/event/UpdateEvent";
 import { UpdateEventPhoto } from "../../usecase/event/UpdateEventPhoto";
+import { UpdateSellersGoalService } from "../../usecase/event/UpdateSellersGoalService";
 import { CompanyRepositoryPrisma } from "../repositories/company/CompanyRepositoryPrisma";
 import { EventRepositoryPrisma } from "../repositories/event/EventRepositoryPrisma";
 import { CloudinaryUploadService } from "../services/CloudinaryUploadService";
@@ -14,6 +15,7 @@ export function makeEventUseCases(
   eventRepository: EventRepositoryPrisma,
   companyRepository: CompanyRepositoryPrisma,
   uploadPhotoService: CloudinaryUploadService,
+  updateSellersGoalService?: UpdateSellersGoalService,
   socketServer?: SocketServer
 ) {
   return {
@@ -33,7 +35,8 @@ export function makeEventUseCases(
     update: UpdateEvent.create(
       eventRepository,
       companyRepository,
-      socketServer
+      socketServer,
+      updateSellersGoalService
     ),
     updatePhoto: UpdateEventPhoto.create(
       eventRepository,

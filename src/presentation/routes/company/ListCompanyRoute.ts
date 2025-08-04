@@ -76,12 +76,9 @@ export class ListCompanyRoute implements IRoute {
           segment: company.segment,
           notes: company.notes,
           photo: company.photo,
-          photoPublicId: company.photoPublicId,
-          plan: company.plan,
           status: company.status,
           accessExpiresAt: company.accessExpiresAt,
           createdAt: company.createdAt,
-          maxConcurrentEvents: company.maxConcurrentEvents,
           users: company.users as UserProps[],
         })),
       };

@@ -32,8 +32,6 @@ export class SwitchEventStateRoute implements IRoute {
       const eventLimit =
         (request as any).featureValues?.["limit_event"] ?? null;
 
-      console.log((request as any).featureValues);
-
       const result = await this.switchEventStateService.execute({
         eventId,
         companyId: user.companyId,

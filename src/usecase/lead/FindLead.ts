@@ -51,8 +51,8 @@ export class FindLead
     return {
       id: lead.id,
       name: lead.name,
-      email: lead.email ?? undefined,
-      phone: lead.phone ?? undefined,
+      // email: lead.email ?? undefined,
+      // phone: lead.phone ?? undefined,
       notes: lead.notes ?? undefined,
       customInterest: lead.customInterest ?? undefined,
       companyId: lead.companyId,

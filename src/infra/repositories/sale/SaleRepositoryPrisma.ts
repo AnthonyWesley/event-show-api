@@ -23,37 +23,58 @@ export class SaleRepositoryPrisma implements ISaleGateway {
       await this.prisma.$transaction(async (tx) => {
         let aLead = null;
 
+        // 1. Se a venda tem leadId, busca pelo ID
         if (sale.leadId) {
           aLead = await tx.lead.findFirst({ where: { id: sale.leadId } });
+
+          if (aLead) {
+            await tx.lead.update({
+              where: { id: aLead.id },
+              data: { convertedAt: new Date() },
+            });
+          }
         }
 
+        // 2. Se ainda não encontrou o lead e recebeu um objeto lead
         if (!aLead && lead) {
           if (!lead.name || !lead.eventId || !lead.companyId) {
             throw new Error("Dados obrigatórios do lead ausentes.");
           }
 
-          aLead = await tx.lead.create({
-            data: {
-              id: lead.id ?? generateId(),
-              name: lead.name,
-              email: lead.email,
+          // 2.1. Tenta encontrar o lead por outros critérios (ex: phone + eventId + companyId)
+          aLead = await tx.lead.findFirst({
+            where: {
               phone: lead.phone,
-              notes: lead.notes,
-              customInterest: lead.customInterest,
-              leadSourceId: lead.leadSourceId ?? undefined,
-              sellerId: lead.sellerId ?? undefined,
               eventId: lead.eventId,
               companyId: lead.companyId,
-              createdAt: new Date(),
-              products: lead.products?.length
-                ? {
-                    connect: lead.products.map((p) => ({ id: p.id })),
-                  }
-                : undefined,
             },
           });
+
+          // 2.2. Se ainda não existir, cria
+          if (!aLead) {
+            aLead = await tx.lead.create({
+              data: {
+                id: lead.id ?? generateId(),
+                name: lead.name,
+                phone: lead.phone,
+                notes: lead.notes,
+                customInterest: lead.customInterest,
+                leadSourceId: lead.leadSourceId ?? undefined,
+                sellerId: lead.sellerId ?? undefined,
+                eventId: lead.eventId,
+                companyId: lead.companyId,
+                createdAt: new Date(),
+                products: lead.products?.length
+                  ? {
+                      connect: lead.products.map((p) => ({ id: p.id })),
+                    }
+                  : undefined,
+              },
+            });
+          }
         }
 
+        // 3. Cria a venda
         const data = {
           id: sale.id,
           productId: sale.productId,
@@ -66,10 +87,31 @@ export class SaleRepositoryPrisma implements ISaleGateway {
 
         await tx.sale.create({ data });
 
+        // 4. Marca como convertido, se ainda não tiver sido
         if (aLead && !aLead.convertedAt) {
           await tx.lead.update({
             where: { id: aLead.id },
-            data: { convertedAt: new Date() },
+            data: {
+              convertedAt: new Date(),
+              sellerId: sale.sellerId,
+              status: "CONVERTED",
+            },
+          });
+        }
+
+        if (
+          aLead &&
+          lead?.products?.length &&
+          (!aLead.products || aLead.products.length === 0)
+        ) {
+          await tx.lead.update({
+            where: { id: aLead.id },
+            data: {
+              status: "CONVERTED",
+              products: {
+                connect: lead.products.map((p) => ({ id: p.id })),
+              },
+            },
           });
         }
       });

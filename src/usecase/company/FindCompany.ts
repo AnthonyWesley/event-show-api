@@ -4,6 +4,10 @@ import { PlanType, StatusType } from "../../domain/entities/company/Company";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 import { SubscriptionProps } from "../../domain/entities/subscription/Subscription";
+import {
+  LeadCustomField,
+  LeadCustomFieldProps,
+} from "../../domain/entities/leadCustomField/LeadCustomField";
 
 export type FindCompanyInputDto = { id: string };
 
@@ -22,10 +26,11 @@ export type FindCompanyOutputDto = {
   website?: string;
   segment?: string;
   notes?: string;
+  isValueVisible?: boolean;
 
   photo?: string;
-  photoPublicId?: string;
-
+  // photoPublicId?: string;
+  leadsCustomField: LeadCustomFieldProps[];
   planId: string;
   status: StatusType;
   accessExpiresAt: Date;
@@ -50,6 +55,7 @@ export class FindCompany
     const planActive = aCompany.subscriptions?.find(
       (sub) => sub.status === "ACTIVE"
     );
+
     return {
       id: aCompany.id,
       name: aCompany.name,
@@ -64,10 +70,11 @@ export class FindCompany
       zipCode: aCompany.zipCode,
       website: aCompany.website,
       segment: aCompany.segment,
+      isValueVisible: aCompany.isValueVisible,
       notes: aCompany.notes,
-
+      leadsCustomField: aCompany.leadsCustomField as LeadCustomFieldProps[],
       photo: aCompany.photo,
-      photoPublicId: aCompany.photoPublicId,
+      // photoPublicId: aCompany.photoPublicId,
 
       planId: planActive?.id ?? "",
       status: aCompany.status,

@@ -12,7 +12,6 @@ export type FindEventResponseDto = {
   id: string;
   name: string;
   photo?: string;
-  photoPublicId?: string;
   file?: any;
   startDate: Date;
   endDate: Date;
@@ -55,7 +54,6 @@ export class FindEventRoute implements IRoute {
         id: output.id,
         name: output.name,
         photo: output.photo,
-        photoPublicId: output.photoPublicId,
         startDate: output.startDate,
         endDate: output.endDate,
         goal: output.goal,
@@ -63,6 +61,7 @@ export class FindEventRoute implements IRoute {
         companyId: output.companyId,
         sales: output.sales,
         isActive: output.isActive,
+        isValueVisible: output.isValueVisible,
         totalSalesValue: output.totalSalesValue,
         totalUnitsSold: output.totalUnitsSold,
         allSellers: output.allSellers,

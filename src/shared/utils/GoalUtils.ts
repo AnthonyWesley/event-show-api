@@ -1,12 +1,7 @@
 import { GoalType } from "@prisma/client";
 import { SellerWithStats } from "./SellerStatsHelper";
 import { SellerProps } from "../../domain/entities/seller/Seller";
-
-const podiumColors: Record<number, string> = {
-  1: "text-yellow-400",
-  2: "text-gray-300",
-  3: "text-amber-600",
-};
+import { LeadProps } from "../../domain/entities/lead/Lead";
 
 export class GoalUtils {
   /**
@@ -32,6 +27,6 @@ export class GoalUtils {
     totalGoal: number
   ): number {
     if (!allSellers.length) return 0;
-    return Math.ceil(totalGoal / allSellers.length);
+    return totalGoal / allSellers.length;
   }
 }

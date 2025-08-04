@@ -43,8 +43,6 @@ export class CreateSeller
   public async execute(
     input: CreateSellerInputDto
   ): Promise<CreateSellerOutputDto> {
-    console.log(input.keys);
-
     if (!input.name || !input.email || !input.companyId) {
       throw new ValidationError(
         "All fields are required: name, email, companyId."

@@ -5,8 +5,6 @@ import {
   CreateUser,
   CreateUserInputDto,
 } from "../../../usecase/user/CreateUser";
-import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
-import { checkFeatures } from "../../../infra/http/middlewares/checkFeature";
 
 export type CreateCompanyResponseDto = {
   id: string;
@@ -30,7 +28,6 @@ export class RegisterUserRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response) => {
       const { name, email, password, phone, companyId, company } = request.body;
-      console.log(request.body);
 
       const keys = (request as any).featureValues;
 

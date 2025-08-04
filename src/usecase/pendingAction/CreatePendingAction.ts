@@ -39,8 +39,6 @@ export class CreatePendingAction
   async execute(
     input: CreatePendingActionInputDto
   ): Promise<CreatePendingActionOutputDto> {
-    console.log(input.payload);
-
     const action = PendingAction.create(
       input.companyId,
       input.eventId,

@@ -1,5 +1,6 @@
 import { IInviteGateway } from "../../domain/entities/invite/IInviteGateway";
 import { AuthTokenService } from "../../service/AuthTokenService";
+import { UpdateSellersGoalService } from "../../usecase/event/UpdateSellersGoalService";
 import { CreateSellerEvent } from "../../usecase/sellerEvent/CreateSellerEvent";
 import { DeleteSellerEvent } from "../../usecase/sellerEvent/DeleteSellerEvent";
 import { GuestAccess } from "../../usecase/sellerEvent/GuestAccess";
@@ -21,10 +22,15 @@ export function makeSellerEventUseCases(
   inviteGateway: IInviteGateway,
   tokenService: AuthTokenService,
   socketServer: SocketServer,
-  sendMessageService: IWhatsAppService
+  sendMessageService: IWhatsAppService,
+  updateSellersGoalService?: UpdateSellersGoalService
 ) {
   return {
-    create: CreateSellerEvent.create(sellerEventRepository, socketServer),
+    create: CreateSellerEvent.create(
+      sellerEventRepository,
+      socketServer,
+      updateSellersGoalService
+    ),
     sendMessage: SendGuestAccessInvite.create(
       companyRepository,
       eventRepository,
@@ -50,7 +56,11 @@ export function makeSellerEventUseCases(
       companyRepository,
       eventRepository
     ),
-    delete: DeleteSellerEvent.create(sellerEventRepository, socketServer),
+    delete: DeleteSellerEvent.create(
+      sellerEventRepository,
+      socketServer,
+      updateSellersGoalService
+    ),
     // update: UpdateSeller.create(sellerRepository, companyRepository),
   };
 }

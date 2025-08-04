@@ -35,6 +35,11 @@ import { AuthTokenService } from "../service/AuthTokenService";
 import { ServiceTokenService } from "../service/ServiceTokenService";
 import { WhatsAppService } from "./mail/WhatsAppService";
 import { InviteRepositoryPrisma } from "./repositories/invite/InviteRepositoryPrisma";
+import { SetupDefaultLeadFields } from "../usecase/LeadCustomField/SetupDefaultLeadFields";
+import { LeadCustomFieldRepositoryPrisma } from "./repositories/leadCustomField/LeadRepositoryPrisma";
+import { LeadCustomValueRepositoryPrisma } from "./repositories/leadCustomValue/LeadCustomValueRepositoryPrisma";
+import { UpsertLeadCustomValues } from "../usecase/LeadCustomValues/UpsertLeadCustomValues";
+import { UpdateSellersGoalService } from "../usecase/event/UpdateSellersGoalService";
 
 export function makeUseCases(
   socketServer: SocketServer,
@@ -60,7 +65,22 @@ export function makeUseCases(
   const invoiceRepository = InvoiceRepositoryPrisma.create(prisma);
   const subscriptionRepository = SubscriptionRepositoryPrisma.create(prisma);
   const inviteRepository = InviteRepositoryPrisma.create(prisma);
+  const leadCustomFieldsRepository =
+    LeadCustomFieldRepositoryPrisma.create(prisma);
 
+  const leadCustomValuesRepository =
+    LeadCustomValueRepositoryPrisma.create(prisma);
+
+  const setupDefaultLeadFields = new SetupDefaultLeadFields(
+    leadCustomFieldsRepository
+  );
+  const updateSellersGoalService = new UpdateSellersGoalService(
+    sellerEventRepository
+  );
+
+  const upsertLeadCustomValues = UpsertLeadCustomValues.create(
+    leadCustomValuesRepository
+  );
   return {
     admin: makeAdminUseCases(
       adminRepository,
@@ -73,12 +93,14 @@ export function makeUseCases(
       companyRepository,
       userRepository,
       uploader,
-      authorization
+      authorization,
+      setupDefaultLeadFields
     ),
     event: makeEventUseCases(
       eventRepository,
       companyRepository,
       uploader,
+      updateSellersGoalService,
       socketServer
     ),
     product: makeProductUseCases(
@@ -91,7 +113,8 @@ export function makeUseCases(
       eventRepository,
       companyRepository,
       leadSourceRepository,
-      exporter
+      exporter,
+      upsertLeadCustomValues
     ),
     leadSource: makeLeadSourceUseCases(leadSourceRepository, companyRepository),
     seller: makeSellerUseCases(
@@ -109,7 +132,8 @@ export function makeUseCases(
       inviteRepository,
       authorization,
       socketServer,
-      sendMessageService
+      sendMessageService,
+      updateSellersGoalService
     ),
     sale: makeSaleUseCases(
       saleRepository,

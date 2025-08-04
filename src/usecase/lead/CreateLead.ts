@@ -1,23 +1,26 @@
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import { ILeadGateway } from "../../domain/entities/lead/ILeadGateway";
-import { Lead } from "../../domain/entities/lead/Lead";
+import { Lead, LeadStatus } from "../../domain/entities/lead/Lead";
 import { ILeadSourceGateway } from "../../domain/entities/leadSource/ILeadSourceGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { ValidationError } from "../../shared/errors/ValidationError";
 import { IUseCases } from "../IUseCases";
+import {
+  UpsertLeadCustomValueInputDto,
+  UpsertLeadCustomValues,
+} from "../LeadCustomValues/UpsertLeadCustomValues";
 
 export type CreateLeadInputDto = {
   leadSourceId: string | undefined;
   sellerId?: string | undefined;
   name: string;
-  email?: string;
-  phone?: string;
+  phone: string;
   products: { id: string; name: string }[];
-
   customInterest?: string;
   notes?: string;
   eventId: string;
   companyId: string;
+  customValues: UpsertLeadCustomValueInputDto[];
 };
 
 export type CreateLeadOutputDto = {
@@ -30,23 +33,29 @@ export class CreateLead
   private constructor(
     private readonly leadGateway: ILeadGateway,
     private readonly eventGateway: IEventGateway,
-    private readonly leadSourceGateway: ILeadSourceGateway
+    private readonly leadSourceGateway: ILeadSourceGateway,
+    private readonly upsertLeadCustomValues: UpsertLeadCustomValues
   ) {}
 
   public static create(
     leadGateway: ILeadGateway,
     eventGateway: IEventGateway,
-    leadSourceGateway: ILeadSourceGateway
+    leadSourceGateway: ILeadSourceGateway,
+    upsertLeadCustomValues: UpsertLeadCustomValues
   ) {
-    return new CreateLead(leadGateway, eventGateway, leadSourceGateway);
+    return new CreateLead(
+      leadGateway,
+      eventGateway,
+      leadSourceGateway,
+      upsertLeadCustomValues
+    );
   }
 
   public async execute(
     input: CreateLeadInputDto
   ): Promise<CreateLeadOutputDto> {
-    const hasLeadSource =
-      !!input.leadSourceId && input.leadSourceId.trim() !== "";
-    const hasSeller = !!input.sellerId && input.sellerId.trim() !== "";
+    const hasLeadSource = !!input.leadSourceId?.trim();
+    const hasSeller = !!input.sellerId?.trim();
 
     if ((hasLeadSource && hasSeller) || (!hasLeadSource && !hasSeller)) {
       throw new ValidationError(
@@ -58,24 +67,29 @@ export class CreateLead
       eventId: input.eventId,
       companyId: input.companyId,
     });
-    if (!event) {
-      throw new NotFoundError("Event");
-    }
+
+    if (!event) throw new NotFoundError("Event");
 
     const lead = Lead.create({
       name: input.name,
+      phone: input.phone,
       products: input.products,
       eventId: input.eventId,
       companyId: input.companyId,
       leadSourceId: hasLeadSource ? input.leadSourceId : undefined,
       sellerId: hasSeller ? input.sellerId : undefined,
-      email: input.email,
-      phone: input.phone,
       notes: input.notes,
-      customInterest: input.customInterest,
+      // customInterest: input.customInterest,
+      status: LeadStatus.NEW,
+      wasPresent: false,
+      sales: [],
     });
 
     await this.leadGateway.save(lead);
+    // input.customValues.forEach((v) => {
+    //   v.leadId = lead.id;
+    // });
+    // await this.upsertLeadCustomValues.execute(input.customValues);
 
     return { id: lead.id };
   }

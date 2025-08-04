@@ -7,6 +7,7 @@ import { UserProps } from "../user/User";
 import { LeadSource } from "@prisma/client";
 import { SubscriptionProps } from "../subscription/Subscription";
 import { Validator } from "../../../shared/utils/Validator";
+import { LeadCustomFieldProps } from "../leadCustomField/LeadCustomField";
 
 export type PlanType = "TEST" | "BASIC" | "PREMIUM";
 export type StatusType = "ACTIVE" | "SUSPENDED";
@@ -46,12 +47,14 @@ export type CompanyProps = {
   status: StatusType;
   accessExpiresAt: Date;
   createdAt: Date;
+  isValueVisible?: boolean;
 
   products?: ProductProps[];
   subscriptions?: SubscriptionProps[];
   sources?: LeadSource[];
   events?: EventProps[];
   sellers?: SellerProps[];
+  leadsCustomField?: LeadCustomFieldProps[];
   users?: UserProps[];
 };
 
@@ -178,6 +181,9 @@ export class Company {
   get status() {
     return this.props.status;
   }
+  get isValueVisible() {
+    return this.props.isValueVisible;
+  }
   get accessExpiresAt() {
     return this.props.accessExpiresAt;
   }
@@ -201,5 +207,8 @@ export class Company {
   }
   get users() {
     return this.props.users;
+  }
+  get leadsCustomField() {
+    return this.props.leadsCustomField;
   }
 }

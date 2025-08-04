@@ -71,10 +71,15 @@ export class ListEvent
           company.products ?? []
         );
 
+        const wasPresentMap = SellerStatsHelper.computeWasPresentPerSeller(
+          event.leads ?? []
+        );
+
         const sellersWithStats = SellerStatsHelper.applyStatsToSellers(
           eventSellers,
           stats,
-          event.goal
+          event.goal,
+          wasPresentMap
         );
 
         const allSellers = SellerStatsHelper.sortByGoalType(

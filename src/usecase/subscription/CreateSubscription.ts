@@ -27,8 +27,6 @@ export class CreateSubscription {
   public async execute(
     input: CreateSubscriptionInputDto
   ): Promise<CreateSubscriptionOutputDto> {
-    console.log(input);
-
     if (
       !input.companyId ||
       !input.externalId ||

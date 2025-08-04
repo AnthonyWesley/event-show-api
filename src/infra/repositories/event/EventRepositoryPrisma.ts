@@ -109,6 +109,20 @@ export class EventRepositoryPrisma implements IEventGateway {
       },
     });
   }
+  async countWasPresentBySeller(sellerId: string): Promise<number> {
+    return await this.prismaClient.lead.count({
+      where: {
+        sellerId,
+        wasPresent: true,
+      },
+    });
+  }
+  async setIsSellerGoalCustom(eventId: string, value: boolean): Promise<void> {
+    await this.prismaClient.event.update({
+      where: { id: eventId },
+      data: { isSellerGoalCustom: value },
+    });
+  }
 
   async findById(input: FindEventInputDto): Promise<Event | null> {
     try {
@@ -120,6 +134,7 @@ export class EventRepositoryPrisma implements IEventGateway {
         include: {
           sales: { include: { seller: true } },
           sellerEvents: true,
+          leads: true,
         },
       });
 
@@ -179,6 +194,7 @@ export class EventRepositoryPrisma implements IEventGateway {
       endDate: raw.endDate ?? undefined,
       companyId: raw.companyId,
       goal: raw.goal,
+      leads: raw.leads,
       isActive: raw.isActive,
       goalType: raw.goalType,
       createdAt: raw.createdAt,

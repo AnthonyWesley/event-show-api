@@ -10,6 +10,9 @@ const allowedOrigins = [
   "http://192.168.0.93",
   "http://192.168.0.93:5173",
   "http://192.168.100.62:5173",
+  "http://192.168.0.17:5173",
+  "https://eventshow.conceitotecnologia.inf.br",
+  "https://eventshow.conceitotecnologia.com",
   "https://event-flow-awl.netlify.app",
 ];
 

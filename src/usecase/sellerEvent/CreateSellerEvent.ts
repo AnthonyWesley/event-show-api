@@ -2,6 +2,8 @@ import { ISellerEventGateway } from "../../domain/entities/sellerEvent/ISellerEv
 import { SellerEvent } from "../../domain/entities/sellerEvent/SellerEvent";
 import { SocketServer } from "../../infra/socket/SocketServer";
 import { ValidationError } from "../../shared/errors/ValidationError";
+import { GoalUtils } from "../../shared/utils/GoalUtils";
+import { UpdateSellersGoalService } from "../event/UpdateSellersGoalService";
 import { IUseCases } from "../IUseCases";
 
 export type CreateSellerEventInputDto = {
@@ -18,14 +20,20 @@ export class CreateSellerEvent
 {
   private constructor(
     private readonly sellerEventGateway: ISellerEventGateway,
-    private readonly socketServer?: SocketServer
+    private readonly socketServer?: SocketServer,
+    private readonly updateSellersGoalService?: UpdateSellersGoalService
   ) {}
 
   public static create(
     sellerEventGateway: ISellerEventGateway,
-    socketServer?: SocketServer
+    socketServer?: SocketServer,
+    updateSellersGoalService?: UpdateSellersGoalService
   ) {
-    return new CreateSellerEvent(sellerEventGateway, socketServer);
+    return new CreateSellerEvent(
+      sellerEventGateway,
+      socketServer,
+      updateSellersGoalService
+    );
   }
 
   public async execute(
@@ -44,10 +52,16 @@ export class CreateSellerEvent
       return { id: exists.id };
     }
 
-    const sellerEvent = SellerEvent.create(input.sellerId, input.eventId);
+    const sellerEvent = SellerEvent.create(input.sellerId, input.eventId, 0);
 
     await this.sellerEventGateway.save(sellerEvent);
     this.socketServer?.emit("sellerEvent:created", { id: sellerEvent.id });
+
+    const allSellersByEvent = await this.sellerEventGateway.listSellersByEvent(
+      input.eventId
+    );
+
+    await this.updateSellersGoalService?.execute(allSellersByEvent[0]?.event);
 
     return { id: sellerEvent.id };
   }

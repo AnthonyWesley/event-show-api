@@ -54,8 +54,6 @@ export class InviteRepositoryPrisma implements IInviteGateway {
   }
 
   async findByCode(code: string): Promise<Invite | null> {
-    console.log(code);
-
     try {
       const invite = await this.prisma.invite.findUnique({
         where: { code },

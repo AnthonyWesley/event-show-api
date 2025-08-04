@@ -23,7 +23,7 @@ export class Product {
       throw new Error("Product name is required.");
     }
 
-    if (isNaN(price) || price <= 0) {
+    if (isNaN(price) || price < 0) {
       throw new Error(
         "Product price must be a positive number greater than zero."
       );

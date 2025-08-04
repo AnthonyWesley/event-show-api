@@ -39,12 +39,19 @@ export class ListLeadByEventRoute implements IRoute {
       const { user } = request as any;
       const { eventId } = request.params;
 
-      const result = await this.listLeadServer.execute({
+      const search = request.query.search as string | undefined;
+      const output = await this.listLeadServer.execute({
         eventId,
         companyId: user.companyId,
+        search: typeof search === "string" ? search.trim() : undefined,
       });
 
-      response.status(200).json(result);
+      // const result = await this.listLeadServer.execute({
+      //   eventId,
+      //   companyId: user.companyId,
+      // });
+
+      response.status(200).json(output);
     };
   }
 

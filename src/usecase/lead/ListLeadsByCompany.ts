@@ -7,7 +7,7 @@ export type ListLeadsOutputDto = {
   id: string;
   name: string;
   email?: string;
-  phone?: string;
+  phone: string;
   customInterest?: string;
   notes?: string;
   companyId: string;
@@ -41,13 +41,16 @@ export class ListLeadsByCompany {
     return leads.map((lead) => ({
       id: lead.id,
       name: lead.name,
-      email: lead.email ?? undefined,
-      phone: lead.phone ?? undefined,
+      phone: lead.phone ?? "",
+      wasPresent: lead.wasPresent,
+
       notes: lead.notes ?? undefined,
       customInterest: lead.customInterest ?? undefined,
       companyId: lead.companyId,
       createdAt: lead.createdAt,
       convertedAt: lead.convertedAt ?? undefined,
+      // customValues: lead.customValues ?? undefined,
+
       event: {
         id: lead.event?.id ?? lead.eventId,
         name: lead.event?.name ?? "Evento desconhecido",

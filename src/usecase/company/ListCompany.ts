@@ -24,13 +24,10 @@ export type ListCompanyOutputDto = {
     notes?: string;
 
     photo?: string;
-    photoPublicId?: string;
 
-    plan: PlanType;
     status: StatusType;
     accessExpiresAt: Date;
     createdAt: Date;
-    maxConcurrentEvents: number;
     users: UserProps[];
   }[];
 };
@@ -70,13 +67,14 @@ export class ListCompany
         notes: c.notes,
 
         photo: c.photo,
-        photoPublicId: c.photoPublicId,
+        // photoPublicId: c.photoPublicId,
 
-        plan: c.plan,
+        // plan: c.plan,
+
         status: c.status,
         accessExpiresAt: c.accessExpiresAt,
         createdAt: c.createdAt,
-        maxConcurrentEvents: c.maxConcurrentEvents,
+        // maxConcurrentEvents: c.maxConcurrentEvents,
         users: c.users as UserProps[],
       })),
     };

@@ -1,10 +1,14 @@
-import { PrismaClient } from "@prisma/client";
-import { Lead } from "../../../domain/entities/lead/Lead";
-import { ILeadGateway } from "../../../domain/entities/lead/ILeadGateway";
-import { UpdateLeadInputDto } from "../../../usecase/lead/UpdateLead";
+import { Prisma, PrismaClient } from "@prisma/client";
+import {
+  ILeadGateway,
+  LeadWithField,
+} from "../../../domain/entities/lead/ILeadGateway";
+import { Lead, LeadProps } from "../../../domain/entities/lead/Lead";
+import { ObjectHelper } from "../../../shared/utils/ObjectHelper";
 import { DeleteLeadInputDto } from "../../../usecase/lead/DeleteLead";
 import { FindLeadInputDto } from "../../../usecase/lead/FindLead";
-import { ObjectHelper } from "../../../shared/utils/ObjectHelper";
+import { UpdateLeadInputDto } from "../../../usecase/lead/UpdateLead";
+import { LeadCustomValue } from "../../../domain/entities/leadCustomValue/LeadCustomValue";
 
 export class LeadRepositoryPrisma implements ILeadGateway {
   private constructor(private readonly prisma: PrismaClient) {}
@@ -14,28 +18,76 @@ export class LeadRepositoryPrisma implements ILeadGateway {
   }
 
   async save(lead: Lead): Promise<void> {
-    const data = {
-      id: lead.id,
-      name: lead.name,
-      email: lead.email,
-      phone: lead.phone,
-      notes: lead.notes,
-      customInterest: lead.customInterest,
-      ...(lead.leadSourceId ? { leadSourceId: lead.leadSourceId } : {}),
-      ...(lead.sellerId ? { sellerId: lead.sellerId } : {}),
-      products: {
-        connect: lead.products.map((product) => ({ id: product.id })),
-      },
-      eventId: lead.eventId,
-      companyId: lead.companyId,
-      createdAt: lead.createdAt,
-      convertedAt: lead.convertedAt,
-    };
-
     try {
-      await this.prisma.lead.create({ data });
+      const createdLead = await this.prisma.lead.create({
+        data: {
+          id: lead.id,
+          name: lead.name,
+          phone: lead.phone,
+
+          notes: lead.notes,
+          customInterest: lead.customInterest,
+          leadSourceId: lead.leadSourceId ?? undefined,
+          sellerId: lead.sellerId ?? undefined,
+          eventId: lead.eventId,
+          companyId: lead.companyId,
+          createdAt: lead.createdAt,
+          convertedAt: lead.convertedAt ?? undefined,
+          products: {
+            connect: lead.products.map((product) => ({ id: product.id })),
+          },
+        },
+      });
+      if (!createdLead.sellerId)
+        await this.prisma.lead.update({
+          where: { id: createdLead.id },
+          data: { wasPresent: true },
+        });
     } catch (error: any) {
       throw new Error("Error saving lead: " + error.message);
+    }
+  }
+
+  async update(input: UpdateLeadInputDto): Promise<Lead> {
+    try {
+      const {
+        companyId,
+        leadId,
+        products,
+        leadSourceId,
+        customValues,
+        ...rest
+      } = ObjectHelper.removeUndefinedFields(input);
+
+      const updateData: any = {
+        ...rest,
+        leadSourceId,
+      };
+
+      if (products) {
+        updateData.products = {
+          set: [],
+          connect: products.map((p) => ({ id: p.id })),
+        };
+      }
+
+      const updated = await this.prisma.lead.update({
+        where: { id: leadId, companyId },
+        data: updateData,
+        include: {
+          products: true,
+          leadSource: true,
+          seller: true,
+          event: true,
+          customValues: {
+            include: { field: true },
+          },
+        },
+      });
+
+      return this.toEntity(updated);
+    } catch (error: any) {
+      throw new Error("Error updating lead: " + error.message);
     }
   }
 
@@ -48,19 +100,51 @@ export class LeadRepositoryPrisma implements ILeadGateway {
         leadSource: { select: { id: true, name: true } },
         seller: { select: { id: true, name: true } },
         event: { select: { id: true, name: true } },
+        customValues: true,
       },
     });
   }
 
-  async listByEvent(eventId: string): Promise<any[]> {
+  async listByEvent(
+    eventId: string,
+    search?: string
+  ): Promise<LeadWithField[]> {
+    const filters: any = {
+      eventId,
+    };
+
+    if (search?.trim()) {
+      filters.OR = [
+        {
+          name: {
+            contains: search,
+            // mode: "insensitive",
+          },
+        },
+        {
+          customValues: {
+            some: {
+              field: {
+                key: "phone",
+              },
+              value: {
+                contains: search,
+              },
+            },
+          },
+        },
+      ];
+    }
+
     return this.prisma.lead.findMany({
-      where: { eventId },
+      where: filters,
       orderBy: { createdAt: "desc" },
       include: {
         products: { select: { id: true, name: true } },
         leadSource: { select: { id: true, name: true } },
         seller: { select: { id: true, name: true } },
         event: { select: { id: true, name: true } },
+        customValues: { include: { field: true } },
       },
     });
   }
@@ -80,37 +164,6 @@ export class LeadRepositoryPrisma implements ILeadGateway {
       return lead;
     } catch (error: any) {
       throw new Error("Error finding lead: " + error.message);
-    }
-  }
-
-  async update(input: UpdateLeadInputDto): Promise<Lead> {
-    try {
-      const cleanData = ObjectHelper.removeUndefinedFields(input);
-      const { companyId, leadSourceId, products, leadId, ...rest } = cleanData;
-
-      const data: any = {
-        ...rest,
-      };
-
-      if (leadSourceId) {
-        data.leadSource = { connect: { id: leadSourceId } };
-      }
-
-      const updated = await this.prisma.lead.update({
-        where: { id: leadId },
-
-        data,
-        include: {
-          products: true,
-          leadSource: true,
-          seller: true,
-          event: true,
-        },
-      });
-
-      return this.toEntity(updated);
-    } catch (error: any) {
-      throw new Error("Error updating lead: " + error.message);
     }
   }
 
@@ -138,20 +191,41 @@ export class LeadRepositoryPrisma implements ILeadGateway {
     return Lead.with({
       id: raw.id,
       name: raw.name,
-      email: raw.email ?? undefined,
-      phone: raw.phone ?? undefined,
+      phone: raw.phone,
       notes: raw.notes ?? undefined,
       customInterest: raw.customInterest ?? undefined,
-      leadSourceId: raw.leadSourceId,
-      sellerId: raw.sellerId,
+      leadSourceId: raw.leadSourceId ?? undefined,
+      sellerId: raw.sellerId ?? undefined,
       eventId: raw.eventId,
       companyId: raw.companyId,
       createdAt: raw.createdAt,
-      products: raw.products,
-      convertedAt: raw.convertedAt,
-
-      sales: raw.sales,
-      leadSource: raw.leadSource,
+      convertedAt: raw.convertedAt ?? undefined,
+      wasPresent: raw.wasPresent,
+      status: raw.status,
+      products: raw.products ?? [],
+      sales: raw.sales ?? [],
+      event: raw.event ?? undefined,
+      seller: raw.seller ?? undefined,
+      leadSource: raw.leadSource ?? undefined,
+      customValues: (raw.customValues ?? []).map((cv: any) =>
+        LeadCustomValue.with({
+          id: cv.id,
+          leadId: cv.leadId,
+          fieldId: cv.fieldId,
+          value: cv.value,
+          field: cv.field
+            ? {
+                id: cv.field.id,
+                name: cv.field.name,
+                key: cv.field.key,
+                type: cv.field.type,
+                required: cv.field.required,
+                order: cv.field.order,
+                companyId: cv.field.companyId,
+              }
+            : undefined,
+        })
+      ),
     });
   }
 }

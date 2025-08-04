@@ -36,18 +36,17 @@ export class CreateLeadRoute implements IRoute {
       const { eventId } = request.params;
       const {
         name,
-        email,
-        phone,
         products,
         customInterest,
         notes,
         sellerId,
         leadSourceId,
+        phone,
+        customValues,
       } = request.body;
 
       const input: CreateLeadInputDto = {
         name,
-        email,
         phone,
         products,
         customInterest,
@@ -56,6 +55,7 @@ export class CreateLeadRoute implements IRoute {
         companyId: user.companyId,
         leadSourceId,
         sellerId,
+        customValues,
       };
 
       const output: CreateLeadRouteResponseDto =

@@ -35,11 +35,13 @@ export class UpdateLeadRoute implements IRoute {
       const {
         name,
         email,
+        wasPresent,
         phone,
         notes,
         leadSourceId,
         customInterest,
         products,
+        customValues,
       } = request.body;
 
       const input: UpdateLeadInputDto = {
@@ -50,8 +52,10 @@ export class UpdateLeadRoute implements IRoute {
         phone,
         notes,
         leadSourceId,
+        wasPresent,
         customInterest,
         products,
+        customValues,
       };
 
       const result = await this.updateLeadService.execute(input);

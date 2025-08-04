@@ -101,7 +101,6 @@ export class ApproveOrRejectPendingAction
     }
 
     await performAction();
-    console.log(input);
 
     await this.pendingGateway.update(input.pendingActionId, "APPROVED");
 

@@ -10,25 +10,32 @@ import { EventRepositoryPrisma } from "../repositories/event/EventRepositoryPris
 import { LeadRepositoryPrisma } from "../repositories/lead/LeadRepositoryPrisma";
 import { CompanyRepositoryPrisma } from "../repositories/company/CompanyRepositoryPrisma";
 import { LeadSourceRepositoryPrisma } from "../repositories/leadSource/LeadSourceRepositoryPrisma";
+import { UpsertLeadCustomValues } from "../../usecase/LeadCustomValues/UpsertLeadCustomValues";
 
 export function makeLeadUseCases(
   leadRepository: LeadRepositoryPrisma,
   eventRepository: EventRepositoryPrisma,
   companyRepository: CompanyRepositoryPrisma,
   leadSourceRepository: LeadSourceRepositoryPrisma,
-  exporter: ILeadExporter
+  exporter: ILeadExporter,
+  upsertLeadCustomValues: UpsertLeadCustomValues
 ) {
   return {
     create: CreateLead.create(
       leadRepository,
       eventRepository,
-      leadSourceRepository
+      leadSourceRepository,
+      upsertLeadCustomValues
     ),
     findOne: FindLead.create(leadRepository, companyRepository),
     exportLead: ExportLead.create(leadRepository, eventRepository, exporter),
     listByCompany: ListLeadsByCompany.create(leadRepository, companyRepository),
     listByEvent: ListLeadsByEvent.create(leadRepository, eventRepository),
     delete: DeleteLead.create(leadRepository, companyRepository),
-    update: UpdateLead.create(leadRepository, companyRepository),
+    update: UpdateLead.create(
+      leadRepository,
+      companyRepository,
+      upsertLeadCustomValues
+    ),
   };
 }

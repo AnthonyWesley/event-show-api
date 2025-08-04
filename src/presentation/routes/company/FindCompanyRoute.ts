@@ -1,7 +1,6 @@
 import { Response, Request } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
-import { Goal } from "../../../domain/entities/event/Event";
 import { FindCompany } from "../../../usecase/company/FindCompany";
 
 export class FindCompanyRoute implements IRoute {
@@ -47,9 +46,10 @@ export class FindCompanyRoute implements IRoute {
         website: output.website,
         segment: output.segment,
         notes: output.notes,
+        isValueVisible: output.isValueVisible,
 
         photo: output.photo,
-        photoPublicId: output.photoPublicId,
+        leadsCustomField: output.leadsCustomField,
 
         planId: output.planId,
         status: output.status,
