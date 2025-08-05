@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  app:
+  api-eventshow:
     build:
       context: .
       dockerfile: Dockerfile
@@ -25,10 +25,10 @@ services:
       - EVOLUTION_URL=${EVOLUTION_URL}
       - EVOLUTION_INSTANCE=${EVOLUTION_INSTANCE}
       - EVOLUTION_API_KEY=${EVOLUTION_API_KEY}
-                                                                                                   - PORT=${PORT:-3000}
+      - PORT=${PORT:-3000}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${PORT:-3000}/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:$PORT/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -36,23 +36,7 @@ services:
     networks:
       - coolify
 
-  # Opcional: Adicione um banco de dados se necessário
-#   postgres:
-#     image: postgres:15-alpine
-#     environment:
-#       POSTGRES_DB: eventflow
-#       POSTGRES_USER: postgres
-#       POSTGRES_PASSWORD: password
-#     volumes:
-#       - postgres_data:/var/lib/postgresql/data
-#     ports:
-#       - "5432:5432"
-#     networks:
-#       - coolify
-
 networks:
   coolify:
     external: true
-
-# volumes:
-#   postgres_data:
+ 
