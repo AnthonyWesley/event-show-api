@@ -35,8 +35,9 @@ services:
       start_period: 40s
     networks:
       - coolify
-
-  # Opcional: Adicione um banco de dados se necessário
+    container_name: api-eventshow
+  
+# Opcional: Adicione um banco de dados se necessário
 #   postgres:
 #     image: postgres:15-alpine
 #     environment:
