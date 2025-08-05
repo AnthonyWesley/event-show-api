@@ -25,7 +25,8 @@ services:
       - EVOLUTION_URL=${EVOLUTION_URL}
       - EVOLUTION_INSTANCE=${EVOLUTION_INSTANCE}
       - EVOLUTION_API_KEY=${EVOLUTION_API_KEY}
-                                                                                                   - PORT=${PORT:-3000}
+      - PORT=${PORT:-3000}
+      
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:${PORT:-3000}/health || exit 1"]
@@ -35,7 +36,7 @@ services:
       start_period: 40s
     networks:
       - coolify
-    container_name: api-eventshow
+      - api-network
   
 # Opcional: Adicione um banco de dados se necessário
 #   postgres:
@@ -54,6 +55,6 @@ services:
 networks:
   coolify:
     external: true
-
+    name: api-network
 # volumes:
 #   postgres_data:
