@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: production
+      networks:
+       - api-network
     ports:
       - "3000:${PORT:-3000}"
     environment:
@@ -55,6 +57,7 @@ services:
 networks:
   coolify:
     external: true
+  api-network:    
     name: api-network
 # volumes:
 #   postgres_data:
