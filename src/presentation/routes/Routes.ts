@@ -80,6 +80,7 @@ import { UpdateLeadSourceRoute } from "./leadSource/UpdateLeadSourceRoute";
 import { RegisterUserRoute } from "./user/RegisterUserRoute";
 import { SendGuestAccessInviteRoute } from "./sellerEvent/SendGuestAccessInviteRoute";
 import { HealthRoute } from "./HealthRoute";
+import { UpdateSellerEventGoalRoute } from "./sellerEvent/UpdateSellerEventGoalRoute";
 
 export function makeRoutes(useCases: any, authorization: AuthorizationRoute) {
   return [
@@ -188,6 +189,10 @@ export function makeRoutes(useCases: any, authorization: AuthorizationRoute) {
       authorization
     ),
     DeleteSellerEventRoute.create(useCases.sellerEvent.delete, authorization),
+    UpdateSellerEventGoalRoute.create(
+      useCases.sellerEvent.updateGoal,
+      authorization
+    ),
 
     CreatePendingActionRoute.create(
       useCases.pendingAction.create,

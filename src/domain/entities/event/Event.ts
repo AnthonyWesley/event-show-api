@@ -1,7 +1,8 @@
-import { GoalType } from "@prisma/client";
+import { GoalMode, GoalType } from "@prisma/client";
 import { generateId } from "../../../shared/utils/IdGenerator";
 import { SaleProps } from "../sale/Sale";
 import { LeadProps } from "../lead/Lead";
+import { SellerEventProps } from "../sellerEvent/SellerEvent";
 
 export type Goal = "QUANTITY" | "VALUE";
 
@@ -24,13 +25,13 @@ export type EventProps = {
   startDate: Date;
   endDate?: Date;
   isActive: boolean;
-  isSellerGoalCustom?: boolean;
+  goalMode?: GoalMode;
   companyId: string;
   goal: number;
   goalType: GoalType;
   createdAt: Date;
-  sales: SaleProps[];
-  sellerEvents: SellerEvent[];
+  sales?: SaleProps[];
+  sellerEvents?: SellerEventProps[];
   leads?: LeadProps[];
 };
 
@@ -38,33 +39,20 @@ export class Event {
   private constructor(private readonly props: EventProps) {}
 
   public static create(
-    name: string,
-    goal: number,
-    goalType: Goal,
-    companyId: string,
-    isSellerGoalCustom: boolean,
-    photo?: string
-  ) {
-    if (!name.trim()) {
+    props: Omit<EventProps, "id" | "createdAt" | "startDate" | "isActive">
+  ): Event {
+    if (!props.name.trim()) {
       throw new Error("Event name is required.");
     }
 
-    if (!companyId.trim()) {
+    if (!props.companyId.trim()) {
       throw new Error("Company ID is required.");
     }
-
     return new Event({
+      ...props,
       id: generateId(),
-      name,
-      photo,
       startDate: new Date(),
       isActive: false,
-      goal,
-      goalType,
-      companyId,
-      isSellerGoalCustom,
-      sellerEvents: [],
-      sales: [],
       createdAt: new Date(),
     });
   }
@@ -104,8 +92,8 @@ export class Event {
   public get goalType() {
     return this.props.goalType;
   }
-  public get isSellerGoalCustom() {
-    return this.props.isSellerGoalCustom;
+  public get goalMode() {
+    return this.props.goalMode;
   }
 
   public get companyId() {

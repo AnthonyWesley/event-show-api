@@ -3,10 +3,10 @@ import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 
 export type UpdateSellerEventGoalInputDto = {
-  sellerEventId: string;
+  sellerId: string;
   companyId: string;
   eventId: string;
-  newGoal: number;
+  goal: number;
 };
 
 export class UpdateSellerEventGoal {
@@ -15,9 +15,16 @@ export class UpdateSellerEventGoal {
     private readonly eventGateway: IEventGateway
   ) {}
 
+  static create(
+    sellerEventGateway: ISellerEventGateway,
+    eventGateway: IEventGateway
+  ) {
+    return new UpdateSellerEventGoal(sellerEventGateway, eventGateway);
+  }
+
   async execute(input: UpdateSellerEventGoalInputDto): Promise<void> {
     const sellerEvent = await this.sellerEventGateway.findByEventAndSeller(
-      input.sellerEventId,
+      input.sellerId,
       input.eventId
     );
     if (!sellerEvent) {
@@ -32,15 +39,33 @@ export class UpdateSellerEventGoal {
       throw new NotFoundError("Event");
     }
 
-    // Atualiza a meta individual do vendedor
+    // Atualiza a meta do vendedor individualmente
     await this.sellerEventGateway.updateById(
-      input.sellerEventId,
-      input.newGoal
+      sellerEvent.sellerId, // <- corrigido: usar ID do SellerEvent
+      input.eventId,
+      input.goal
     );
 
-    // Marca o evento como customizado
-    if (!event.isSellerGoalCustom) {
-      await this.eventGateway.setIsSellerGoalCustom(event.id, true);
+    // Marca como personalizado, se ainda não for
+    if (event.goalMode === "auto") {
+      await this.eventGateway.setIsSellerGoalCustom(event.id, "manual");
     }
+
+    // Recarrega todos os SellerEvents atualizados
+    const allSellers = await this.sellerEventGateway.listSellersByEvent(
+      event.id
+    );
+
+    // Soma das metas personalizadas
+    const updatedTotalGoal = allSellers.reduce((acc, s) => acc + s.goal, 0);
+
+    // Atualiza a meta total do evento com base nas metas manuais
+    await this.eventGateway.update({
+      eventId: event.id,
+      companyId: event.companyId,
+      goal: updatedTotalGoal,
+      isActive: event.isActive,
+      goalMode: "manuel",
+    });
   }
 }

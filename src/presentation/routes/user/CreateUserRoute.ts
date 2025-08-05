@@ -35,7 +35,6 @@ export class CreateUserRoute implements IRoute {
   public getHandler() {
     return async (request: Request, response: Response) => {
       const { name, email, password, phone, companyId, company } = request.body;
-      console.log(request.body);
 
       const keys = (request as any).featureValues;
 
@@ -48,7 +47,6 @@ export class CreateUserRoute implements IRoute {
         company,
         keys,
       };
-      console.log(keys);
 
       const output: CreateCompanyResponseDto =
         await this.createUserService.execute(input);

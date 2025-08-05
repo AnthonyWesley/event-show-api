@@ -40,7 +40,6 @@ export class RegisterUserRoute implements IRoute {
         company,
         keys,
       };
-      console.log(keys);
 
       const output: CreateCompanyResponseDto =
         await this.createUserService.execute(input);

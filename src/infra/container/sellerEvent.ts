@@ -7,6 +7,7 @@ import { GuestAccess } from "../../usecase/sellerEvent/GuestAccess";
 import { ListEventsBySeller } from "../../usecase/sellerEvent/ListEventsBySeller";
 import { ListSellerByEvent } from "../../usecase/sellerEvent/ListSellerByEvent";
 import { SendGuestAccessInvite } from "../../usecase/sellerEvent/SendGuestAccessInvite";
+import { UpdateSellerEventGoal } from "../../usecase/sellerEvent/UpdateSellerEventGoal";
 import { IWhatsAppService } from "../mail/IWhatsAppService";
 import { CompanyRepositoryPrisma } from "../repositories/company/CompanyRepositoryPrisma";
 import { EventRepositoryPrisma } from "../repositories/event/EventRepositoryPrisma";
@@ -61,6 +62,9 @@ export function makeSellerEventUseCases(
       socketServer,
       updateSellersGoalService
     ),
-    // update: UpdateSeller.create(sellerRepository, companyRepository),
+    updateGoal: UpdateSellerEventGoal.create(
+      sellerEventRepository,
+      eventRepository
+    ),
   };
 }

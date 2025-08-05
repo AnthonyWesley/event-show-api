@@ -1,4 +1,4 @@
-import { GoalType } from "@prisma/client";
+import { GoalMode, GoalType } from "@prisma/client";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { SaleProps } from "../../domain/entities/sale/Sale";
@@ -25,7 +25,7 @@ export type FindEventOutputDto = {
   file?: any;
   startDate: Date;
   endDate?: Date;
-  // sellerEvents: SellerEventProps[];
+  goalMode: GoalMode;
   sales: SaleProps[];
   goal: number;
   isActive?: boolean;
@@ -60,13 +60,13 @@ export class FindEvent
     const company = await this.companyGateway.findById(event.companyId);
     if (!company) throw new NotFoundError("Company");
 
-    const sellerIds = event.sellerEvents.map((se: any) => se.sellerId);
+    const sellerIds = event?.sellerEvents?.map((se: any) => se.sellerId);
     const sellers = (company.sellers ?? []).filter((s) =>
-      sellerIds.includes(s.id)
+      sellerIds?.includes(s.id)
     );
 
     const stats = SellerStatsHelper.computeStats(
-      event.sales,
+      event.sales ?? [],
       company.products ?? []
     );
 
@@ -105,9 +105,10 @@ export class FindEvent
       startDate: event.startDate,
       endDate: event.endDate ?? undefined,
       // sellerEvents: event.sellerEvents,
-      sales: event.sales,
+      sales: event.sales ?? [],
       isActive: event.isActive,
       goal: event.goal,
+      goalMode: event.goalMode ?? "auto",
       isValueVisible: company.isValueVisible,
       goalType: event.goalType as GoalType,
       companyId: event.companyId,

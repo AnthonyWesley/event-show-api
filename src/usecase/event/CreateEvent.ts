@@ -5,11 +5,13 @@ import { ValidationError } from "../../shared/errors/ValidationError";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { SocketServer } from "../../infra/socket/SocketServer";
+import { GoalMode } from "@prisma/client";
 
 export type CreateEventInputDto = {
   name: string;
   endDate?: Date;
   photo?: string;
+  goalMode: GoalMode;
   goal: number;
   goalType: Goal;
   companyId: string;
@@ -49,13 +51,13 @@ export class CreateEvent
       throw new NotFoundError("Company");
     }
 
-    const anEvent = Event.create(
-      input.name,
-      input.goal,
-      input.goalType,
-      companyExists.id,
-      input.photo ?? ""
-    );
+    const anEvent = Event.create({
+      name: input.name,
+      goal: input.goal,
+      goalType: input.goalType,
+      companyId: companyExists.id,
+      goalMode: input.goalMode ?? "auto",
+    });
     await this.eventGateway.save(anEvent);
     this.socketServer?.emit("event:created", anEvent);
 

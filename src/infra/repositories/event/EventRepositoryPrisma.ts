@@ -1,4 +1,4 @@
-import { GoalType, PrismaClient } from "@prisma/client";
+import { GoalMode, GoalType, PrismaClient } from "@prisma/client";
 import { Event } from "../../../domain/entities/event/Event";
 import { IEventGateway } from "../../../domain/entities/event/IEventGateway";
 import { DeleteEventInputDto } from "../../../usecase/event/DeleteEvent";
@@ -117,10 +117,13 @@ export class EventRepositoryPrisma implements IEventGateway {
       },
     });
   }
-  async setIsSellerGoalCustom(eventId: string, value: boolean): Promise<void> {
+  async setIsSellerGoalCustom(
+    eventId: string,
+    goalMode: GoalMode
+  ): Promise<void> {
     await this.prismaClient.event.update({
       where: { id: eventId },
-      data: { isSellerGoalCustom: value },
+      data: { goalMode },
     });
   }
 
@@ -133,7 +136,13 @@ export class EventRepositoryPrisma implements IEventGateway {
         },
         include: {
           sales: { include: { seller: true } },
-          sellerEvents: true,
+          sellerEvents: {
+            include: {
+              seller: {
+                select: { name: true, phone: true, photo: true, id: true },
+              },
+            },
+          },
           leads: true,
         },
       });

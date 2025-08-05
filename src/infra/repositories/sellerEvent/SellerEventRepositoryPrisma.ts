@@ -1,4 +1,4 @@
-import { PrismaClient, Event } from "@prisma/client";
+import { PrismaClient, Event, GoalMode } from "@prisma/client";
 import { ISellerEventGateway } from "../../../domain/entities/sellerEvent/ISellerEventGateway";
 import { SellerEvent } from "../../../domain/entities/sellerEvent/SellerEvent";
 import { SellerProps } from "../../../domain/entities/seller/Seller";
@@ -89,10 +89,14 @@ export class SellerEventRepositoryPrisma implements ISellerEventGateway {
     }
   }
 
-  async updateById(sellerEventId: string, goal: number): Promise<SellerEvent> {
+  async updateById(
+    sellerId: string,
+    eventId: string,
+    goal: number
+  ): Promise<SellerEvent> {
     try {
       const updated = await this.prisma.sellerEvent.update({
-        where: { id: sellerEventId },
+        where: { sellerId_eventId: { sellerId, eventId } },
         data: { goal },
       });
       return this.toEntity(updated);
@@ -101,11 +105,14 @@ export class SellerEventRepositoryPrisma implements ISellerEventGateway {
     }
   }
 
-  async setIsSellerGoalCustom(eventId: string, value: boolean): Promise<void> {
+  async setIsSellerGoalCustom(
+    eventId: string,
+    goalMode: GoalMode
+  ): Promise<void> {
     try {
       await this.prisma.event.update({
         where: { id: eventId },
-        data: { isSellerGoalCustom: value },
+        data: { goalMode },
       });
     } catch (error: any) {
       throw new Error("Error setting isSellerGoalCustom: " + error.message);
@@ -130,7 +137,7 @@ export class SellerEventRepositoryPrisma implements ISellerEventGateway {
               id: true,
               name: true,
               goal: true,
-              isSellerGoalCustom: true,
+              goalMode: true,
             },
           },
           seller: {
@@ -164,15 +171,5 @@ export class SellerEventRepositoryPrisma implements ISellerEventGateway {
       eventId: raw.eventId,
       seller: raw.seller as SellerProps,
     });
-  }
-
-  private toRaw(entity: SellerEvent) {
-    return {
-      id: entity.id,
-      sellerId: entity.sellerId,
-      seller: entity.seller,
-      event: entity.event,
-      eventId: entity.eventId,
-    };
   }
 }

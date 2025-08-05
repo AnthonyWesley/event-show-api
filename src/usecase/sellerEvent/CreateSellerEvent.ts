@@ -9,6 +9,7 @@ import { IUseCases } from "../IUseCases";
 export type CreateSellerEventInputDto = {
   sellerId: string;
   eventId: string;
+  companyId: string;
 };
 
 export type CreateSellerEventOutputDto = {
@@ -61,7 +62,8 @@ export class CreateSellerEvent
       input.eventId
     );
 
-    await this.updateSellersGoalService?.execute(allSellersByEvent[0]?.event);
+    if (allSellersByEvent.length > 0 && allSellersByEvent[0].event)
+      await this.updateSellersGoalService?.execute(allSellersByEvent[0]?.event);
 
     return { id: sellerEvent.id };
   }

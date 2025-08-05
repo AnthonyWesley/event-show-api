@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  // provider = "postgresql"
+  // provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -145,7 +145,7 @@ model Event {
   photoPublicId  String?
   startDate      DateTime
   endDate        DateTime?
-  isSellerGoalCustom Boolean   @default(true) 
+  goalMode       GoalMode @default(auto)
   isActive       Boolean       @default(true) 
   goal           Float         @default(0.0)
   goalType       GoalType      @default(QUANTITY)
@@ -365,3 +365,7 @@ enum LeadStatus {
   DISCARDED
 }
 
+enum GoalMode {
+  auto
+  manual
+}
