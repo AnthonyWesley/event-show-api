@@ -6,8 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
       target: production
-    networks:
-      - api-network
     ports:
       - "3000:${PORT:-3000}"
     environment:
@@ -28,35 +26,19 @@ services:
       - EVOLUTION_INSTANCE=${EVOLUTION_INSTANCE}
       - EVOLUTION_API_KEY=${EVOLUTION_API_KEY}
       - PORT=${PORT:-3000}
-      
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${PORT:-3000}/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:$PORT/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
     networks:
+      - api-network
       - coolify
-       
-# Opcional: Adicione um banco de dados se necessário
-#   postgres:
-#     image: postgres:15-alpine
-#     environment:
-#       POSTGRES_DB: eventflow
-#       POSTGRES_USER: postgres
-#       POSTGRES_PASSWORD: password
-#     volumes:
-#       - postgres_data:/var/lib/postgresql/data
-#     ports:
-#       - "5432:5432"
-#     networks:
-#       - coolify
 
 networks:
   coolify:
     external: true
   api-network:    
     name: api-network
-# volumes:
-#   postgres_data:
