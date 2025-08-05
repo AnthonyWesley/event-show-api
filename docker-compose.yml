@@ -38,8 +38,7 @@ services:
       start_period: 40s
     networks:
       - coolify
-      - api-network
-  
+       
 # Opcional: Adicione um banco de dados se necessário
 #   postgres:
 #     image: postgres:15-alpine
