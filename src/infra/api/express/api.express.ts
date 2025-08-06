@@ -13,7 +13,7 @@ const allowedOrigins = [
   "http://192.168.0.17:5173",
   "https://eventshow.conceitotecnologia.inf.br",
   "https://eventshow.conceitotecnologia.com",
-  "https://event-flow-awl.netlify.app",
+  "https://event-show-api.vercel.app/",
 ];
 
 export class ApiExpress {
