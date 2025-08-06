@@ -1,5 +1,6 @@
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
+import { ISocketServer } from "../../infra/socket/ISocketServer";
 import { SocketServer } from "../../infra/socket/SocketServer";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
@@ -13,13 +14,13 @@ export class DeleteEvent implements IUseCases<DeleteEventInputDto, void> {
   private constructor(
     readonly eventGateway: IEventGateway,
     readonly companyGateway: ICompanyGateway,
-    readonly socketServer?: SocketServer
+    readonly socketServer?: ISocketServer
   ) {}
 
   static create(
     eventGateway: IEventGateway,
     companyGateway: ICompanyGateway,
-    socketServer?: SocketServer
+    socketServer?: ISocketServer
   ) {
     return new DeleteEvent(eventGateway, companyGateway, socketServer);
   }

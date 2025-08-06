@@ -40,9 +40,10 @@ import { LeadCustomFieldRepositoryPrisma } from "./repositories/leadCustomField/
 import { LeadCustomValueRepositoryPrisma } from "./repositories/leadCustomValue/LeadCustomValueRepositoryPrisma";
 import { UpsertLeadCustomValues } from "../usecase/LeadCustomValues/UpsertLeadCustomValues";
 import { UpdateSellersGoalService } from "../usecase/event/UpdateSellersGoalService";
+import { ISocketServer } from "./socket/ISocketServer";
 
 export function makeUseCases(
-  socketServer: SocketServer,
+  socketServer: ISocketServer,
   authorization: AuthTokenService,
   serviceToken: ServiceTokenService
 ) {

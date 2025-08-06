@@ -1,5 +1,6 @@
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
+import { ISocketServer } from "../../infra/socket/ISocketServer";
 import { SocketServer } from "../../infra/socket/SocketServer";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 
@@ -28,13 +29,13 @@ export class UpdateSeller {
   private constructor(
     private readonly sellerGateway: ISellerGateway,
     private readonly companyGateway: ICompanyGateway,
-    private readonly socketServer: SocketServer
+    private readonly socketServer: ISocketServer
   ) {}
 
   static create(
     sellerGateway: ISellerGateway,
     companyGateway: ICompanyGateway,
-    socketServer: SocketServer
+    socketServer: ISocketServer
   ) {
     return new UpdateSeller(sellerGateway, companyGateway, socketServer);
   }

@@ -6,6 +6,7 @@ import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { SocketServer } from "../../infra/socket/SocketServer";
 import { GoalMode } from "@prisma/client";
+import { ISocketServer } from "../../infra/socket/ISocketServer";
 
 export type CreateEventInputDto = {
   name: string;
@@ -27,13 +28,13 @@ export class CreateEvent
   private constructor(
     private readonly eventGateway: IEventGateway,
     private readonly companyGateway: ICompanyGateway,
-    private readonly socketServer?: SocketServer
+    private readonly socketServer: ISocketServer
   ) {}
 
   public static create(
     eventGateway: IEventGateway,
     companyGateway: ICompanyGateway,
-    socketServer?: SocketServer
+    socketServer: ISocketServer
   ) {
     return new CreateEvent(eventGateway, companyGateway, socketServer);
   }
@@ -59,7 +60,7 @@ export class CreateEvent
       goalMode: input.goalMode ?? "auto",
     });
     await this.eventGateway.save(anEvent);
-    this.socketServer?.emit("event:created", anEvent);
+    this.socketServer.emit("event:created", anEvent);
 
     return { id: anEvent.id };
   }

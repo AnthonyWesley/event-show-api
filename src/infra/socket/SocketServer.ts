@@ -1,7 +1,8 @@
 import { Server } from "socket.io";
 import { Server as HttpServer } from "http";
+import { ISocketServer } from "./ISocketServer";
 
-export class SocketServer {
+export class SocketServer implements ISocketServer {
   private io: Server;
 
   constructor(server: HttpServer) {

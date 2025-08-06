@@ -1,6 +1,7 @@
 import { IPendingActionGateway } from "../../domain/entities/pendingAction/IPendingActionGateway";
 import { ISaleGateway } from "../../domain/entities/sale/ISaleGateway";
 import { Sale } from "../../domain/entities/sale/Sale";
+import { ISocketServer } from "../../infra/socket/ISocketServer";
 import { SocketServer } from "../../infra/socket/SocketServer";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
@@ -24,12 +25,12 @@ export class ApproveOrRejectPendingAction
   constructor(
     private readonly pendingGateway: IPendingActionGateway,
     private readonly saleGateway: ISaleGateway,
-    private readonly socketServer?: SocketServer
+    private readonly socketServer?: ISocketServer
   ) {}
   public static create(
     pendingGateway: IPendingActionGateway,
     saleGateway: ISaleGateway,
-    socketServer?: SocketServer
+    socketServer?: ISocketServer
   ) {
     return new ApproveOrRejectPendingAction(
       pendingGateway,

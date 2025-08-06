@@ -13,6 +13,7 @@ import { CompanyRepositoryPrisma } from "../repositories/company/CompanyReposito
 import { EventRepositoryPrisma } from "../repositories/event/EventRepositoryPrisma";
 import { SellerRepositoryPrisma } from "../repositories/seller/SellerRepositoryPrisma";
 import { SellerEventRepositoryPrisma } from "../repositories/sellerEvent/SellerEventRepositoryPrisma";
+import { ISocketServer } from "../socket/ISocketServer";
 import { SocketServer } from "../socket/SocketServer";
 
 export function makeSellerEventUseCases(
@@ -22,7 +23,7 @@ export function makeSellerEventUseCases(
   sellerRepository: SellerRepositoryPrisma,
   inviteGateway: IInviteGateway,
   tokenService: AuthTokenService,
-  socketServer: SocketServer,
+  socketServer: ISocketServer,
   sendMessageService: IWhatsAppService,
   updateSellersGoalService?: UpdateSellersGoalService
 ) {

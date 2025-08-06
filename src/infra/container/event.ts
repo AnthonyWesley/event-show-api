@@ -9,14 +9,15 @@ import { UpdateSellersGoalService } from "../../usecase/event/UpdateSellersGoalS
 import { CompanyRepositoryPrisma } from "../repositories/company/CompanyRepositoryPrisma";
 import { EventRepositoryPrisma } from "../repositories/event/EventRepositoryPrisma";
 import { CloudinaryUploadService } from "../services/CloudinaryUploadService";
+import { ISocketServer } from "../socket/ISocketServer";
 import { SocketServer } from "../socket/SocketServer";
 
 export function makeEventUseCases(
   eventRepository: EventRepositoryPrisma,
   companyRepository: CompanyRepositoryPrisma,
   uploadPhotoService: CloudinaryUploadService,
-  updateSellersGoalService?: UpdateSellersGoalService,
-  socketServer?: SocketServer
+  updateSellersGoalService: UpdateSellersGoalService,
+  socketServer: ISocketServer
 ) {
   return {
     create: CreateEvent.create(

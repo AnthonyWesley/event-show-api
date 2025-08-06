@@ -7,6 +7,7 @@ import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { SocketServer } from "../../infra/socket/SocketServer";
 import { ForbiddenError } from "../../shared/errors/ForbiddenError";
 import { hasReachedLimit } from "../../shared/utils/hasReachedLimit";
+import { ISocketServer } from "../../infra/socket/ISocketServer";
 
 export type CreateSellerInputDto = {
   name: string;
@@ -29,13 +30,13 @@ export class CreateSeller
   private constructor(
     private readonly sellerGateway: ISellerGateway,
     private readonly companyGateway: ICompanyGateway,
-    private readonly socketServer: SocketServer
+    private readonly socketServer: ISocketServer
   ) {}
 
   public static create(
     sellerGateway: ISellerGateway,
     companyGateway: ICompanyGateway,
-    socketServer: SocketServer
+    socketServer: ISocketServer
   ) {
     return new CreateSeller(sellerGateway, companyGateway, socketServer);
   }

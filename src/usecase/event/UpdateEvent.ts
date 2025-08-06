@@ -5,6 +5,7 @@ import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { SocketServer } from "../../infra/socket/SocketServer";
 import { UpdateSellersGoalService } from "./UpdateSellersGoalService";
+import { ISocketServer } from "../../infra/socket/ISocketServer";
 
 export type UpdateEventInputDto = {
   companyId: string;
@@ -38,14 +39,14 @@ export class UpdateEvent {
   constructor(
     private readonly eventGateway: IEventGateway,
     private readonly companyGateway: ICompanyGateway,
-    private readonly socketServer?: SocketServer,
+    private readonly socketServer: ISocketServer,
     private readonly updateSellersGoalService?: UpdateSellersGoalService
   ) {}
 
   static create(
     eventGateway: IEventGateway,
     companyGateway: ICompanyGateway,
-    socketServer?: SocketServer,
+    socketServer: ISocketServer,
     updateSellersGoalService?: UpdateSellersGoalService
   ) {
     return new UpdateEvent(

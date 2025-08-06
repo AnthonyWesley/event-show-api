@@ -1,4 +1,5 @@
 import { ISellerEventGateway } from "../../domain/entities/sellerEvent/ISellerEventGateway";
+import { ISocketServer } from "../../infra/socket/ISocketServer";
 import { SocketServer } from "../../infra/socket/SocketServer";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { ValidationError } from "../../shared/errors/ValidationError";
@@ -15,13 +16,13 @@ export class DeleteSellerEvent
 {
   private constructor(
     private readonly sellerEventGateway: ISellerEventGateway,
-    private readonly socketServer?: SocketServer,
+    private readonly socketServer?: ISocketServer,
     private readonly updateSellersGoalService?: UpdateSellersGoalService
   ) {}
 
   public static create(
     sellerEventGateway: ISellerEventGateway,
-    socketServer?: SocketServer,
+    socketServer?: ISocketServer,
     updateSellersGoalService?: UpdateSellersGoalService
   ) {
     return new DeleteSellerEvent(

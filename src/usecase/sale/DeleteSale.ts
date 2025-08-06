@@ -2,6 +2,7 @@ import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import { IProductGateway } from "../../domain/entities/product/IProductGateway";
 import { ISaleGateway } from "../../domain/entities/sale/ISaleGateway";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
+import { ISocketServer } from "../../infra/socket/ISocketServer";
 import { SocketServer } from "../../infra/socket/SocketServer";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
@@ -18,7 +19,7 @@ export class DeleteSale implements IUseCases<DeleteSaleInputDto, void> {
     private readonly eventGateway: IEventGateway,
     private readonly productGateway: IProductGateway,
     private readonly sellerGateway: ISellerGateway,
-    private readonly socketServer: SocketServer
+    private readonly socketServer: ISocketServer
   ) {}
 
   public static create(
@@ -26,7 +27,7 @@ export class DeleteSale implements IUseCases<DeleteSaleInputDto, void> {
     eventGateway: IEventGateway,
     productGateway: IProductGateway,
     sellerGateway: ISellerGateway,
-    socketServer: SocketServer
+    socketServer: ISocketServer
   ) {
     return new DeleteSale(
       saleGateway,

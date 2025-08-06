@@ -7,6 +7,7 @@ import { SocketServer } from "../../infra/socket/SocketServer";
 import { S3Client } from "@aws-sdk/client-s3";
 import { MinIoUploadService } from "../../infra/services/MinIoUploadService";
 import { WhatsAppService } from "../../infra/mail/WhatsAppService";
+import { ISocketServer } from "../../infra/socket/ISocketServer";
 
 export type UpdateSellerPhotoInputDto = {
   sellerId: string;
@@ -27,7 +28,7 @@ export class UpdateSellerPhoto {
     private readonly companyGateway: ICompanyGateway,
     private readonly uploadPhotoService: CloudinaryUploadService,
 
-    private readonly socketServer: SocketServer // private readonly minIoUploadService: S3Client,
+    private readonly socketServer: ISocketServer // private readonly minIoUploadService: S3Client,
   ) {}
 
   static create(
@@ -35,7 +36,7 @@ export class UpdateSellerPhoto {
     companyGateway: ICompanyGateway,
     uploadPhotoService: CloudinaryUploadService,
     // minIoUploadService: S3Client,
-    socketServer: SocketServer
+    socketServer: ISocketServer
   ) {
     return new UpdateSellerPhoto(
       sellerGateway,

@@ -6,6 +6,7 @@ import {
 } from "../../domain/entities/pendingAction/PendingAction";
 import { IPendingActionGateway } from "../../domain/entities/pendingAction/IPendingActionGateway";
 import { SocketServer } from "../../infra/socket/SocketServer";
+import { ISocketServer } from "../../infra/socket/ISocketServer";
 
 export type CreatePendingActionInputDto = {
   companyId: string;
@@ -26,12 +27,12 @@ export class CreatePendingAction
 {
   private constructor(
     private readonly pendingActionGateway: IPendingActionGateway,
-    private readonly socketServer?: SocketServer
+    private readonly socketServer?: ISocketServer
   ) {}
 
   public static create(
     pendingActionGateway: IPendingActionGateway,
-    socketServer?: SocketServer
+    socketServer?: ISocketServer
   ) {
     return new CreatePendingAction(pendingActionGateway, socketServer);
   }

@@ -10,6 +10,7 @@ import { CompanyRepositoryPrisma } from "../repositories/company/CompanyReposito
 import { SellerRepositoryPrisma } from "../repositories/seller/SellerRepositoryPrisma";
 import { CloudinaryUploadService } from "../services/CloudinaryUploadService";
 import { SocketServer } from "../socket/SocketServer";
+import { ISocketServer } from "../socket/ISocketServer";
 
 export function makeSellerUseCases(
   sellerRepository: SellerRepositoryPrisma,
@@ -17,7 +18,7 @@ export function makeSellerUseCases(
   uploadPhotoService: CloudinaryUploadService,
   // minIoUploadService: S3Client,
 
-  socketServer: SocketServer
+  socketServer: ISocketServer
 ) {
   return {
     create: CreateSeller.create(

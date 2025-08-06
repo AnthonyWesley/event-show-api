@@ -8,6 +8,7 @@ import { ProductRepositoryPrisma } from "../repositories/product/ProductReposito
 
 import { SaleRepositoryPrisma } from "../repositories/sale/SaleRepositoryPrisma";
 import { SellerRepositoryPrisma } from "../repositories/seller/SellerRepositoryPrisma";
+import { ISocketServer } from "../socket/ISocketServer";
 import { SocketServer } from "../socket/SocketServer";
 
 export function makeSaleUseCases(
@@ -15,7 +16,7 @@ export function makeSaleUseCases(
   eventRepository: EventRepositoryPrisma,
   productRepository: ProductRepositoryPrisma,
   sellerRepository: SellerRepositoryPrisma,
-  socketServer: SocketServer
+  socketServer: ISocketServer
 ) {
   return {
     create: CreateSale.create(

@@ -3,6 +3,7 @@ import { IProductGateway } from "../../domain/entities/product/IProductGateway";
 import { ISaleGateway } from "../../domain/entities/sale/ISaleGateway";
 import { Sale } from "../../domain/entities/sale/Sale";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
+import { ISocketServer } from "../../infra/socket/ISocketServer";
 import { SocketServer } from "../../infra/socket/SocketServer";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { ValidationError } from "../../shared/errors/ValidationError";
@@ -30,7 +31,7 @@ export class CreateSale
     private readonly eventGateway: IEventGateway,
     private readonly productGateway: IProductGateway,
     private readonly sellerGateway: ISellerGateway,
-    private readonly socketServer: SocketServer
+    private readonly socketServer: ISocketServer
   ) {}
 
   public static create(
@@ -38,7 +39,7 @@ export class CreateSale
     eventGateway: IEventGateway,
     productGateway: IProductGateway,
     sellerGateway: ISellerGateway,
-    socketServer: SocketServer
+    socketServer: ISocketServer
   ) {
     return new CreateSale(
       saleGateway,
