@@ -35,8 +35,15 @@ services:
       start_period: 40s
     networks:
       - coolify
+      - app_network
 
 networks:
   coolify:
     external: true
- 
+
+  app_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/24
+          gateway: 172.25.0.1
