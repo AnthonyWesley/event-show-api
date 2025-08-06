@@ -2,10 +2,7 @@ import multer from "multer";
 import fs from "fs";
 import path from "path";
 
-const uploadDir = path.resolve(
-  process.env.TMPDIR || "./tmp" // Usa ./tmp localmente
-);
-
+const uploadDir = path.resolve(process.env.TMPDIR ?? "/tmp");
 // Função para garantir que o diretório existe
 const ensureUploadDir = () => {
   if (!fs.existsSync(uploadDir)) {
