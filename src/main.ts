@@ -8,11 +8,9 @@ import { AuthTokenService } from "./service/AuthTokenService";
 import { NullSocketServer } from "./infra/socket/NullSocketServer";
 import { ISocketServer } from "./infra/socket/ISocketServer";
 
-// Carrega variáveis de ambiente apenas em desenvolvimento
 if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config();
+  import("dotenv").then((dotenv) => dotenv.config());
 }
-
 function main() {
   const api = ApiExpress.create();
   const socketServer: ISocketServer =

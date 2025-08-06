@@ -7,8 +7,8 @@ import { ServiceTokenService } from "../src/service/ServiceTokenService";
 import { AuthTokenService } from "../src/service/AuthTokenService";
 
 // Carrega variáveis de ambiente apenas em desenvolvimento
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
+if (process.env.NODE_ENV !== "production") {
+  import("dotenv").then((dotenv) => dotenv.config());
 }
 
 function main() {
@@ -27,7 +27,7 @@ function main() {
   const routes = makeRoutes(useCases, authorization);
 
   api.setRoutes(routes);
-  const port = parseInt(process.env.PORT || '3000', 10);
+  const port = parseInt(process.env.PORT || "3000", 10);
   api.start(port);
 }
 
