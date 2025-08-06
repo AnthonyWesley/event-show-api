@@ -73,7 +73,10 @@ export class UpdateEvent {
       throw new Error("Failed to update event.");
     }
 
-    if (existingEvent.goal !== updatedEvent.goal) {
+    if (
+      existingEvent.goal !== updatedEvent.goal ||
+      updatedEvent.goalMode === "auto"
+    ) {
       await this.updateSellersGoalService?.execute(updatedEvent);
     }
 
