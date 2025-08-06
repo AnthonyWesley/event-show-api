@@ -3,7 +3,6 @@ import { HttpMethod, IRoute } from "../IRoute";
 import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
 import { FindUser } from "../../../usecase/user/FindUser";
 import { PlanType } from "../../../domain/entities/admin/Admin";
-import { company } from "../../../infra/Container";
 
 export type FindUserResponseDto = {
   id: string;

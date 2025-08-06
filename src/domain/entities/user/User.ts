@@ -89,7 +89,6 @@ export class User {
         ? {
             id: this.company.id,
             name: this.company.name,
-            plan: this.company.plan,
             status: this.company.status,
             photo: this.company.photo,
             photoPublicId: this.company.photoPublicId,

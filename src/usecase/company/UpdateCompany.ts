@@ -13,6 +13,7 @@ export type UpdateCompanyInputDto = {
   ie?: string;
   responsibleName?: string;
   address?: string;
+  platformId?: string;
   city?: string;
   state?: string;
   zipCode?: string;
@@ -56,6 +57,7 @@ export class UpdateCompany
       ie: input.ie,
       responsibleName: input.responsibleName,
       address: input.address,
+      platformId: input.platformId ?? "",
       city: input.city,
       state: input.state,
       zipCode: input.zipCode,

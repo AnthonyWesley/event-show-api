@@ -21,7 +21,7 @@ export class SaleRepositoryPrisma implements ISaleGateway {
   async save(sale: Sale, lead?: Lead): Promise<void> {
     try {
       await this.prisma.$transaction(async (tx) => {
-        let aLead = null;
+        let aLead: any = null;
 
         // 1. Tenta buscar o lead por ID (caso já exista)
         if (sale.leadId) {

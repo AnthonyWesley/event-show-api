@@ -1,7 +1,9 @@
 import { Response, Request } from "express";
 import { IRoute, HttpMethod } from "../IRoute";
-import { RefreshInputDto } from "../../../usecase/company/RefreshCompany";
-import { RefreshAdmin } from "../../../usecase/admin/RefreshAdmin";
+import {
+  RefreshAdmin,
+  RefreshInputDto,
+} from "../../../usecase/admin/RefreshAdmin";
 
 export type RefreshAdminResponseDto = {
   accessToken: string;

@@ -5,7 +5,6 @@ import {
 } from "../../../usecase/event/CreateEvent";
 import { HttpMethod, IRoute } from "../IRoute";
 import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
-import { checkFeatures } from "../../../infra/http/middlewares/checkFeature";
 
 export type CreateEventResponseDto = {
   id: string;
@@ -35,7 +34,7 @@ export class CreateEventRoute implements IRoute {
     return async (request: Request, response: Response) => {
       const { user } = request as any;
 
-      const { name, goal, goalType, photo } = request.body;
+      const { name, goal, goalType, photo, goalMode } = request.body;
 
       const input: CreateEventInputDto = {
         name,
@@ -43,6 +42,7 @@ export class CreateEventRoute implements IRoute {
         goal,
         goalType,
         photo,
+        goalMode,
       };
 
       const output: CreateEventResponseDto =

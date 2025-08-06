@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
 import { IRoute, HttpMethod } from "../IRoute";
-import { LogoutInputDto } from "../../../usecase/company/LogoutCompany";
 import { LogoutAdmin } from "../../../usecase/admin/LogoutAdmin";
+import { LogoutInputDto } from "../../../usecase/user/LogoutUser";
 
 export type LogoutAdminResponseDto = {
   message: string;

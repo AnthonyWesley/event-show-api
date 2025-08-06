@@ -13,8 +13,6 @@ export class UpdateSellersGoalService {
     if (typeof event.goal !== "number")
       throw new Error("Event goal must be a number.");
 
-    // ✅ Só atualiza se for "auto"
-
     if (event.goalMode !== "auto") {
       console.warn(
         `Skipping seller goal update: Event ${event.id} has custom seller goals`

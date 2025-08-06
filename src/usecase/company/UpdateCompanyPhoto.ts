@@ -68,7 +68,7 @@ export class UpdateCompanyPhoto
       name: existingCompany.name,
       email: existingCompany.email,
       phone: existingCompany.phone,
-      plan: existingCompany.plan,
+      platformId: existingCompany.platformId,
       products: existingCompany.products,
       status: existingCompany.status,
       events: existingCompany.events,

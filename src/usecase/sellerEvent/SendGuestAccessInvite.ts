@@ -97,12 +97,12 @@ export class SendGuestAccessInvite
 
       newInvite = await Invite.create({
         sellerEventId: findSellerEvent?.id,
-        code: code(),
+        code,
         eventId: existEvent?.id,
         expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24h
       });
 
-      await this.inviteGateway.save(newInvite); // ← agora sim
+      await this.inviteGateway.save(newInvite);
     }
     const urlInvite = `event-flow-awl.netlify.app/guest/${newInvite?.code}`;
 
