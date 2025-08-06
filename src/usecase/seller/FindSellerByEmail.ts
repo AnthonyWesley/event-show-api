@@ -1,5 +1,6 @@
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
+import { ConflictError } from "../../shared/errors/ConflictError";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
 
@@ -46,7 +47,7 @@ export class FindSellerByEmail
     }
     const seller = await this.sellerGateway.findByEmail(input);
     if (!seller) {
-      throw new NotFoundError("Seller");
+      throw new ConflictError("Seller");
     }
 
     return {
