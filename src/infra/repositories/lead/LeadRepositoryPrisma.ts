@@ -55,16 +55,33 @@ export class LeadRepositoryPrisma implements ILeadGateway {
         leadId,
         products,
         leadSourceId,
+        sellerId,
         customValues,
         ...rest
       } = ObjectHelper.removeUndefinedFields(input);
 
+      // Função auxiliar para validar ID
+      const isValidId = (value: unknown): value is string =>
+        typeof value === "string" && value.trim().length > 0;
+
+      // Validação de obrigatoriedade mínima
+      // if (!isValidId(leadSourceId) && !isValidId(sellerId)) {
+      //   throw new Error("É necessário informar leadSourceId ou sellerId.");
+      // }
+
       const updateData: any = {
         ...rest,
-        leadSourceId,
       };
 
-      if (products) {
+      if (isValidId(leadSourceId)) {
+        updateData.leadSourceId = leadSourceId.trim();
+      }
+
+      if (isValidId(sellerId)) {
+        updateData.sellerId = sellerId.trim();
+      }
+
+      if (products && products.length > 0) {
         updateData.products = {
           set: [],
           connect: products.map((p) => ({ id: p.id })),
@@ -72,7 +89,10 @@ export class LeadRepositoryPrisma implements ILeadGateway {
       }
 
       const updated = await this.prisma.lead.update({
-        where: { id: leadId, companyId },
+        where: {
+          id: leadId,
+          companyId,
+        },
         data: updateData,
         include: {
           products: true,
@@ -80,7 +100,9 @@ export class LeadRepositoryPrisma implements ILeadGateway {
           seller: true,
           event: true,
           customValues: {
-            include: { field: true },
+            include: {
+              field: true,
+            },
           },
         },
       });

@@ -1,9 +1,6 @@
 import { PrismaClient, Event, GoalMode } from "@prisma/client";
 import { ISellerEventGateway } from "../../../domain/entities/sellerEvent/ISellerEventGateway";
 import { SellerEvent } from "../../../domain/entities/sellerEvent/SellerEvent";
-import { SellerProps } from "../../../domain/entities/seller/Seller";
-import { NotFound } from "@aws-sdk/client-s3";
-import { NotFoundError } from "../../../shared/errors/NotFoundError";
 
 export class SellerEventRepositoryPrisma implements ISellerEventGateway {
   private constructor(private readonly prisma: PrismaClient) {}
@@ -15,6 +12,7 @@ export class SellerEventRepositoryPrisma implements ISellerEventGateway {
   async save(sellerEvent: SellerEvent): Promise<void> {
     try {
       const data = {
+        id: sellerEvent.id,
         sellerId: sellerEvent.sellerId,
         eventId: sellerEvent.eventId,
         goal: sellerEvent.goal,
@@ -52,6 +50,7 @@ export class SellerEventRepositoryPrisma implements ISellerEventGateway {
               id: true,
               name: true,
               goal: true,
+              goalMode: true,
             },
           },
           seller: {
@@ -99,6 +98,7 @@ export class SellerEventRepositoryPrisma implements ISellerEventGateway {
         where: { sellerId_eventId: { sellerId, eventId } },
         data: { goal },
       });
+
       return this.toEntity(updated);
     } catch (error: any) {
       throw new Error("Error updating sellerEvent: " + error.message);
@@ -169,7 +169,7 @@ export class SellerEventRepositoryPrisma implements ISellerEventGateway {
       event: raw.event,
       goal: raw.goal,
       eventId: raw.eventId,
-      seller: raw.seller as SellerProps,
+      seller: raw.seller,
     });
   }
 }

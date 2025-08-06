@@ -80,7 +80,7 @@ export class SendGuestAccessInvite
       throw new NotFoundError("Seller");
     }
 
-    const findSellerEvent = existEvent?.sellerEvents.find(
+    const findSellerEvent = existEvent?.sellerEvents?.find(
       (se) => se.sellerId === existSeller?.id
     );
     if (!findSellerEvent) {

@@ -65,6 +65,7 @@ export class EventRepositoryPrisma implements IEventGateway {
         isActive: input.isActive,
         goal: input.goal,
         goalType: input.goalType,
+        goalMode: input.goalMode,
       });
 
       const updated = await this.prismaClient.event.update({
@@ -139,7 +140,14 @@ export class EventRepositoryPrisma implements IEventGateway {
           sellerEvents: {
             include: {
               seller: {
-                select: { name: true, phone: true, photo: true, id: true },
+                select: {
+                  name: true,
+                  phone: true,
+                  photo: true,
+                  id: true,
+                  email: true,
+                  leads: true,
+                },
               },
             },
           },
@@ -203,6 +211,7 @@ export class EventRepositoryPrisma implements IEventGateway {
       endDate: raw.endDate ?? undefined,
       companyId: raw.companyId,
       goal: raw.goal,
+      goalMode: raw.goalMode,
       leads: raw.leads,
       isActive: raw.isActive,
       goalType: raw.goalType,

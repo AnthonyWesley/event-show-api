@@ -16,7 +16,15 @@ export class SellerRepositoryPrisma implements ISellerGateway {
 
   async save(seller: Seller): Promise<void> {
     try {
-      await this.prisma.seller.create({ data: this.toRaw(seller) });
+      const data = {
+        id: seller.id,
+        name: seller.name,
+        email: seller.email,
+        companyId: seller.companyId,
+        phone: seller.phone,
+        photo: seller.photo,
+      };
+      await this.prisma.seller.create({ data });
     } catch (error: any) {
       throw new Error("Error saving seller: " + error.message);
     }
@@ -51,7 +59,10 @@ export class SellerRepositoryPrisma implements ISellerGateway {
 
       const sellers = await this.prisma.seller.findMany({
         where: filters,
-        include: { sales: { orderBy: { createdAt: "desc" } } },
+        include: {
+          sales: { orderBy: { createdAt: "desc" } },
+          leads: true,
+        },
       });
 
       return sellers.map(this.toEntity);
@@ -119,7 +130,8 @@ export class SellerRepositoryPrisma implements ISellerGateway {
     try {
       const seller = await this.prisma.seller.findUnique({
         where: { id: input.sellerId, companyId: input.companyId },
-        include: { sales: { orderBy: { createdAt: "desc" } } },
+
+        include: { sales: { orderBy: { createdAt: "desc" } }, leads: true },
       });
 
       if (!seller) return null;
@@ -158,21 +170,9 @@ export class SellerRepositoryPrisma implements ISellerGateway {
       photo: raw.photo ?? "",
       photoPublicId: raw.photoPublicId ?? "",
       sales: raw.sales,
+      leads: raw.leads,
       companyId: raw.companyId,
       createdAt: raw.createdAt,
     });
-  }
-
-  private toRaw(seller: Seller) {
-    return {
-      id: seller.id,
-      name: seller.name,
-      email: seller.email,
-      phone: seller.phone,
-      photo: seller.photo,
-      photoPublicId: seller.photoPublicId,
-      companyId: seller.companyId,
-      createdAt: seller.createdAt,
-    };
   }
 }

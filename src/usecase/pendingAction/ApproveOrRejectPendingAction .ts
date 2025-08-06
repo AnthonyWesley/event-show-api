@@ -62,7 +62,7 @@ export class ApproveOrRejectPendingAction
           productId: payload.productId,
           sellerId: payload.sellerId,
           quantity: payload.quantity,
-          leadId: payload.lead?.id,
+          leadId: payload.leadId,
         });
 
         await this.saleGateway.save(sale, leadWithCompanyId);

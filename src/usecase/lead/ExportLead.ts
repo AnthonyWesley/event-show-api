@@ -58,12 +58,13 @@ export class ExportLead implements IUseCases<ExportLeadInputDto, any> {
 
       return {
         Nome: lead.name,
-        Email: lead.email || "Não informado",
+        // Email: lead.email || "Não informado",
         Telefone: lead.phone || "Não informado",
         ...productInterests,
-        Origem: lead.leadSource?.name ?? lead.seller?.name,
+        Origem: `${lead.leadSource?.name} - ${lead.seller?.name}`,
         Observações: lead.notes || "",
         Evento: lead.event?.name,
+        Present: lead.wasPresent ? "Sim" : "não",
         CriadoEm: lead.createdAt.toLocaleString("pt-BR"),
         ConvertidoEm: (lead.convertedAt || "Não convertido").toLocaleString(
           "pt-BR"

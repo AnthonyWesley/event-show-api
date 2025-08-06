@@ -30,7 +30,7 @@ export class UpdateEventRoute implements IRoute {
     return async (request: Request, response: Response) => {
       const { eventId } = request.params;
       const { user } = request as any;
-      const { name, startDate, endDate, goal, goalType, isActive } =
+      const { name, startDate, endDate, goal, goalType, isActive, goalMode } =
         request.body;
 
       const input: UpdateEventInputDto = {
@@ -42,6 +42,7 @@ export class UpdateEventRoute implements IRoute {
         startDate,
         endDate,
         isActive,
+        goalMode,
       };
 
       const result = await this.updateEventService.execute(input);

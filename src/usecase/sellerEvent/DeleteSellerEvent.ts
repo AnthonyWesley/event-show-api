@@ -52,6 +52,7 @@ export class DeleteSellerEvent
       input.eventId
     );
 
-    await this.updateSellersGoalService?.execute(allSellersByEvent[0].event);
+    if (allSellersByEvent.length > 0)
+      await this.updateSellersGoalService?.execute(allSellersByEvent[0].event);
   }
 }

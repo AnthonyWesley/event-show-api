@@ -22,7 +22,7 @@ export class WhatsAppService implements IWhatsAppService {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        number: `55${to}`, // apenas números
+        number: `${to}`, // apenas números
         options: {
           delay: 0,
           presence: "composing",

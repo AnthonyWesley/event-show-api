@@ -28,6 +28,7 @@ export class CreateSellerEventRoute implements IRoute {
     return async (request: Request, response: Response) => {
       const { eventId, sellerId } = request.params;
       const { user } = request as any;
+      console.log("ID do SELLER", sellerId);
 
       const output = await this.createSellerEventService.execute({
         eventId,

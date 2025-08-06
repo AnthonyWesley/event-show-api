@@ -27,6 +27,6 @@ export class GoalUtils {
     totalGoal: number
   ): number {
     if (!allSellers.length) return 0;
-    return totalGoal / allSellers.length;
+    return Math.ceil(totalGoal / allSellers.length);
   }
 }

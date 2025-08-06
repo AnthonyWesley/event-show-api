@@ -8,7 +8,7 @@ export type SellerWithStats = SellerProps & {
   sales: SaleProps[];
   totalSalesCount: number;
   totalSalesValue: number;
-  goal: number;
+  goal?: number;
   wasPresentCount: number;
 };
 
@@ -39,16 +39,16 @@ export class SellerStatsHelper {
   static applyStatsToSellers(
     sellers: SellerProps[],
     stats: Record<string, { count: number; total: number }>,
-    goalEvent: number,
+    // goalEvent: number,
     wasPresentMap: Record<string, number>
   ): SellerWithStats[] {
     return sellers
       .filter((s): s is SellerProps => !!s)
       .map((seller) => {
-        const goal = GoalUtils.calculateIndividualSellerGoal(
-          sellers,
-          goalEvent
-        );
+        // const goal = GoalUtils.calculateIndividualSellerGoal(
+        //   sellers,
+        //   goalEvent
+        // );
         const { count, total } = stats[seller.id] ?? { count: 0, total: 0 };
         const wasPresentCount = wasPresentMap[seller.id] ?? 0;
 
@@ -57,7 +57,7 @@ export class SellerStatsHelper {
           sales: [],
           totalSalesCount: count,
           totalSalesValue: total,
-          goal,
+          // goal,
           wasPresentCount,
         };
       });

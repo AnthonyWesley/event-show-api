@@ -41,8 +41,10 @@ export class UpdateLeadRoute implements IRoute {
         leadSourceId,
         customInterest,
         products,
+        sellerId,
         customValues,
       } = request.body;
+      console.log(request.body);
 
       const input: UpdateLeadInputDto = {
         companyId: user.companyId,
@@ -52,6 +54,7 @@ export class UpdateLeadRoute implements IRoute {
         phone,
         notes,
         leadSourceId,
+        sellerId,
         wasPresent,
         customInterest,
         products,

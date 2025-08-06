@@ -23,25 +23,31 @@ export class SaleRepositoryPrisma implements ISaleGateway {
       await this.prisma.$transaction(async (tx) => {
         let aLead = null;
 
-        // 1. Se a venda tem leadId, busca pelo ID
+        // 1. Tenta buscar o lead por ID (caso já exista)
         if (sale.leadId) {
           aLead = await tx.lead.findFirst({ where: { id: sale.leadId } });
 
-          if (aLead) {
+          // Se encontrou o lead e ainda não foi convertido, marca como convertido
+          if (aLead && !aLead.convertedAt) {
             await tx.lead.update({
               where: { id: aLead.id },
-              data: { convertedAt: new Date() },
+              data: {
+                convertedAt: new Date(),
+                sellerId: sale.sellerId,
+                status: "CONVERTED",
+              },
             });
           }
         }
 
-        // 2. Se ainda não encontrou o lead e recebeu um objeto lead
+        // 2. Se não encontrou o lead ainda, tenta buscar ou criar a partir dos dados do `lead`
         if (!aLead && lead) {
+          // Protege contra tentativas de criação com dados incompletos
           if (!lead.name || !lead.eventId || !lead.companyId) {
             throw new Error("Dados obrigatórios do lead ausentes.");
           }
 
-          // 2.1. Tenta encontrar o lead por outros critérios (ex: phone + eventId + companyId)
+          // Busca lead existente por phone + eventId + companyId
           aLead = await tx.lead.findFirst({
             where: {
               phone: lead.phone,
@@ -50,7 +56,7 @@ export class SaleRepositoryPrisma implements ISaleGateway {
             },
           });
 
-          // 2.2. Se ainda não existir, cria
+          // Se não existir ainda, cria
           if (!aLead) {
             aLead = await tx.lead.create({
               data: {
@@ -72,33 +78,34 @@ export class SaleRepositoryPrisma implements ISaleGateway {
               },
             });
           }
+
+          // Marca como convertido após criar/buscar
+          if (aLead && !aLead.convertedAt) {
+            await tx.lead.update({
+              where: { id: aLead.id },
+              data: {
+                convertedAt: new Date(),
+                sellerId: sale.sellerId,
+                status: "CONVERTED",
+              },
+            });
+          }
         }
 
         // 3. Cria a venda
-        const data = {
-          id: sale.id,
-          productId: sale.productId,
-          eventId: sale.eventId,
-          sellerId: sale.sellerId,
-          quantity: sale.quantity,
-          leadId: aLead?.id ?? sale.leadId,
-          createdAt: sale.createdAt,
-        };
+        await tx.sale.create({
+          data: {
+            id: sale.id,
+            productId: sale.productId,
+            eventId: sale.eventId,
+            sellerId: sale.sellerId,
+            quantity: sale.quantity,
+            leadId: aLead?.id ?? sale.leadId,
+            createdAt: sale.createdAt,
+          },
+        });
 
-        await tx.sale.create({ data });
-
-        // 4. Marca como convertido, se ainda não tiver sido
-        if (aLead && !aLead.convertedAt) {
-          await tx.lead.update({
-            where: { id: aLead.id },
-            data: {
-              convertedAt: new Date(),
-              sellerId: sale.sellerId,
-              status: "CONVERTED",
-            },
-          });
-        }
-
+        // 4. Atualiza produtos do lead se necessário
         if (
           aLead &&
           lead?.products?.length &&
@@ -107,7 +114,6 @@ export class SaleRepositoryPrisma implements ISaleGateway {
           await tx.lead.update({
             where: { id: aLead.id },
             data: {
-              status: "CONVERTED",
               products: {
                 connect: lead.products.map((p) => ({ id: p.id })),
               },

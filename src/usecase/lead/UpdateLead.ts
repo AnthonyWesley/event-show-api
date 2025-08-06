@@ -15,6 +15,7 @@ export type UpdateLeadInputDto = {
   customInterest?: string;
   notes?: string;
   leadSourceId?: string;
+  sellerId?: string;
 
   leadId: string;
   companyId: string;
@@ -32,6 +33,7 @@ export type UpdateLeadOutputDto = {
   customInterest?: string;
   notes?: string;
   leadSourceId?: string;
+  sellerId?: string;
 
   companyId: string;
   createdAt: Date;

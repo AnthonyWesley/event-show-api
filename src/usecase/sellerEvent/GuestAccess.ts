@@ -17,6 +17,8 @@ import { AuthTokenService } from "../../service/AuthTokenService";
 import { Invite } from "../../domain/entities/invite/Invite";
 import { IInviteGateway } from "../../domain/entities/invite/IInviteGateway";
 import { ForbiddenError } from "../../shared/errors/ForbiddenError";
+import { SellerEventProps } from "../../domain/entities/sellerEvent/SellerEvent";
+import { LeadProps } from "../../domain/entities/lead/Lead";
 
 export type GuestAccessOutputDto = {
   token: TokenType;
@@ -36,6 +38,7 @@ export type SellerDto = {
   photo: string;
   phone: string;
   sales: SaleProps[];
+  leads: LeadProps[];
 
   event: {
     id: string;
@@ -83,87 +86,78 @@ export class GuestAccess
 
   async execute(input: GuestAccessInputDto): Promise<GuestAccessOutputDto> {
     const invite = await this.inviteGateway.findByCode(input.invite);
-    if (!invite) {
-      throw new NotFoundError("Invite");
-    }
+    if (!invite) throw new NotFoundError("Invite");
 
     if (invite.expiresAt < new Date()) {
       throw new ForbiddenError("Expired invitation");
     }
 
-    const company = await this.companyGateway.findById(
-      invite.event?.companyId ?? ""
-    );
-    if (!company) {
-      throw new UnauthorizedError("Invalid email.");
-    }
+    const companyId = invite.event?.companyId ?? "";
+    const eventId = invite.eventId;
 
-    const event = await this.eventGateway.findById({
-      companyId: invite.event?.companyId ?? "",
-      eventId: invite.eventId,
-    });
-    if (!event) {
-      throw new NotFoundError("Seller");
-    }
+    const company = await this.companyGateway.findById(companyId);
+    if (!company) throw new UnauthorizedError("Invalid email.");
 
-    const sellerIds = event.sellerEvents.map((se: any) => se.sellerId);
-    const eventSellers = (company.sellers ?? []).filter((s) =>
-      sellerIds.includes(s.id)
-    );
+    const event = await this.eventGateway.findById({ companyId, eventId });
+    if (!event) throw new NotFoundError("Event");
 
-    const sellerEventId = await invite.sellerEvent?.sellerId;
-    if (!sellerEventId) {
-      throw new NotFoundError("SellerEventId");
-    }
-
-    const seller = await this.sellerGateway.findById({
-      sellerId: sellerEventId,
-      companyId: invite.event?.companyId ?? "",
-    });
-    if (!seller) {
-      throw new NotFoundError("Seller");
-    }
-
-    const filteredSales = (seller?.sales ?? []).filter(
-      (sale) => sale.eventId === event.id
-    );
+    const sellerEventsFormatted =
+      event.sellerEvents?.map((sellerEvent): any => ({
+        id: sellerEvent.sellerId,
+        sellerEventId: sellerEvent.id,
+        name: sellerEvent.seller?.name ?? "",
+        photo: sellerEvent.seller?.photo ?? "",
+        phone: sellerEvent.seller?.phone ?? "",
+        goal: sellerEvent.goal,
+      })) ?? [];
 
     const stats = SellerStatsHelper.computeStats(
-      event.sales,
+      event.sales ?? [],
       company.products ?? []
     );
+
     const wasPresentMap = SellerStatsHelper.computeWasPresentPerSeller(
-      event?.leads ?? []
+      event.leads ?? []
     );
+
     const sellersWithStats = SellerStatsHelper.applyStatsToSellers(
-      eventSellers,
+      sellerEventsFormatted,
       stats,
-      event.goal,
       wasPresentMap
     );
+
+    const allSellers = SellerStatsHelper.sortByGoalType(
+      sellersWithStats,
+      event.goalType
+    );
+
+    const sellerId = invite.sellerEvent?.sellerId;
+    if (!sellerId) throw new NotFoundError("SellerEventId");
+
+    const seller = await this.sellerGateway.findById({ sellerId, companyId });
+    if (!seller) throw new NotFoundError("Seller");
+
+    const filteredSales = (seller.sales ?? []).filter(
+      (sale) => sale.eventId === event.id
+    );
+    console.log(seller.leads);
 
     const totalProgress = GoalUtils.sumSellerProgressForGoal(
       sellersWithStats,
       event.goalType
     );
 
-    const allSellers = SellerStatsHelper.sortByGoalType(
-      sellersWithStats,
-      event.goalType as GoalType
-    );
-
     const { count: totalSalesCount, total: totalSalesValue } = stats[
       seller.id
     ] ?? { count: 0, total: 0 };
 
-    const currentIndex = Array.isArray(allSellers)
-      ? allSellers.findIndex((s: any) => s.name === seller?.name) + 1
-      : 0;
+    const rank = allSellers.findIndex((s) => s.id === seller.id) + 1;
 
+    const user = company.users?.[0];
     const accessToken = this.authorization.generateToken(
       {
-        id: company.users && company?.users[0].id,
-        email: company.users && company?.users[0].email,
+        id: user?.id ?? "",
+        email: user?.email ?? "",
         companyId: company.id,
       },
       "1d"
@@ -171,25 +165,25 @@ export class GuestAccess
 
     return {
       token: { accessToken },
-
       guest: {
         id: seller.id,
-        rank: currentIndex,
+        rank,
         name: seller.name,
         email: seller.email,
         phone: seller.phone ?? "",
         photo: seller.photo ?? "",
-        sales: filteredSales ?? [],
+        sales: filteredSales,
         goal: allSellers.find((sl) => sl.id === seller.id)?.goal ?? 0,
+        leads: seller.leads ?? [],
         totalProgress,
         totalSalesCount,
         totalSalesValue,
         event: {
-          id: event?.id,
-          name: event?.name,
-          isActive: event?.isActive,
-          goal: event?.goal,
-          goalType: event?.goalType,
+          id: event.id,
+          name: event.name,
+          isActive: event.isActive,
+          goal: event.goal,
+          goalType: event.goalType,
           allSellers,
         },
       },

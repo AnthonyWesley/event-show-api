@@ -1,4 +1,5 @@
 import { generateId } from "../../../shared/utils/IdGenerator";
+import { LeadProps } from "../lead/Lead";
 import { SaleProps } from "../sale/Sale";
 
 export type SellerProps = {
@@ -10,6 +11,7 @@ export type SellerProps = {
   photoPublicId?: string;
   companyId: string;
   sales?: SaleProps[];
+  leads?: LeadProps[];
   createdAt: Date;
 };
 
@@ -45,6 +47,7 @@ export class Seller {
       phone: normalizedPhone,
       photo,
       sales: [],
+      leads: [],
       createdAt: new Date(),
     });
   }
@@ -100,6 +103,9 @@ export class Seller {
   }
   public get sales() {
     return this.props.sales;
+  }
+  public get leads() {
+    return this.props.leads;
   }
 
   public get createdAt() {

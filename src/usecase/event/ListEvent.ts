@@ -60,14 +60,21 @@ export class ListEvent
     if (!events || events.length === 0) return { events: [] };
 
     return {
-      events: events.map((event) => {
-        const sellerIds = event.sellerEvents.map((se) => se.sellerId);
-        const eventSellers = (company.sellers ?? []).filter((s: any) =>
-          sellerIds.includes(s.id)
+      events: events.map((event: any) => {
+        const formattedSellerEvent: any = event.sellerEvents?.map(
+          (sellerEvent: SellerEventProps) => ({
+            id: sellerEvent.sellerId,
+            sellerEventId: sellerEvent.id,
+            name: sellerEvent.seller?.name,
+            photo: sellerEvent.seller?.photo,
+            email: sellerEvent.seller?.email,
+            phone: sellerEvent.seller?.phone,
+            goal: sellerEvent.goal,
+          })
         );
 
         const stats = SellerStatsHelper.computeStats(
-          event.sales,
+          event.sales ?? [],
           company.products ?? []
         );
 
@@ -76,9 +83,9 @@ export class ListEvent
         );
 
         const sellersWithStats = SellerStatsHelper.applyStatsToSellers(
-          eventSellers,
+          formattedSellerEvent,
           stats,
-          event.goal,
+          // event.goal,
           wasPresentMap
         );
 

@@ -8,16 +8,14 @@ export class UpdateSellersGoalService {
   async execute(
     event: Partial<Pick<EventProps, "id" | "goal" | "goalMode">>
   ): Promise<void> {
-    if (!event.id) {
+    if (!event.id)
       throw new Error("Event ID is required to update seller goals.");
-    }
+    if (typeof event.goal !== "number")
+      throw new Error("Event goal must be a number.");
 
-    if (typeof event.goal !== "number") {
-      throw new Error("Event goal must be a number to update seller goals.");
-    }
+    // ✅ Só atualiza se for "auto"
 
-    // ⛔️ Pula atualização se as metas forem manuais
-    if (event.goalMode === "manual") {
+    if (event.goalMode !== "auto") {
       console.warn(
         `Skipping seller goal update: Event ${event.id} has custom seller goals`
       );
@@ -37,7 +35,7 @@ export class UpdateSellersGoalService {
     await Promise.all(
       allSellers.map((sellerEvent) =>
         this.sellerEventGateway.updateById(
-          sellerEvent.sellerId, // correto: usar ID do SellerEvent
+          sellerEvent.sellerId,
           sellerEvent.eventId,
           individualGoal
         )

@@ -11,6 +11,8 @@ import {
   SellerStatsHelper,
   SellerWithStats,
 } from "../../shared/utils/SellerStatsHelper";
+import { SellerProps } from "../../domain/entities/seller/Seller";
+import { LeadProps } from "../../domain/entities/lead/Lead";
 
 export type FindEventInputDto = {
   companyId: string;
@@ -36,6 +38,7 @@ export type FindEventOutputDto = {
   companyId: string;
   createdAt: Date;
   allSellers: SellerWithStats[];
+  leads: LeadProps[];
 };
 
 export class FindEvent
@@ -60,11 +63,6 @@ export class FindEvent
     const company = await this.companyGateway.findById(event.companyId);
     if (!company) throw new NotFoundError("Company");
 
-    const sellerIds = event?.sellerEvents?.map((se: any) => se.sellerId);
-    const sellers = (company.sellers ?? []).filter((s) =>
-      sellerIds?.includes(s.id)
-    );
-
     const stats = SellerStatsHelper.computeStats(
       event.sales ?? [],
       company.products ?? []
@@ -74,10 +72,22 @@ export class FindEvent
       event?.leads ?? []
     );
 
+    const formattedSellerEvent: any = event.sellerEvents?.map(
+      (sellerEvent: SellerEventProps) => ({
+        id: sellerEvent.sellerId,
+        sellerEventId: sellerEvent.id,
+        name: sellerEvent.seller?.name,
+        photo: sellerEvent.seller?.photo,
+        email: sellerEvent.seller?.email,
+        phone: sellerEvent.seller?.phone,
+        goal: sellerEvent.goal,
+      })
+    );
+
     const sellersWithStats = SellerStatsHelper.applyStatsToSellers(
-      sellers,
+      formattedSellerEvent,
       stats,
-      event.goal,
+      // event.goal,
       wasPresentMap
     );
 
@@ -104,7 +114,6 @@ export class FindEvent
       photoPublicId: event.photoPublicId,
       startDate: event.startDate,
       endDate: event.endDate ?? undefined,
-      // sellerEvents: event.sellerEvents,
       sales: event.sales ?? [],
       isActive: event.isActive,
       goal: event.goal,
@@ -113,6 +122,7 @@ export class FindEvent
       goalType: event.goalType as GoalType,
       companyId: event.companyId,
       createdAt: event.createdAt,
+      leads: event.leads ?? [],
       totalSalesValue,
       totalUnitsSold,
       allSellers,

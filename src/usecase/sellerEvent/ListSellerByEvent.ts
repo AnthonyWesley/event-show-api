@@ -10,6 +10,7 @@ import {
   SellerWithStats,
 } from "../../shared/utils/SellerStatsHelper";
 import { GoalType } from "@prisma/client";
+import { SellerEventProps } from "../../domain/entities/sellerEvent/SellerEvent";
 
 export type ListSellerByEventInputDto = {
   // sellerId: string;
@@ -31,7 +32,7 @@ export type ListSellerByEventOutputDto = {
     sales: SaleProps[];
     createdAt: Date;
     wasPresentCount: number;
-    goal: number;
+    goal?: number;
     totalValue: number;
     totalQuantity: number;
   }[];
@@ -70,24 +71,33 @@ export class ListSellerByEvent
       }),
     ]);
 
-    if (!sellerEvents || sellerEvents.length === 0)
-      throw new NotFoundError("SellerEvent");
+    if (!sellerEvents) throw new NotFoundError("SellerEvent");
     if (!company) throw new NotFoundError("Company");
     if (!event) throw new NotFoundError("Event");
 
+    const formattedSellerEvent: any = sellerEvents?.map(
+      (sellerEvent: SellerEventProps) => ({
+        id: sellerEvent.sellerId,
+        sellerEventId: sellerEvent.id,
+        name: sellerEvent.seller?.name,
+        photo: sellerEvent.seller?.photo,
+        email: sellerEvent.seller?.email,
+        phone: sellerEvent.seller?.phone,
+        goal: sellerEvent.goal,
+      })
+    );
+
     const sales = event.sales ?? [];
     const products = company.products ?? [];
-
-    const sellers = sellerEvents.map((se) => se.seller); // já populado
 
     const stats = SellerStatsHelper.computeStats(sales, products);
     const wasPresentMap = SellerStatsHelper.computeWasPresentPerSeller(
       event?.leads ?? []
     );
     const sellersWithStats = SellerStatsHelper.applyStatsToSellers(
-      sellers,
+      formattedSellerEvent,
       stats,
-      event.goal,
+      // event.goal,
       wasPresentMap
     );
 

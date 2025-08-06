@@ -1,4 +1,4 @@
-import { GoalType } from "@prisma/client";
+import { GoalMode, GoalType } from "@prisma/client";
 import { Goal } from "../../domain/entities/event/Event";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
@@ -15,6 +15,7 @@ export type UpdateEventInputDto = {
   endDate?: Date | null;
   goal?: number;
   goalType?: Goal;
+  goalMode?: GoalMode;
   photo?: string;
   photoPublicId?: string;
   file?: any;
@@ -27,6 +28,8 @@ export type UpdateEventResponseDto = {
   isActive?: boolean;
   endDate: Date | null;
   goal: number;
+  goalMode?: GoalMode;
+
   goalType: Goal;
   companyId: string;
 };
@@ -79,6 +82,7 @@ export class UpdateEvent {
       startDate: updatedEvent.startDate,
       endDate: updatedEvent.endDate ?? null,
       isActive: updatedEvent.isActive,
+      goalMode: updatedEvent.goalMode,
       goal: updatedEvent.goal,
       goalType: updatedEvent.goalType as GoalType,
       companyId: updatedEvent.companyId,
@@ -90,6 +94,7 @@ export class UpdateEvent {
       startDate: updatedEvent.startDate,
       endDate: updatedEvent.endDate ?? null,
       isActive: updatedEvent.isActive,
+      goalMode: updatedEvent.goalMode,
       goal: updatedEvent.goal,
       goalType: updatedEvent.goalType as GoalType,
       companyId: updatedEvent.companyId,

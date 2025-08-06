@@ -66,6 +66,7 @@ export class FindEventRoute implements IRoute {
         totalSalesValue: output.totalSalesValue,
         totalUnitsSold: output.totalUnitsSold,
         allSellers: output.allSellers,
+        leads: output.leads,
 
         createdAt: output.createdAt,
       };

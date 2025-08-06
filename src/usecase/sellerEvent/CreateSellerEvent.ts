@@ -53,8 +53,10 @@ export class CreateSellerEvent
       return { id: exists.id };
     }
 
-    const sellerEvent = SellerEvent.create(input.sellerId, input.eventId, 0);
-
+    const sellerEvent = SellerEvent.create({
+      sellerId: input.sellerId,
+      eventId: input.eventId,
+    });
     await this.sellerEventGateway.save(sellerEvent);
     this.socketServer?.emit("sellerEvent:created", { id: sellerEvent.id });
 
