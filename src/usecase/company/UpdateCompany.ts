@@ -12,6 +12,7 @@ export type UpdateCompanyInputDto = {
   cnpj?: string;
   ie?: string;
   responsibleName?: string;
+  isValueVisible?: boolean;
   address?: string;
   platformId?: string;
   city?: string;
@@ -49,6 +50,7 @@ export class UpdateCompany
       email: input.email,
       phone: input.phone,
       products: existingCompany.products,
+      isValueVisible: existingCompany.isValueVisible,
       status: existingCompany.status,
       events: existingCompany.events,
       accessExpiresAt: existingCompany.accessExpiresAt,
@@ -73,6 +75,7 @@ export class UpdateCompany
       email: input.email,
       phone: input.phone,
       cnpj: input.cnpj,
+      isValueVisible: input.isValueVisible,
       ie: input.ie,
       responsibleName: input.responsibleName,
       address: input.address,

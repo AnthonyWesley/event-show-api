@@ -26,6 +26,7 @@ export type EventProps = {
   endDate?: Date;
   isActive: boolean;
   goalMode?: GoalMode;
+  inviteValidityDays?: number;
   companyId: string;
   goal: number;
   goalType: GoalType;
@@ -39,7 +40,10 @@ export class Event {
   private constructor(private readonly props: EventProps) {}
 
   public static create(
-    props: Omit<EventProps, "id" | "createdAt" | "startDate" | "isActive">
+    props: Omit<
+      EventProps,
+      "id" | "createdAt" | "startDate" | "isActive" | "inviteValidityDays"
+    >
   ): Event {
     if (!props.name.trim()) {
       throw new Error("Event name is required.");
@@ -54,6 +58,7 @@ export class Event {
       startDate: new Date(),
       isActive: false,
       createdAt: new Date(),
+      inviteValidityDays: 1,
     });
   }
 
@@ -85,6 +90,9 @@ export class Event {
     return this.props.endDate;
   }
 
+  public get inviteValidityDays() {
+    return this.props.inviteValidityDays;
+  }
   public get goal() {
     return this.props.goal;
   }

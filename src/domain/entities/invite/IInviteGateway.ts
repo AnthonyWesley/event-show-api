@@ -5,6 +5,7 @@ export interface IInviteGateway {
   listByEvent(eventId: string): Promise<Invite[]>;
   listBySeller(saleId: string): Promise<Invite[]>;
   findByCode(code: string): Promise<Invite | null>;
+  findByPhone(eventId: string, phone: string): Promise<Invite | null>;
   findBySellerEventId(sellerEventId: string): Promise<Invite | null>;
   // update(input: UpdateSaleInputDto): Promise<Invite>;
   delete(code: string): Promise<void>;

@@ -11,6 +11,13 @@ import { LeadRepositoryPrisma } from "../repositories/lead/LeadRepositoryPrisma"
 import { CompanyRepositoryPrisma } from "../repositories/company/CompanyRepositoryPrisma";
 import { LeadSourceRepositoryPrisma } from "../repositories/leadSource/LeadSourceRepositoryPrisma";
 import { UpsertLeadCustomValues } from "../../usecase/LeadCustomValues/UpsertLeadCustomValues";
+import { InviteRepositoryPrisma } from "../repositories/invite/InviteRepositoryPrisma";
+import { AuthTokenService } from "../../service/AuthTokenService";
+import { IWhatsAppService } from "../mail/IWhatsAppService";
+import { SendScreenAccessInvite } from "../../usecase/company/SendScreenAccessInvite";
+import { ScreenAccessService } from "../../usecase/company/ScreenAccessService";
+
+import { ISocketServer } from "../socket/ISocketServer";
 
 export function makeLeadUseCases(
   leadRepository: LeadRepositoryPrisma,
@@ -18,7 +25,11 @@ export function makeLeadUseCases(
   companyRepository: CompanyRepositoryPrisma,
   leadSourceRepository: LeadSourceRepositoryPrisma,
   exporter: ILeadExporter,
-  upsertLeadCustomValues: UpsertLeadCustomValues
+  upsertLeadCustomValues: UpsertLeadCustomValues,
+  inviteGateway: InviteRepositoryPrisma,
+  sendMessageService: IWhatsAppService,
+  socketServer: ISocketServer,
+  tokenService: AuthTokenService
 ) {
   return {
     create: CreateLead.create(
@@ -35,7 +46,23 @@ export function makeLeadUseCases(
     update: UpdateLead.create(
       leadRepository,
       companyRepository,
-      upsertLeadCustomValues
+      upsertLeadCustomValues,
+      socketServer
+    ),
+    sendMessage: SendScreenAccessInvite.create(
+      companyRepository,
+      eventRepository,
+      inviteGateway,
+      sendMessageService,
+      tokenService
+    ),
+
+    collectorAccess: ScreenAccessService.create(
+      leadRepository,
+      companyRepository,
+      eventRepository,
+      inviteGateway,
+      tokenService
     ),
   };
 }

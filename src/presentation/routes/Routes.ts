@@ -1,60 +1,75 @@
+import { AuthorizationRoute } from "../../infra/http/middlewares/AuthorizationRoute";
 import { upload } from "../../infra/http/middlewares/multer";
-
 import { CreateAdminRoute } from "./admin/CreateAdminRoute";
+import { ImpersonateCompanyRoute } from "./admin/ImpersonateCompanyRoute";
 import { LoginAdminRoute } from "./admin/LoginAdminRoute";
 import { LogoutAdminRoute } from "./admin/LogoutAdminRoute";
 import { RefreshAdminRoute } from "./admin/RefreshAdminRoute";
-import { UpdateEventPhotoRoute } from "./event/UpdateEventPhotoRoute";
-import { CreateLeadRoute } from "./lead/CreateLeadRoute";
-import { DeleteLeadRoute } from "./lead/DeleteLeadRoute";
-import { ExportLeadRoute } from "./lead/ExportLeadRoute";
-import { FindLeadRoute } from "./lead/FindLeadRoute";
-import { ListLeadByEventRoute } from "./lead/ListLeadByEventRoute";
-import { UpdateLeadRoute } from "./lead/UpdateLeadRoute";
-import { ApproveOrRejectPendingActionRoute } from "./pendingAction/ApproveOrRejectPendingActionRoute";
-import { CreatePendingActionRoute } from "./pendingAction/CreatePendingActionRoute";
-import { ListPendingActionRoute } from "./pendingAction/ListPendingActionRoute";
-import { UpdateProductPhotoRoute } from "./product/UpdateProductPhotoRoute";
-import { CreateSaleRoute } from "./sale/CreateSaleRoute";
-import { DeleteSaleRoute } from "./sale/DeleteSaleRoute";
-import { FindSaleRoute } from "./sale/FindSaleRoute";
-import { ListSaleRoute } from "./sale/ListSaleRoute";
-import { UpdateSaleRoute } from "./sale/UpdateSaleRoute";
-
-import { UpdateSellerPhotoRoute } from "./seller/UpdateSellerPhotoRoute";
-import { CreateSellerEventRoute } from "./sellerEvent/CreateSellerEventRoute";
-import { DeleteSellerEventRoute } from "./sellerEvent/DeleteSellerEventRoute";
-import { GuestAccessRoute } from "./sellerEvent/GuestAccessRoute";
-import { ListEventsBySellerRoute } from "./sellerEvent/ListEventsBySellerRoute";
-import { ListSellerByEventRoute } from "./sellerEvent/ListSellerByEventRoute";
-import { CreateEventRoute } from "./event/CreateEventRoute";
-import { DeleteEventRoute } from "./event/DeleteEventRoute";
-import { SwitchEventStateRoute } from "./event/SwitchEventStateRoute";
-import { UpdateEventRoute } from "./event/UpdateEventRoute";
-import { CreateProductRoute } from "./product/CreateProductRoute";
-import { DeleteProductRoute } from "./product/DeleteProductRoute";
-import { FindProductRoute } from "./product/FindProductRoute";
-import { ListProductRoute } from "./product/ListProductRoute";
-import { UpdateProductRoute } from "./product/UpdateProductRoute";
-import { CreateSellerRoute } from "./seller/CreateSellerRoute";
-import { DeleteSellerRoute } from "./seller/DeleteSellerRoute";
-import { FindSellerByEmailRoute } from "./seller/FindSellerByEmailRoute";
-import { FindSellerRoute } from "./seller/FindSellerRoute";
-import { ListSellerRoute } from "./seller/ListSellerRoute";
-import { UpdateSellerRoute } from "./seller/UpdateSellerRoute";
-import { FindEventRoute } from "./event/FindEventRoute";
-import { ListEventRoute } from "./event/ListEventRoute";
-import { ImpersonateCompanyRoute } from "./admin/ImpersonateCompanyRoute";
 import { ActivateCompanyRoute } from "./company/ActivateCompanyRoute";
 import { CreateCompanyRoute } from "./company/CreateCompanyRoute";
 import { DeleteCompanyRoute } from "./company/DeleteCompanyRoute";
 import { FindCompanyRoute } from "./company/FindCompanyRoute";
 import { ListCompanyRoute } from "./company/ListCompanyRoute";
-
+import { ScreenAccessServiceRoute } from "./company/ScreenAccessServiceRoute";
+import { SendScreenAccessInviteRoute } from "./company/SendScreenAccessInviteRoute";
 import { SuspendCompanyRoute } from "./company/SuspendCompanyRoute";
 import { UpdateCompanyPhotoRoute } from "./company/UpdateCompanyPhotoRoute";
 import { UpdateCompanyRoute } from "./company/UpdateCompanyRoute";
+import { CreateEventRoute } from "./event/CreateEventRoute";
+import { DeleteEventRoute } from "./event/DeleteEventRoute";
+import { FindEventRoute } from "./event/FindEventRoute";
+import { ListEventRoute } from "./event/ListEventRoute";
+import { SwitchEventStateRoute } from "./event/SwitchEventStateRoute";
+import { UpdateEventPhotoRoute } from "./event/UpdateEventPhotoRoute";
+import { UpdateEventRoute } from "./event/UpdateEventRoute";
+import { HealthRoute } from "./HealthRoute";
+import { CreateInvoiceRoute } from "./invoice/CreateInvoiceRoute";
+import { GetInvoiceByIdRoute } from "./invoice/GetInvoiceByIdRoute";
+import { GetInvoicesByCompanyRoute } from "./invoice/GetInvoicesByCompanyRoute";
+import { MarkInvoiceAsPaidRoute } from "./invoice/MarkInvoiceAsPaidRoute";
+import { CreateLeadRoute } from "./lead/CreateLeadRoute";
+import { DeleteLeadRoute } from "./lead/DeleteLeadRoute";
+import { ExportLeadRoute } from "./lead/ExportLeadRoute";
+import { FindLeadRoute } from "./lead/FindLeadRoute";
 import { ListLeadByCompanies } from "./lead/ListLeadByCompany";
+import { ListLeadByEventRoute } from "./lead/ListLeadByEventRoute";
+import { UpdateLeadRoute } from "./lead/UpdateLeadRoute";
+import { CreateLeadSourceRoute } from "./leadSource/CreateLeadSourceRoute";
+import { DeleteLeadSourceRoute } from "./leadSource/DeleteLeadRoute";
+import { FindLeadSourceRoute } from "./leadSource/FindLeadSourceRoute";
+import { ListLeadSourceRoute } from "./leadSource/ListLeadSourceRoute";
+import { UpdateLeadSourceRoute } from "./leadSource/UpdateLeadSourceRoute";
+import { ApproveOrRejectPendingActionRoute } from "./pendingAction/ApproveOrRejectPendingActionRoute";
+import { CreatePendingActionRoute } from "./pendingAction/CreatePendingActionRoute";
+import { ListPendingActionRoute } from "./pendingAction/ListPendingActionRoute";
+import { CreateProductRoute } from "./product/CreateProductRoute";
+import { DeleteProductRoute } from "./product/DeleteProductRoute";
+import { FindProductRoute } from "./product/FindProductRoute";
+import { ListProductRoute } from "./product/ListProductRoute";
+import { UpdateProductPhotoRoute } from "./product/UpdateProductPhotoRoute";
+import { UpdateProductRoute } from "./product/UpdateProductRoute";
+import { CreateSaleRoute } from "./sale/CreateSaleRoute";
+import { DeleteSaleRoute } from "./sale/DeleteSaleRoute";
+import { FindSaleRoute } from "./sale/FindSaleRoute";
+import { ListSaleRoute } from "./sale/ListSaleRoute";
+import { UpdateSaleRoute } from "./sale/UpdateSaleRoute";
+import { CreateSellerRoute } from "./seller/CreateSellerRoute";
+import { DeleteSellerRoute } from "./seller/DeleteSellerRoute";
+import { FindSellerByEmailRoute } from "./seller/FindSellerByEmailRoute";
+import { FindSellerRoute } from "./seller/FindSellerRoute";
+import { ListSellerRoute } from "./seller/ListSellerRoute";
+import { UpdateSellerPhotoRoute } from "./seller/UpdateSellerPhotoRoute";
+import { UpdateSellerRoute } from "./seller/UpdateSellerRoute";
+import { CreateSellerEventRoute } from "./sellerEvent/CreateSellerEventRoute";
+import { DeleteSellerEventRoute } from "./sellerEvent/DeleteSellerEventRoute";
+import { GuestAccessRoute } from "./sellerEvent/GuestAccessRoute";
+import { ListEventsBySellerRoute } from "./sellerEvent/ListEventsBySellerRoute";
+import { ListSellerByEventRoute } from "./sellerEvent/ListSellerByEventRoute";
+import { SendGuestAccessInviteRoute } from "./sellerEvent/SendGuestAccessInviteRoute";
+import { UpdateSellerEventGoalRoute } from "./sellerEvent/UpdateSellerEventGoalRoute";
+import { CancelSubscriptionRoute } from "./subscription/CancelSubscriptionRoute";
+import { CreateSubscriptionRoute } from "./subscription/CreateSubscriptionRoute";
+import { GetSubscriptionByCompanyRoute } from "./subscription/GetSubscriptionByCompanyRoute";
 import { CreateUserRoute } from "./user/CreateUserRoute";
 import { DeleteUserRoute } from "./user/DeleteUserRoute";
 import { FindUserRoute } from "./user/FindUserRoute";
@@ -62,25 +77,9 @@ import { ListUserRoute } from "./user/ListUserRoute";
 import { LoginUserRoute } from "./user/LoginUserRoute";
 import { LogoutUserRoute } from "./user/LogoutUserRoute";
 import { RefreshUserRoute } from "./user/RefreshUserRoute";
+import { RegisterUserRoute } from "./user/RegisterUserRoute";
 import { UpdateUserPhotoRoute } from "./user/UpdateUserPhotoRoute";
 import { UpdateUserRoute } from "./user/UpdateUserRoute";
-import { CreateSubscriptionRoute } from "./subscription/CreateSubscriptionRoute";
-import { CancelSubscriptionRoute } from "./subscription/CancelSubscriptionRoute";
-import { GetSubscriptionByCompanyRoute } from "./subscription/GetSubscriptionByCompanyRoute";
-import { CreateInvoiceRoute } from "./invoice/CreateInvoiceRoute";
-import { GetInvoiceByIdRoute } from "./invoice/GetInvoiceByIdRoute";
-import { GetInvoicesByCompanyRoute } from "./invoice/GetInvoicesByCompanyRoute";
-import { MarkInvoiceAsPaidRoute } from "./invoice/MarkInvoiceAsPaidRoute";
-import { AuthorizationRoute } from "../../infra/http/middlewares/AuthorizationRoute";
-import { CreateLeadSourceRoute } from "./leadSource/CreateLeadSourceRoute";
-import { DeleteLeadSourceRoute } from "./leadSource/DeleteLeadRoute";
-import { FindLeadSourceRoute } from "./leadSource/FindLeadSourceRoute";
-import { ListLeadSourceRoute } from "./leadSource/ListLeadSourceRoute";
-import { UpdateLeadSourceRoute } from "./leadSource/UpdateLeadSourceRoute";
-import { RegisterUserRoute } from "./user/RegisterUserRoute";
-import { SendGuestAccessInviteRoute } from "./sellerEvent/SendGuestAccessInviteRoute";
-import { HealthRoute } from "./HealthRoute";
-import { UpdateSellerEventGoalRoute } from "./sellerEvent/UpdateSellerEventGoalRoute";
 
 export function makeRoutes(useCases: any, authorization: AuthorizationRoute) {
   return [
@@ -149,6 +148,14 @@ export function makeRoutes(useCases: any, authorization: AuthorizationRoute) {
     FindLeadRoute.create(useCases.lead.findOne, authorization),
     DeleteLeadRoute.create(useCases.lead.delete, authorization),
     UpdateLeadRoute.create(useCases.lead.update, authorization),
+    ScreenAccessServiceRoute.create(
+      useCases.lead.collectorAccess,
+      authorization
+    ),
+    SendScreenAccessInviteRoute.create(
+      useCases.lead.sendMessage,
+      authorization
+    ),
 
     CreateLeadSourceRoute.create(useCases.leadSource.create, authorization),
     ListLeadSourceRoute.create(useCases.leadSource.list, authorization),

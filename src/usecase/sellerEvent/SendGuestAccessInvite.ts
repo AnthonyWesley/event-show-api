@@ -99,7 +99,11 @@ export class SendGuestAccessInvite
         sellerEventId: findSellerEvent?.id,
         code,
         eventId: existEvent?.id,
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24h
+        expiresAt: new Date(
+          Date.now() +
+            (existEvent?.inviteValidityDays ?? 1) * 24 * 60 * 60 * 1000
+        ), // 24h
+        phone: "",
       });
 
       await this.inviteGateway.save(newInvite);

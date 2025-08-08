@@ -64,6 +64,7 @@ export class FindEventRoute implements IRoute {
         isValueVisible: output.isValueVisible,
         goalMode: output.goalMode,
         totalSalesValue: output.totalSalesValue,
+        inviteValidityDays: output.inviteValidityDays,
         totalUnitsSold: output.totalUnitsSold,
         allSellers: output.allSellers,
         leads: output.leads,

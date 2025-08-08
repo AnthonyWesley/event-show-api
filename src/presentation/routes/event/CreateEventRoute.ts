@@ -34,7 +34,8 @@ export class CreateEventRoute implements IRoute {
     return async (request: Request, response: Response) => {
       const { user } = request as any;
 
-      const { name, goal, goalType, photo, goalMode } = request.body;
+      const { name, goal, goalType, photo, goalMode, inviteValidityDays } =
+        request.body;
 
       const input: CreateEventInputDto = {
         name,
@@ -43,6 +44,7 @@ export class CreateEventRoute implements IRoute {
         goalType,
         photo,
         goalMode,
+        inviteValidityDays,
       };
 
       const output: CreateEventResponseDto =

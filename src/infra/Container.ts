@@ -115,7 +115,11 @@ export function makeUseCases(
       companyRepository,
       leadSourceRepository,
       exporter,
-      upsertLeadCustomValues
+      upsertLeadCustomValues,
+      inviteRepository,
+      sendMessageService,
+      socketServer,
+      authorization
     ),
     leadSource: makeLeadSourceUseCases(leadSourceRepository, companyRepository),
     seller: makeSellerUseCases(

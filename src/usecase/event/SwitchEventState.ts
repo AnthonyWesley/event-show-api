@@ -67,7 +67,7 @@ export class SwitchEventState {
     const updatedEvent = await this.eventGateway.update({
       ...input,
       isActive: toggledIsActive,
-      endDate: toggledIsActive ? null : new Date(), // ativar => null, desativar => new Date()
+      endDate: toggledIsActive ? null : new Date(),
     });
 
     return {

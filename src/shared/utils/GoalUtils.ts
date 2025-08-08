@@ -22,11 +22,24 @@ export class GoalUtils {
   /**
    * Calcula quanto cada vendedor precisa atingir individualmente para alcançar a meta total.
    */
-  static calculateIndividualSellerGoal(
-    allSellers: SellerProps[],
+  static calculateIndividualSellerGoals(
+    allSellers: any[],
     totalGoal: number
-  ): number {
-    if (!allSellers.length) return 0;
-    return Math.ceil(totalGoal / allSellers.length);
+  ): Record<string, number> {
+    const sellerCount = allSellers.length;
+    if (!sellerCount || totalGoal <= 0) return {};
+
+    const baseGoal = Math.floor(totalGoal / sellerCount);
+    let remainder = totalGoal % sellerCount;
+
+    const goals: Record<string, number> = {};
+
+    for (const seller of allSellers) {
+      // Distribui o excedente para os primeiros "remainder" vendedores
+      goals[seller.sellerId] = baseGoal + (remainder > 0 ? 1 : 0);
+      remainder--;
+    }
+
+    return goals;
   }
 }

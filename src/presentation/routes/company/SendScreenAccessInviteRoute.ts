@@ -1,44 +1,45 @@
 import { Request, Response } from "express";
 import { HttpMethod, IRoute } from "../IRoute";
 import { AuthorizationRoute } from "../../../infra/http/middlewares/AuthorizationRoute";
+import {
+  ScreenAccessType,
+  SendScreenAccessInvite,
+} from "../../../usecase/company/SendScreenAccessInvite";
 
-import { UpdateSellerEventGoal } from "../../../usecase/sellerEvent/UpdateSellerEventGoal";
-
-export class UpdateSellerEventGoalRoute implements IRoute {
+export class SendScreenAccessInviteRoute implements IRoute {
   private constructor(
     private readonly path: string,
     private readonly method: HttpMethod,
-    private readonly updateSellerEventGoalService: UpdateSellerEventGoal,
+    private readonly sendScreenAccessInviteService: SendScreenAccessInvite,
     private readonly authorization: AuthorizationRoute
   ) {}
 
   public static create(
-    updateSellerEventGoalService: UpdateSellerEventGoal,
+    sendScreenAccessInviteService: SendScreenAccessInvite,
     authorization: AuthorizationRoute
   ) {
-    return new UpdateSellerEventGoalRoute(
-      "/events/:eventId/sellerEvents/:sellerId",
-      HttpMethod.PATCH,
-      updateSellerEventGoalService,
+    return new SendScreenAccessInviteRoute(
+      "/events/:eventId/invite/:type",
+      HttpMethod.POST,
+      sendScreenAccessInviteService,
       authorization
     );
   }
 
   public getHandler() {
     return async (request: Request, response: Response) => {
-      const { eventId, sellerId } = request.params;
-
-      const { goal } = request.body;
+      const { eventId, type } = request.params;
+      const { phone } = request.body;
       const { user } = request as any;
 
-      await this.updateSellerEventGoalService.execute({
-        eventId,
-        sellerId,
+      const output = await this.sendScreenAccessInviteService.execute({
         companyId: user.companyId,
-        goal,
+        eventId,
+        phone,
+        screenAccess: type as ScreenAccessType,
       });
 
-      response.status(204).send();
+      response.status(201).json(output.link);
     };
   }
 

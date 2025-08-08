@@ -25,7 +25,7 @@ export class UpdateSellersGoalService {
     );
     if (!allSellers.length) return;
 
-    const individualGoal = GoalUtils.calculateIndividualSellerGoal(
+    const individualGoals = await GoalUtils.calculateIndividualSellerGoals(
       allSellers,
       event.goal
     );
@@ -35,7 +35,7 @@ export class UpdateSellersGoalService {
         this.sellerEventGateway.updateById(
           sellerEvent.sellerId,
           sellerEvent.eventId,
-          individualGoal
+          individualGoals[sellerEvent.sellerId]
         )
       )
     );

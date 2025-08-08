@@ -1,6 +1,5 @@
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
 import { IUseCases } from "../IUseCases";
-import { AuthorizationRoute } from "../../infra/http/middlewares/AuthorizationRoute";
 import { UnauthorizedError } from "../../shared/errors/UnauthorizedError";
 import { IEventGateway } from "../../domain/entities/event/IEventGateway";
 import { ISellerGateway } from "../../domain/entities/seller/ISellerGateway";
@@ -14,10 +13,8 @@ import {
   SellerStatsHelper,
 } from "../../shared/utils/SellerStatsHelper";
 import { AuthTokenService } from "../../service/AuthTokenService";
-import { Invite } from "../../domain/entities/invite/Invite";
 import { IInviteGateway } from "../../domain/entities/invite/IInviteGateway";
 import { ForbiddenError } from "../../shared/errors/ForbiddenError";
-import { SellerEventProps } from "../../domain/entities/sellerEvent/SellerEvent";
 import { LeadProps } from "../../domain/entities/lead/Lead";
 
 export type GuestAccessOutputDto = {
@@ -45,6 +42,7 @@ export type SellerDto = {
     name: string;
     isActive: boolean;
     goal: number;
+    isValueVisible?: boolean;
     goalType: GoalType;
     allSellers: SellerWithStats[];
   };
@@ -140,7 +138,6 @@ export class GuestAccess
     const filteredSales = (seller.sales ?? []).filter(
       (sale) => sale.eventId === event.id
     );
-    console.log(seller.leads);
 
     const totalProgress = GoalUtils.sumSellerProgressForGoal(
       sellersWithStats,
@@ -163,6 +160,8 @@ export class GuestAccess
       "1d"
     );
 
+    console.log(company.isValueVisible);
+
     return {
       token: { accessToken },
       guest: {
@@ -184,6 +183,8 @@ export class GuestAccess
           isActive: event.isActive,
           goal: event.goal,
           goalType: event.goalType,
+          isValueVisible:
+            event.goalType === "QUANTITY" ? company.isValueVisible : true,
           allSellers,
         },
       },

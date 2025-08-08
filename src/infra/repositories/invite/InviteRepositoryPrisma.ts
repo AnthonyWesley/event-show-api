@@ -17,9 +17,10 @@ export class InviteRepositoryPrisma implements IInviteGateway {
           id: invite.id,
           code: invite.code,
           eventId: invite.eventId,
-          sellerEventId: invite.sellerEventId,
           expiresAt: invite.expiresAt,
+          phone: invite.phone,
           createdAt: invite.createdAt,
+          ...(invite.sellerEventId && { sellerEventId: invite.sellerEventId }),
         },
       });
     } catch (error: any) {
@@ -69,6 +70,23 @@ export class InviteRepositoryPrisma implements IInviteGateway {
       throw new Error("Error listing invites: " + error.message);
     }
   }
+
+  async findByPhone(eventId: string, phone: string): Promise<Invite | null> {
+    try {
+      const invite = await this.prisma.invite.findFirst({
+        where: { eventId, phone },
+        include: { sellerEvent: true, event: true },
+      });
+
+      if (!invite) {
+        return null;
+      }
+
+      return this.toEntity(invite);
+    } catch (error: any) {
+      throw new Error("Error listing invites: " + error.message);
+    }
+  }
   async findBySellerEventId(sellerEventId: string): Promise<Invite | null> {
     const invite = await this.prisma.invite.findFirst({
       where: { sellerEventId },
@@ -105,6 +123,7 @@ export class InviteRepositoryPrisma implements IInviteGateway {
       createdAt: raw.createdAt,
       sellerEvent: raw.sellerEvent,
       expiresAt: raw.expiresAt,
+      phone: raw.phone,
     });
   }
 }

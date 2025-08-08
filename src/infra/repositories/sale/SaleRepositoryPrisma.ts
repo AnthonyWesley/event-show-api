@@ -33,6 +33,7 @@ export class SaleRepositoryPrisma implements ISaleGateway {
               where: { id: aLead.id },
               data: {
                 convertedAt: new Date(),
+                wasPresent: true,
                 sellerId: sale.sellerId,
                 status: "CONVERTED",
               },
@@ -86,6 +87,7 @@ export class SaleRepositoryPrisma implements ISaleGateway {
               data: {
                 convertedAt: new Date(),
                 sellerId: sale.sellerId,
+                wasPresent: true,
                 status: "CONVERTED",
               },
             });

@@ -64,9 +64,7 @@ export class UpdateEventPhoto {
       folder: `event/${existingEvent.id}`,
       public_id: "photo",
       overwrite: true,
-      transformation: [
-        { width: 400, height: 400, crop: "thumb", gravity: "face" },
-      ],
+      // transformation: [{ width: 400, height: 400 }],
       tags: ["event"],
       context: {
         alt: `${existingEvent.name} - foto`,
@@ -84,6 +82,7 @@ export class UpdateEventPhoto {
       photo: upload.secure_url,
       photoPublicId: upload.public_id,
       isActive: existingEvent.isActive,
+      inviteValidityDays: existingEvent.inviteValidityDays,
       goal: existingEvent.goal,
       goalType: existingEvent.goalType as GoalType,
       companyId: existingEvent.companyId,

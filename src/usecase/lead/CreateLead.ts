@@ -20,6 +20,7 @@ export type CreateLeadInputDto = {
   notes?: string;
   eventId: string;
   companyId: string;
+  wasPresent: boolean;
   customValues: UpsertLeadCustomValueInputDto[];
 };
 
@@ -81,7 +82,7 @@ export class CreateLead
       notes: input.notes,
       // customInterest: input.customInterest,
       status: LeadStatus.NEW,
-      wasPresent: false,
+      wasPresent: input.wasPresent,
       sales: [],
     });
 

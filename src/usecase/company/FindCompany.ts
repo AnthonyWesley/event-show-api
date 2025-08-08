@@ -1,13 +1,8 @@
 import { ICompanyGateway } from "../../domain/entities/company/ICompanyGateway";
-import { PlanType, StatusType } from "../../domain/entities/company/Company";
-
+import { StatusType } from "../../domain/entities/company/Company";
 import { NotFoundError } from "../../shared/errors/NotFoundError";
 import { IUseCases } from "../IUseCases";
-import { SubscriptionProps } from "../../domain/entities/subscription/Subscription";
-import {
-  LeadCustomField,
-  LeadCustomFieldProps,
-} from "../../domain/entities/leadCustomField/LeadCustomField";
+import { LeadCustomFieldProps } from "../../domain/entities/leadCustomField/LeadCustomField";
 
 export type FindCompanyInputDto = { id: string };
 

@@ -30,6 +30,7 @@ export type FindEventOutputDto = {
   goalMode: GoalMode;
   sales: SaleProps[];
   goal: number;
+  inviteValidityDays?: number;
   isActive?: boolean;
   isValueVisible?: boolean;
   totalSalesValue: number;
@@ -118,9 +119,11 @@ export class FindEvent
       isActive: event.isActive,
       goal: event.goal,
       goalMode: event.goalMode ?? "auto",
-      isValueVisible: company.isValueVisible,
+      isValueVisible:
+        event.goalType === "QUANTITY" ? company.isValueVisible : true,
       goalType: event.goalType as GoalType,
       companyId: event.companyId,
+      inviteValidityDays: event.inviteValidityDays,
       createdAt: event.createdAt,
       leads: event.leads ?? [],
       totalSalesValue,

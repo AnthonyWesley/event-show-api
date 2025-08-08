@@ -5,6 +5,7 @@ import {
   UpsertLeadCustomValueInputDto,
   UpsertLeadCustomValues,
 } from "../LeadCustomValues/UpsertLeadCustomValues";
+import { ISocketServer } from "../../infra/socket/ISocketServer";
 
 export type UpdateLeadInputDto = {
   name?: string;
@@ -43,15 +44,22 @@ export class UpdateLead {
   constructor(
     private readonly leadGateway: ILeadGateway,
     private readonly companyGateway: ICompanyGateway,
-    private readonly upsertLeadCustomValues: UpsertLeadCustomValues
+    private readonly upsertLeadCustomValues: UpsertLeadCustomValues,
+    private readonly socketServer: ISocketServer
   ) {}
 
   static create(
     leadGateway: ILeadGateway,
     companyGateway: ICompanyGateway,
-    upsertLeadCustomValues: UpsertLeadCustomValues
+    upsertLeadCustomValues: UpsertLeadCustomValues,
+    socketServer: ISocketServer
   ) {
-    return new UpdateLead(leadGateway, companyGateway, upsertLeadCustomValues);
+    return new UpdateLead(
+      leadGateway,
+      companyGateway,
+      upsertLeadCustomValues,
+      socketServer
+    );
   }
 
   async execute(input: UpdateLeadInputDto): Promise<UpdateLeadOutputDto> {
@@ -66,6 +74,11 @@ export class UpdateLead {
 
     const updatedLead = await this.leadGateway.update(input);
 
+    if (input.wasPresent)
+      await this.socketServer.emit(
+        "lead:updated",
+        `${updatedLead.name} acabou de confirmar presença no evento!`
+      );
     // if (input.customValues && input.customValues.length > 0) {
     //   input.customValues.forEach((v) => {
     //     v.leadId = lead.id; // garante leadId em todos os valores

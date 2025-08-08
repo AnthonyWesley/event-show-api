@@ -14,6 +14,7 @@ export type CreateEventInputDto = {
   photo?: string;
   goalMode: GoalMode;
   goal: number;
+  inviteValidityDays: number;
   goalType: Goal;
   companyId: string;
 };

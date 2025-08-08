@@ -43,6 +43,7 @@ export class CreateLeadRoute implements IRoute {
         leadSourceId,
         phone,
         customValues,
+        wasPresent,
       } = request.body;
 
       const input: CreateLeadInputDto = {
@@ -56,6 +57,7 @@ export class CreateLeadRoute implements IRoute {
         leadSourceId,
         sellerId,
         customValues,
+        wasPresent,
       };
 
       const output: CreateLeadRouteResponseDto =

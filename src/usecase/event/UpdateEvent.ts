@@ -12,6 +12,7 @@ export type UpdateEventInputDto = {
   eventId: string;
   name?: string;
   isActive: boolean;
+  inviteValidityDays?: number;
   startDate?: Date;
   endDate?: Date | null;
   goal?: number;
@@ -86,6 +87,7 @@ export class UpdateEvent {
       startDate: updatedEvent.startDate,
       endDate: updatedEvent.endDate ?? null,
       isActive: updatedEvent.isActive,
+      inviteValidityDays: updatedEvent.inviteValidityDays,
       goalMode: updatedEvent.goalMode,
       goal: updatedEvent.goal,
       goalType: updatedEvent.goalType as GoalType,

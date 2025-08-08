@@ -105,7 +105,7 @@ export class ApproveOrRejectPendingAction
 
     await this.pendingGateway.update(input.pendingActionId, "APPROVED");
 
-    await this.socketServer?.emit("sale:created", { id: input.approve });
+    await this.socketServer?.emit("sale:created", `Sua venda foi aprovada!`);
 
     return { pendingActionId: action.id, status: "Action approved" };
   }

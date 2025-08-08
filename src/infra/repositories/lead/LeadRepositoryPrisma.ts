@@ -24,7 +24,7 @@ export class LeadRepositoryPrisma implements ILeadGateway {
           id: lead.id,
           name: lead.name,
           phone: lead.phone,
-
+          wasPresent: lead.wasPresent,
           notes: lead.notes,
           customInterest: lead.customInterest,
           leadSourceId: lead.leadSourceId ?? undefined,
@@ -38,6 +38,7 @@ export class LeadRepositoryPrisma implements ILeadGateway {
           },
         },
       });
+
       if (!createdLead.sellerId)
         await this.prisma.lead.update({
           where: { id: createdLead.id },
