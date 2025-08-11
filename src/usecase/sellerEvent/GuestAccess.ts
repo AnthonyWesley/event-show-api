@@ -46,7 +46,6 @@ export type SellerDto = {
     goalType: GoalType;
     allSellers: SellerWithStats[];
   };
-  totalProgress: number;
   totalSalesCount: number;
   totalSalesValue: number;
 };
@@ -139,11 +138,6 @@ export class GuestAccess
       (sale) => sale.eventId === event.id
     );
 
-    const totalProgress = GoalUtils.sumSellerProgressForGoal(
-      sellersWithStats,
-      event.goalType
-    );
-
     const { count: totalSalesCount, total: totalSalesValue } = stats[
       seller.id
     ] ?? { count: 0, total: 0 };
@@ -160,7 +154,13 @@ export class GuestAccess
       "1d"
     );
 
-    console.log(company.isValueVisible);
+    //   if (event.wasPresent)
+    // await this.socketServer.emit(
+    //   "lead:updated",
+    //   `${updatedLead.name} acabou de confirmar presença no evento!`
+    // );
+
+    console.log(event.leads?.filter((le) => le.sellerId === seller?.id));
 
     return {
       token: { accessToken },
@@ -174,7 +174,6 @@ export class GuestAccess
         sales: filteredSales,
         goal: allSellers.find((sl) => sl.id === seller.id)?.goal ?? 0,
         leads: seller.leads ?? [],
-        totalProgress,
         totalSalesCount,
         totalSalesValue,
         event: {

@@ -8,13 +8,13 @@ import { UpdateSellersGoalService } from "../event/UpdateSellersGoalService";
 import { IUseCases } from "../IUseCases";
 
 export type CreateSellerEventInputDto = {
-  sellerId: string;
+  sellers: { sellerId: string }[];
   eventId: string;
   companyId: string;
 };
 
 export type CreateSellerEventOutputDto = {
-  id: string;
+  sellers: { sellerId: string }[];
 };
 
 export class CreateSellerEvent
@@ -41,33 +41,35 @@ export class CreateSellerEvent
   public async execute(
     input: CreateSellerEventInputDto
   ): Promise<CreateSellerEventOutputDto> {
-    if (!input.sellerId || !input.eventId) {
+    if (!input.sellers.length || !input.eventId) {
       throw new ValidationError("Seller ID and Event ID are required.");
     }
 
-    const exists = await this.sellerEventGateway.findByEventAndSeller(
-      input.sellerId,
-      input.eventId
-    );
+    const eventId = input.eventId;
 
-    if (exists) {
-      return { id: exists.id };
+    // 1. Inserir todos no banco
+    for (const { sellerId } of input.sellers) {
+      const exists = await this.sellerEventGateway.findByEventAndSeller(
+        sellerId,
+        eventId
+      );
+
+      if (!exists) {
+        const sellerEvent = SellerEvent.create({ sellerId, eventId });
+        await this.sellerEventGateway.save(sellerEvent);
+        this.socketServer?.emit("sellerEvent:created", { id: sellerEvent.id });
+      }
     }
 
-    const sellerEvent = SellerEvent.create({
-      sellerId: input.sellerId,
-      eventId: input.eventId,
-    });
-    await this.sellerEventGateway.save(sellerEvent);
-    this.socketServer?.emit("sellerEvent:created", { id: sellerEvent.id });
-
+    // 2. Buscar todos de uma vez
     const allSellersByEvent = await this.sellerEventGateway.listSellersByEvent(
-      input.eventId
+      eventId
     );
 
-    if (allSellersByEvent.length > 0 && allSellersByEvent[0].event)
-      await this.updateSellersGoalService?.execute(allSellersByEvent[0]?.event);
-
-    return { id: sellerEvent.id };
+    // 3. Atualizar metas só no final
+    if (allSellersByEvent.length > 0 && allSellersByEvent[0].event) {
+      await this.updateSellersGoalService?.execute(allSellersByEvent[0].event);
+    }
+    return { sellers: input.sellers };
   }
 }

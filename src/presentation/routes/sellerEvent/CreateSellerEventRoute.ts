@@ -17,7 +17,7 @@ export class CreateSellerEventRoute implements IRoute {
     authorization: AuthorizationRoute
   ) {
     return new CreateSellerEventRoute(
-      "/events/:eventId/sellers/:sellerId",
+      "/events/:eventId/sellers/batch",
       HttpMethod.POST,
       createSellerEventService,
       authorization
@@ -26,17 +26,19 @@ export class CreateSellerEventRoute implements IRoute {
 
   public getHandler() {
     return async (request: Request, response: Response) => {
-      const { eventId, sellerId } = request.params;
+      const { eventId } = request.params;
+      console.log(request.body);
+      const { sellers } = request.body;
+
       const { user } = request as any;
-      console.log("ID do SELLER", sellerId);
 
       const output = await this.createSellerEventService.execute({
         eventId,
-        sellerId,
+        sellers,
         companyId: user.companyId,
       });
 
-      response.status(201).json({ id: output.id });
+      response.status(201).json({ sellers: output });
     };
   }
 

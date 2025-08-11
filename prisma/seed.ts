@@ -127,7 +127,7 @@ const realLeadNames = [
   "Thiago Almeida",
   "Vanessa Moura",
 ];
-const companyId = "01K1JWQASY7MEH2N92R9SWMJNY";
+const companyId = "01K21Z3CDER88E6AHCKC45MRKH";
 
 function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -233,8 +233,8 @@ async function main() {
         data: {
           id: ulid(),
           name,
-          email:
-            Math.random() > 0.3 ? `lead${ulid().slice(0, 6)}@mail.com` : null,
+          // email:
+          //   Math.random() > 0.3 ? `lead${ulid().slice(0, 6)}@mail.com` : null,
           phone:
             Math.random() > 0.3 ? `1198888-${getRandomInt(1000, 9999)}` : null,
           customInterest: Math.random() > 0.8 ? product.name : null,

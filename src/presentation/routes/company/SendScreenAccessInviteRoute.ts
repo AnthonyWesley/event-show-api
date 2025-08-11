@@ -39,7 +39,7 @@ export class SendScreenAccessInviteRoute implements IRoute {
         screenAccess: type as ScreenAccessType,
       });
 
-      response.status(201).json(output.link);
+      response.status(201).json(output.message);
     };
   }
 

@@ -67,6 +67,10 @@ export class ApproveOrRejectPendingAction
         });
 
         await this.saleGateway.save(sale, leadWithCompanyId);
+        await this.socketServer?.emit(
+          `sale:created-${sale.sellerId}`,
+          `Sua venda foi aprovada!`
+        );
       },
 
       UPDATE_SALE: async () => {
@@ -104,8 +108,6 @@ export class ApproveOrRejectPendingAction
     await performAction();
 
     await this.pendingGateway.update(input.pendingActionId, "APPROVED");
-
-    await this.socketServer?.emit("sale:created", `Sua venda foi aprovada!`);
 
     return { pendingActionId: action.id, status: "Action approved" };
   }

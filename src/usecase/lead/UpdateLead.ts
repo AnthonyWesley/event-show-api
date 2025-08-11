@@ -76,7 +76,7 @@ export class UpdateLead {
 
     if (input.wasPresent)
       await this.socketServer.emit(
-        "lead:updated",
+        `lead:updated-${updatedLead.sellerId}`,
         `${updatedLead.name} acabou de confirmar presença no evento!`
       );
     // if (input.customValues && input.customValues.length > 0) {
